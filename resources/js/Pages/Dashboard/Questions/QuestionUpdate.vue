@@ -3,7 +3,7 @@
         <div class="flex items-center justify-between border-bot-only py-4 mb-6">
             <span class="text-[20px] font-bold text-gray-500 ">New Question Page </span> 
         </div>
-        <!-- {{ form }} >>>> {{ options }} -->
+        <!-- {{ form }} >>>> {{ options }} --> {{ data.question }} ???????? {{ data.question.options }}
         <form @submit.prevent="submit">    
             <div class="" > 
                 <div class=" flex w-full mb-4 flex-col lg:flex-row "> 
@@ -143,29 +143,51 @@ import {ref, watch, onMounted} from 'vue'
 import { useForm,usePage } from '@inertiajs/vue3';
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 
+const terms = ref([
+    'prelim',
+    'mid-term',
+    'pre-final',
+    'final',
+])
+
+onMounted(()=>{
+    if(data.question.type === 'text')
+    {
+        textTab.value = true;
+    }
+
+    if(data.question.type === 'image')
+    {
+        imageTab.value = true;
+    }
+})
 
 const user = usePage().props.user
+const data = defineProps({
+    subjectCodes:Array,
+    question:Object,
+})
 const form = useForm({
-    question:'',
-    type:'text',
-    term: '',
+    question:data.question.question,
+    type:data.question.type,
+    term: data.question.term,
     attached_image:'',
     subject_code_id:'',
     author_id:user.id,
     options:[],
 })
-const data = defineProps({
-    subjectCodes:Array,
-})
+
 
 const questionType = ref([
     'text',
     'image',
 ])
 
-const selectedSubjectCode = ref('');
+const selectedSubjectCode = ref(data.question.subject_code);
 const imageUrl  = ref('/storage/images/');
-const textTab   = ref(true)
+
+
+const textTab   = ref(false)
 const imageTab  = ref(false)
 
 
@@ -304,32 +326,27 @@ const imageOptionURL_2 = ref('');
 const imageOptionURL_3 = ref('');
 
 // options 
-const selectedOption = ref(null)
+const selectedOption = ref(data.question.options.findIndex((option)=> option.isCorrect === 'true'));
 const options = ref([
     {
-        option:'',
+        option:data.question.options[0].option,
         isCorrect:'false',
     },
     {
-        option:'',
+        option:data.question.options[1].option,
         isCorrect:'false',
     },
     {
-        option:'',
+        option:data.question.options[2].option,
         isCorrect:'false',
     },
     {
-        option:'',
+        option:data.question.options[3].option,
         isCorrect:'false',
     }
 ])
 
-const terms = ([
-    'prelim',
-    'mid-term',
-    'pre-final',
-    'final',
-])
+
 
 function clearOptions(){
     const temp = ref([])

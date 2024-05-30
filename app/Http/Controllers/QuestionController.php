@@ -305,11 +305,35 @@ class QuestionController extends Controller
             }
         }
     }
+
+    public function showUpdate($id)
+    {
+        
+        // only admin, coadmin, dephead is allowed to update
+        // user rolse admin, co-admin, department head, faculty
+        $loggedUser = Auth::user();
+
+        $question = Question::with('subjectCode','options')->findOrFail($id);
+        
+
+        if($loggedUser->role == 'admin' || $loggedUser->role == 'co-admin')
+        {
+            $subjectCodes = SubjectCode::orderBy('id','asc')->get();
+        }
+        
+        if($loggedUser->role == 'department head')
+        {
+            $subjectCodes = SubjectCode::where('department_id', $loggedUser->department_id)->orderBy('id','asc')->get();
+        }
+
+        return inertia('Dashboard/Questions/QuestionUpdate', [
+            'subjectCodes'  => $subjectCodes,
+            'question'      => $question
+        ]);
+    }
     public function destroy($id)
     {
         $questionToDelete = Question::findOrFail($id);
-
-        
 
         if($questionToDelete->type == 'text')
         {

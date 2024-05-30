@@ -139,7 +139,7 @@
                                     <div  class="flex flex-col   lg:flex-row lg:justify-center  lg:space-x-4">
                                         <button @click="showQuestionInfoModal(question)" class="btn-primary p-2">Info</button>
                                         <button  @click="deleteConfirmation(question.id)" class=" btn-warning my-2">Delete </button>
-                                        <Link href="" type="button" class="btn-success my-2">
+                                        <Link :href="route('question.update.show',{id:question.id})" type="button" class="btn-success my-2">
                                             Update
                                         </Link>
                                     </div>
