@@ -459,7 +459,7 @@ const submit = ()=>{
         }
         else
         {
-            if(!selectedOption.value)
+            if(selectedOption.value === null || selectedOption.value === '')
             {
                 imageOptionValidator.value = "Please select correct answer."
                 noError.value = false

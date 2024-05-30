@@ -67,5 +67,6 @@ Route::controller(QuestionController::class)->group(function(){
     Route::get('/test_bank/questions/add', 'showAddQuestion')->name('question.add');
     Route::post('/test_bank/question/store', 'storeQuestion')->name('question.store');
     Route::get('/test_bank/question/update/{id}', 'showUpdate')->name('question.update.show');
+    Route::put('/test_bank/question/update', 'update')->name('question.update');
 
 });

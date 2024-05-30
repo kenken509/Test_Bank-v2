@@ -3,7 +3,7 @@
         <div class="flex items-center justify-between border-bot-only py-4 mb-6">
             <span class="text-[20px] font-bold text-gray-500 ">New Question Page </span> 
         </div>
-        <!-- {{ form }} >>>> {{ options }} --> {{ data.question }} ????????  <span class="text-red-500">image file: {{  }}</span>
+        <!-- {{ form }} >>>> {{ options }} --> {{ data.question.attached_image }} ????????  <span class="text-red-500">hasAttached_image: {{ form.hasExistingAttached_image }}</span>
         
         <form @submit.prevent="submit">    
             <div class="" > 
@@ -161,6 +161,9 @@ onMounted(()=>{
     {
         imageTab.value = true;
     }
+    
+    selectedOption.value = data.question.options.findIndex((option)=> option.isCorrect === 'true')
+    
 })
 
 const user = usePage().props.user
@@ -169,12 +172,14 @@ const data = defineProps({
     question:Object,
 })
 const form = useForm({
+    question_id:data.question.id,
     question:data.question.question,
     type:data.question.type,
     term: data.question.term,
-    attached_image:'',
+    attached_image:data.question.attached_image,
+    hasExistingAttached_image:data.question.attached_image ? 'true':'false',
     subject_code_id:'',
-    author_id:user.id,
+    editor_id:user.id,
     options:[],
 })
 
@@ -320,30 +325,30 @@ function imageFileValidator(file,index){
 }
 
 //image urls
-const attachedImagePreviewUrl = ref(imageUrl.value+data.question.attached_image);
+const attachedImagePreviewUrl = ref(data.question.attached_image ? imageUrl.value+data.question.attached_image:imageUrl.value +'image_attachment.png');
 const imageOptionURL_0 = ref(imageUrl.value+data.question.options[0].option);
 const imageOptionURL_1 = ref(imageUrl.value+data.question.options[1].option);
 const imageOptionURL_2 = ref(imageUrl.value+data.question.options[2].option);
 const imageOptionURL_3 = ref(imageUrl.value+data.question.options[3].option);
 
 // options 
-const selectedOption = ref(data.question.options.findIndex((option)=> option.isCorrect === 'true'));
+const selectedOption = ref('');
 const options = ref([
     {
         option:data.question.options[0].option,
-        isCorrect:'false',
+        isCorrect:data.question.options[0].option.isCorrect,
     },
     {
         option:data.question.options[1].option,
-        isCorrect:'false',
+        isCorrect:data.question.options[1].option.isCorrect,
     },
     {
         option:data.question.options[2].option,
-        isCorrect:'false',
+        isCorrect:data.question.options[2].option.isCorrect,
     },
     {
         option:data.question.options[3].option,
-        isCorrect:'false',
+        isCorrect:data.question.options[3].option.isCorrect,
     }
 ])
 
@@ -477,7 +482,7 @@ const submit = ()=>{
         }
         else
         {
-            if(!selectedOption.value)
+            if(selectedOption.value === null || selectedOption.value === '')
             {
                 imageOptionValidator.value = "Please select correct answer."
                 noError.value = false
@@ -507,19 +512,19 @@ const submitConfirmation = ()=>
     { 
         Swal.fire({
             title: "Are you sure?",
-            text: "Save new question confirmation",
+            text: "Update new question confirmation",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, save it!",
+            confirmButtonText: "Yes, update it!",
             allowOutsideClick:false,
             allowEscapeKey:false,
             }).then((result) => {
                 if(result.isConfirmed)
                 {
-                    console.log(form)
-                    form.post(route('question.store'))
+                    //console.log(form)
+                    form.put(route('question.update'))
                 }
 
                 if(result.isDismissed)

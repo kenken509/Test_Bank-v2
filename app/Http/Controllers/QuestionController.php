@@ -331,6 +331,38 @@ class QuestionController extends Controller
             'question'      => $question
         ]);
     }
+
+    public function update(Request $request)
+    {
+       $questionToUpdate = Question::with('options')->findOrFail($request->question_id);
+
+        //dd($request->attached_image);
+        // question_id:data.question.id,
+        // question:data.question.question,
+        // type:data.question.type,
+        // term: data.question.term,
+        // attached_image:'',
+        // hasExistingAttached_image:data.question.attached_image ? 'true':'false',
+        // subject_code_id:'',
+        // editor_id:user.id,
+        // options:[],
+
+        if($questionToUpdate->attached_image)
+        {
+            if($request->attached_image == $questionToUpdate->attached_image)
+            {
+                dd('update everything except the attached image');
+            };
+        }
+        else
+        {
+            dd('existing question doesnt have attached_image');
+        }
+
+        
+        dd($questionToUpdate->attached_image == $request->attached_image);
+        
+    }
     public function destroy($id)
     {
         $questionToDelete = Question::findOrFail($id);
