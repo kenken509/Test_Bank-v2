@@ -139,8 +139,8 @@ class QuestionController extends Controller
                 } else {
                     $imagePath = null;
                 }
-
-
+                
+                $imageFiles=[$imagePath];
                 $question = new Question();
                 $question->question         = $request->question;
                 $question->type             = $request->type;
@@ -150,6 +150,7 @@ class QuestionController extends Controller
                 $question->author_id        = $request->author_id;
                 $question->save();
 
+                throw new \Exception('simulated error');
                 //dd($request);
                 // Save each option related to the question
                 foreach ($request->options as $option) {
@@ -168,6 +169,11 @@ class QuestionController extends Controller
             {
                 DB::rollback();
                 Log::error('error creating new question: '.$e->getMessage());
+                
+                // Delete all images in the array
+                foreach ($imageFiles as $filename) {
+                    Storage::disk('public')->delete('Images/' . $filename);
+                }
 
                 return redirect()->back()->with('error', 'Failed to create new question.');
             }
@@ -188,7 +194,9 @@ class QuestionController extends Controller
                     $path = $file->store('Images', 'public');
                     $imagePath = basename($path);
                     
-                    
+                     // Array to store filenames of images
+                    $imageFiles = [$imagePath];
+
                     $question = new Question();
                     $question->question         = $request->question;
                     $question->type             = $request->type;
@@ -204,7 +212,10 @@ class QuestionController extends Controller
                         $optionImage    = $option['option'];
                         $path           = $optionImage->store('Images','public');
                         $imagePath      = basename($path);
-                        
+
+                        // Add option image filename to the array
+                        $imageFiles[] = $imagePath;
+
                         $newOption = new Option();
                         $newOption->option      = $imagePath;
                         $newOption->isCorrect   = $option['isCorrect'] ? 'true': 'false';
@@ -213,7 +224,9 @@ class QuestionController extends Controller
 
                     }
 
-                    
+                    // Simulate an error
+                    //throw new \Exception('Simulated error after saving the attached image');
+
                     DB::commit();
                     return redirect()->route('questions.show')->with('success', 'Successfully created new question.');
                 
@@ -222,6 +235,11 @@ class QuestionController extends Controller
                 {
                     DB::rollback();
                     Log::error('error saving image question: '.$e->getMessage());
+                    
+                    // Delete all images in the array
+                    foreach ($imageFiles as $filename) {
+                        Storage::disk('public')->delete('Images/' . $filename);
+                    }
 
                     return redirect()->back()->with('error', 'Failed to create new question');
                 }
@@ -229,7 +247,61 @@ class QuestionController extends Controller
             }
             else
             {
-                dd('no attached image');
+                //     question:'',
+                //     type:'text',
+                //     term: '',
+                //     attached_image:'',
+                //     term:'',
+                //     subject_code_id:'',
+                //     author_id:user.id,
+                //     options:[],
+                try
+                {
+                    DB::beginTransaction();
+
+                    $imageFiles = [];
+                    $question = new Question();
+
+                    $question->question         = $request->question;
+                    $question->type             = $request->type;
+                    $question->term             = $request->term;
+                    $question->subject_code_id  = $request->subject_code_id;
+                    $question->author_id        = $request->author_id;
+                    $question->save();
+
+                    foreach($request->options as $option)
+                    {
+                        $optionImage    = $option['option'];
+                        $path           = $optionImage->store('Images','public');
+                        $imagePath      = basename($path);
+
+                        // Add option image filename to the array
+                        $imageFiles[] = $imagePath;
+
+                        $newOption = new Option();
+                        $newOption->option      = $imagePath;
+                        $newOption->isCorrect   = $option['isCorrect'] ? 'true': 'false';
+                        $newOption->question_id = $question->id;
+                        $newOption->save();
+                    }
+
+                    //throw new \Exception('simulated error');
+                    DB::commit();
+                    return redirect()->route('questions.show')->with('success','Successfully created new question.');
+                    
+                }
+                catch(\Exception $e)
+                {
+                    DB::rollback();
+                    Log::error('error creating new question without image_attachment: '.$e->getMessage());
+
+                    foreach($imageFiles as $filename)
+                    {
+                        Storage::disk('public')->delete('Images/' . $filename);
+                    }
+                    
+                    return redirect()->back()->with('error', 'Failed to create new question.');
+                }
             }
         }
     }
