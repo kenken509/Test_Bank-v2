@@ -3,7 +3,8 @@
         <div class="flex items-center justify-between border-bot-only py-4 mb-6">
             <span class="text-[20px] font-bold text-gray-500 ">New Question Page </span> 
         </div>
-        <!-- {{ form }} >>>> {{ options }} --> {{ data.question }} ???????? {{ data.question.options }}
+        <!-- {{ form }} >>>> {{ options }} --> {{ data.question }} ????????  <span class="text-red-500">image file: {{  }}</span>
+        
         <form @submit.prevent="submit">    
             <div class="" > 
                 <div class=" flex w-full mb-4 flex-col lg:flex-row "> 
@@ -184,7 +185,7 @@ const questionType = ref([
 ])
 
 const selectedSubjectCode = ref(data.question.subject_code);
-const imageUrl  = ref('/storage/images/');
+const imageUrl  = ref('/storage/Images/');
 
 
 const textTab   = ref(false)
@@ -319,11 +320,11 @@ function imageFileValidator(file,index){
 }
 
 //image urls
-const attachedImagePreviewUrl = ref('');
-const imageOptionURL_0 = ref('');
-const imageOptionURL_1 = ref('');
-const imageOptionURL_2 = ref('');
-const imageOptionURL_3 = ref('');
+const attachedImagePreviewUrl = ref(imageUrl.value+data.question.attached_image);
+const imageOptionURL_0 = ref(imageUrl.value+data.question.options[0].option);
+const imageOptionURL_1 = ref(imageUrl.value+data.question.options[1].option);
+const imageOptionURL_2 = ref(imageUrl.value+data.question.options[2].option);
+const imageOptionURL_3 = ref(imageUrl.value+data.question.options[3].option);
 
 // options 
 const selectedOption = ref(data.question.options.findIndex((option)=> option.isCorrect === 'true'));
@@ -372,7 +373,7 @@ const markCorrectOption = (index) => {
     });
 };
 
-
+//imageUrl+data.question.options[0].option
 const imageOption_0 = ref(null);
 const imageOption_1 = ref(null);
 const imageOption_2 = ref(null);
