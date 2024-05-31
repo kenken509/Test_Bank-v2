@@ -3,7 +3,7 @@
         <div class="flex items-center justify-between border-bot-only py-4 mb-6">
             <span class="text-[20px] font-bold text-gray-500 ">New Question Page </span> 
         </div>
-        <!-- {{ form }} >>>> {{ options }} --> {{ data.question.options }}
+        <!-- {{ form }} >>>> {{ options }} --> {{ options }}
        {{ selectedOption }}
         <form @submit.prevent="submit" id="questionUpdateForm">    
             <div class="" > 

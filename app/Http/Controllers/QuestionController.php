@@ -353,7 +353,7 @@ class QuestionController extends Controller
                     $questionToUpdate->subject_code_id  = $request->subject_code_id;
                     $questionToUpdate->editor_id        = $request->editor_id;
                     $questionToUpdate->save();
-                   
+                
                     foreach($request->options as $option)
                     {
                         $answer = '';
@@ -373,7 +373,7 @@ class QuestionController extends Controller
                         $optionToUpdate->save();
                     }
 
-                   
+                
 
                     return redirect()->route('questions.show')->with('success', 'Question updated successfully.');
                 }
@@ -427,11 +427,85 @@ class QuestionController extends Controller
             }
             else
             {
-                dd('existing question doesnt have attached_image');
+                // no existing image but request has image
+                if($request->hasFile('attached_image'))
+                {
+                   $file        = $request->file('attached_image');
+                   $path        = $file->store('Images','public');
+                   $imagePath   = basename($path);
+
+                   $questionToUpdate->attached_image   = $imagePath;
+                   $questionToUpdate->question         = $request->question;
+                   $questionToUpdate->type             = $request->type;
+                   $questionToUpdate->term             = $request->term;
+                   $questionToUpdate->subject_code_id  = $request->subject_code_id;
+                   $questionToUpdate->editor_id        = $request->editor_id;
+                   $questionToUpdate->save();
+
+                   foreach($request->options as $option)
+                        {
+                            $answer = '';
+                            if($option['isCorrect']=='true')
+                            {
+                                $answer = 'true';
+                            }
+                            else
+                            {
+                                $answer = 'false';
+                            }
+
+                            $optionToUpdate = Option::findOrFail($option['option_id']);
+
+                            $optionToUpdate->option = $option['option'];
+                            $optionToUpdate->isCorrect = $answer;
+                            $optionToUpdate->save();
+                        }
+
+                        return redirect()->route('questions.show')->with('success', 'Question updated successfully.');
+                }
+                else // request doesnt have image
+                {
+                    $questionToUpdate->question         = $request->question;
+                    $questionToUpdate->type             = $request->type;
+                    $questionToUpdate->term             = $request->term;
+                    $questionToUpdate->subject_code_id  = $request->subject_code_id;
+                    $questionToUpdate->editor_id        = $request->editor_id;
+                    $questionToUpdate->save();
+
+                    foreach($request->options as $option)
+                    {
+                        $answer = '';
+                        if($option['isCorrect']=='true')
+                        {
+                            $answer = 'true';
+                        }
+                        else
+                        {
+                            $answer = 'false';
+                        }
+
+                        $optionToUpdate = Option::findOrFail($option['option_id']);
+
+                        $optionToUpdate->option = $option['option'];
+                        $optionToUpdate->isCorrect = $answer;
+                        $optionToUpdate->save();
+                    }
+
+                    return redirect()->route('questions.show')->with('success', 'Question updated successfully.');
+                }
             }
+            
+            
+            
         }
         
-
+        if($request->type == 'image')
+        {
+            if($questionToUpdate->attached_image)
+            {
+                //delete the attached image and proceed to updating;
+            }
+        }
         
         //dd($questionToUpdate->attached_image == $request->attached_image);
         
