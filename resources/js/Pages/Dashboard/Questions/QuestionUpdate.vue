@@ -3,8 +3,8 @@
         <div class="flex items-center justify-between border-bot-only py-4 mb-6">
             <span class="text-[20px] font-bold text-gray-500 ">New Question Page </span> 
         </div>
-        <!-- {{ form }} >>>> {{ options }} --> {{ form }}
-        sdfsd{{ data.question.options[0].isCorrect }}
+        <!-- {{ form }} >>>> {{ options }} --> {{ data.question.options }}
+       {{ selectedOption }}
         <form @submit.prevent="submit" id="questionUpdateForm">    
             <div class="" > 
                 <div class=" flex w-full mb-4 flex-col lg:flex-row "> 
@@ -70,7 +70,7 @@
                                     name="options" 
                                     :value="index"
                                     v-model="selectedOption"
-                                    @change="markCorrectOption(index)"
+                                    
                                     :required="textTab"
                                     />
                                     <textarea v-model="options[index].option" cols="10" rows="2" class="w-full" :required="textTab"></textarea>
@@ -376,11 +376,33 @@ function clearImageUrls()
     imageOptionURL_3.value = ''
 }
 
+watch(selectedOption,(index)=>{
+    options.value.forEach((option,i)=>{
+        if(i===index)
+        {
+            option.isCorrect = 'true'
+        }
+        else
+        {
+            option.isCorrect = 'false'
+        }
+    })
+})
 const markCorrectOption = (index) => {
     options.value.forEach((option, i) => {
-        option.isCorrect = (i === index);
+        if(i===index)
+        {
+           option.isCorrect='true'
+        }
+        else
+        {
+            option.isCorrect='false'
+        }
+        //option.isCorrect = (i === index);
     });
+
 };
+
 
 //imageUrl+data.question.options[0].option
 const imageOption_0 = ref(null);
@@ -468,46 +490,23 @@ const handleImageOptionFileChange_3 = (event) => {
 // form submission
 
 const submit = ()=>{
-    // dto ako tumigil >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    const formData = new FormData();
-
-    // Append each form field to the FormData object
-    formData.append('question_id', form.question_id);
-    formData.append('question', form.question);
-    formData.append('type', form.type);
-    formData.append('term', form.term);
-    formData.append('attached_image', form.attached_image); // Ensure the attached image is appended
-    formData.append('hasExistingAttached_image', form.hasExistingAttached_image);
-    formData.append('subject_code_id', form.subject_code_id);
-    formData.append('editor_id', form.editor_id);
-
-    Object.keys(form).forEach(key => {
+    
+   /* Object.keys(form).forEach(key => {
         if (key === 'new_attached_image' && form[key]) {
             formData.append('attached_image', form[key]);
         } else if (form[key] !== null && form[key] !== undefined) {
             formData.append(key, form[key]);
         }
-    });
+    });     */
 
-    // Use the Inertia post method to submit the form
-    form.post(route('question.update'), {
-        preserveState: true,
-        data: formData,
-        onSuccess: () => {
-            console.log('Form submitted successfully!');
-        },
-        onError: (errors) => {
-            console.log('Form submission failed:', errors);
-        }
-    });
+    
+    
     // validate text options if form.type = 'text'
-    // if(form.type === 'text' || noError.value)
-    // {   
-    //     alert('im here');
-    //     form.options = options.value
-    //     console.log(form)
-    //     submitConfirmation()
-    // }
+    if(form.type === 'text')
+    {   
+        form.options = options.value
+        submitConfirmation()
+    }
     
     // if(form.type === 'image')
     // {
@@ -562,8 +561,30 @@ const submitConfirmation = ()=>
             }).then((result) => {
                 if(result.isConfirmed)
                 {
-                    
-                    form.post(route('question.update'))
+                    const formData = new FormData();
+
+                    form.options = options.value
+                    // Append each form field to the FormData object
+                    formData.append('question_id', form.question_id);
+                    formData.append('question', form.question);
+                    formData.append('type', form.type);
+                    formData.append('term', form.term);
+                    formData.append('attached_image', form.attached_image); // Ensure the attached image is appended
+                    formData.append('hasExistingAttached_image', form.hasExistingAttached_image);
+                    formData.append('subject_code_id', form.subject_code_id);
+                    formData.append('editor_id', form.editor_id);
+                    formData.append('options', form.options);
+                    //form.post(route('question.update'))
+                    form.post(route('question.update'), {
+                        preserveState: true,
+                        data: formData,
+                        onSuccess: () => {
+                            console.log('Form submitted successfully!');
+                        },
+                        onError: (errors) => {
+                            console.log('Form submission failed:', errors);
+                        }
+                    });
                 }
 
                 if(result.isDismissed)
