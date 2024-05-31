@@ -334,8 +334,10 @@ class QuestionController extends Controller
 
     public function update(Request $request)
     {
+        dd($request->question_id);
        $questionToUpdate = Question::with('options')->findOrFail($request->question_id);
-
+       
+        //dd($request);
         //dd($request->attached_image);
         // question_id:data.question.id,
         // question:data.question.question,
@@ -346,21 +348,66 @@ class QuestionController extends Controller
         // subject_code_id:'',
         // editor_id:user.id,
         // options:[],
-
-        if($questionToUpdate->attached_image)
+        
+        if($request->type == 'text')
         {
-            if($request->attached_image == $questionToUpdate->attached_image)
+            if($questionToUpdate->attached_image)
             {
-                dd('update everything except the attached image');
-            };
+                // existing attached image not changed
+                if($request->attached_image == $questionToUpdate->attached_image)
+                {
+                    $questionToUpdate->question         = $request->question;
+                    $questionToUpdate->type             = $request->type;
+                    $questionToUpdate->term             = $request->term;
+                    $questionToUpdate->subject_code_id  = $request->subject_code_id;
+                    $questionToUpdate->editor_id        = $request->editor_id;
+                    
+                   
+                    foreach($request->options as $option)
+                    {
+                        $answer = '';
+                        if($option['isCorrect']=='true')
+                        {
+                            $answer = 'true';
+                        }
+                        else
+                        {
+                            $answer = 'false';
+                        }
+
+                        $optionToUpdate = Option::findOrFail($option['option_id']);
+
+                        $optionToUpdate->option = $option['option'];
+                        $optionToUpdate->isCorrect = $answer;
+                        $optionToUpdate->save();
+                    }
+
+                    $questionToUpdate->save();
+
+                    return redirect()->route('questions.show')->with('success', 'Question updated successfully.');
+                }
+                else
+                {
+                    dd('im here');
+                    if($request->hasFile('attached_image'))
+                    {
+                        dd('attached image replaced');
+                    }
+                    else
+                    {
+                        dd('attached image was deleted.');
+                    }
+                };
+            }
+            else
+            {
+                dd('existing question doesnt have attached_image');
+            }
         }
-        else
-        {
-            dd('existing question doesnt have attached_image');
-        }
+        
 
         
-        dd($questionToUpdate->attached_image == $request->attached_image);
+        //dd($questionToUpdate->attached_image == $request->attached_image);
         
     }
     public function destroy($id)

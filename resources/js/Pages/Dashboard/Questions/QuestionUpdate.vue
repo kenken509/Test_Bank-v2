@@ -3,9 +3,9 @@
         <div class="flex items-center justify-between border-bot-only py-4 mb-6">
             <span class="text-[20px] font-bold text-gray-500 ">New Question Page </span> 
         </div>
-        <!-- {{ form }} >>>> {{ options }} --> {{ data.question.attached_image }} ????????  <span class="text-red-500">hasAttached_image: {{ form.hasExistingAttached_image }}</span>
-        
-        <form @submit.prevent="submit">    
+        <!-- {{ form }} >>>> {{ options }} --> {{ form }}
+        sdfsd{{ data.question.options[0].isCorrect }}
+        <form @submit.prevent="submit" id="questionUpdateForm">    
             <div class="" > 
                 <div class=" flex w-full mb-4 flex-col lg:flex-row "> 
                     <div class="flex items-center w-[150px] ">
@@ -178,7 +178,7 @@ const form = useForm({
     term: data.question.term,
     attached_image:data.question.attached_image,
     hasExistingAttached_image:data.question.attached_image ? 'true':'false',
-    subject_code_id:'',
+    subject_code_id:data.question.subject_code_id,
     editor_id:user.id,
     options:[],
 })
@@ -233,7 +233,7 @@ const handleAttachedImageChange = (event) => {
    
     const file = event.target.files[0];
     
-
+    
     if(file)
     {
         if(!['image/jpeg'].includes(file.type))
@@ -253,8 +253,8 @@ const handleAttachedImageChange = (event) => {
         form.attached_image = file;
         attachedImageValidator.value = ''
         attachedImagePreviewUrl.value = URL.createObjectURL(file);
-        console.log('attached image: '+form.attached_image);
-        console.log('size: '+file.size)
+        // console.log('attached image: '+form.attached_image);
+        // console.log('size: '+file.size)
     }
     else
     {
@@ -335,20 +335,24 @@ const imageOptionURL_3 = ref(imageUrl.value+data.question.options[3].option);
 const selectedOption = ref('');
 const options = ref([
     {
+        option_id:data.question.options[0].id,
         option:data.question.options[0].option,
-        isCorrect:data.question.options[0].option.isCorrect,
+        isCorrect:data.question.options[0].isCorrect,
     },
     {
+        option_id:data.question.options[1].id,
         option:data.question.options[1].option,
-        isCorrect:data.question.options[1].option.isCorrect,
+        isCorrect:data.question.options[1].isCorrect,
     },
     {
+        option_id:data.question.options[2].id,
         option:data.question.options[2].option,
-        isCorrect:data.question.options[2].option.isCorrect,
+        isCorrect:data.question.options[2].isCorrect,
     },
     {
+        option_id:data.question.options[3].id,
         option:data.question.options[3].option,
-        isCorrect:data.question.options[3].option.isCorrect,
+        isCorrect:data.question.options[3].isCorrect,
     }
 ])
 
@@ -464,45 +468,80 @@ const handleImageOptionFileChange_3 = (event) => {
 // form submission
 
 const submit = ()=>{
+    // dto ako tumigil >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    const formData = new FormData();
+
+    // Append each form field to the FormData object
+    formData.append('question_id', form.question_id);
+    formData.append('question', form.question);
+    formData.append('type', form.type);
+    formData.append('term', form.term);
+    formData.append('attached_image', form.attached_image); // Ensure the attached image is appended
+    formData.append('hasExistingAttached_image', form.hasExistingAttached_image);
+    formData.append('subject_code_id', form.subject_code_id);
+    formData.append('editor_id', form.editor_id);
+
+    Object.keys(form).forEach(key => {
+        if (key === 'new_attached_image' && form[key]) {
+            formData.append('attached_image', form[key]);
+        } else if (form[key] !== null && form[key] !== undefined) {
+            formData.append(key, form[key]);
+        }
+    });
+
+    // Use the Inertia post method to submit the form
+    form.post(route('question.update'), {
+        preserveState: true,
+        data: formData,
+        onSuccess: () => {
+            console.log('Form submitted successfully!');
+        },
+        onError: (errors) => {
+            console.log('Form submission failed:', errors);
+        }
+    });
     // validate text options if form.type = 'text'
-    if(form.type === 'text')
-    {
-        form.options = options
-        submitConfirmation()
-    }
+    // if(form.type === 'text' || noError.value)
+    // {   
+    //     alert('im here');
+    //     form.options = options.value
+    //     console.log(form)
+    //     submitConfirmation()
+    // }
     
-    if(form.type === 'image')
-    {
+    // if(form.type === 'image')
+    // {
        
-        if(imageOptionURL_0.value === '' || imageOptionURL_1.value === '' || imageOptionURL_2.value === '' || imageOptionURL_3.value === '')
-        {
+    //     if(imageOptionURL_0.value === '' || imageOptionURL_1.value === '' || imageOptionURL_2.value === '' || imageOptionURL_3.value === '')
+    //     {
             
-            imageOptionValidator.value = 'Fill out all image options.'
-            noError.value = false
-        }
-        else
-        {
-            if(selectedOption.value === null || selectedOption.value === '')
-            {
-                imageOptionValidator.value = "Please select correct answer."
-                noError.value = false
-            }
-            else
-            {
+    //         imageOptionValidator.value = 'Fill out all image options.'
+    //         noError.value = false
+    //     }
+    //     else
+    //     {
+    //         if(selectedOption.value === null || selectedOption.value === '')
+    //         {
+    //             imageOptionValidator.value = "Please select correct answer."
+    //             noError.value = false
+    //         }
+    //         else
+    //         {
                 
-                imageOptionValidator.value = ''
-                noError.value = true
-            }
-        }
+    //             imageOptionValidator.value = ''
+    //             noError.value = true
+    //         }
+    //     }
         
         
 
-        if(noError.value)
-        {
-            form.options = options
-            submitConfirmation();
-        }
-    }
+    //     if(noError.value)
+    //     {
+    //         form.options = options.value
+    //         console.log(form)
+    //         submitConfirmation();
+    //     }
+    // }
 }
 
 
@@ -523,8 +562,8 @@ const submitConfirmation = ()=>
             }).then((result) => {
                 if(result.isConfirmed)
                 {
-                    //console.log(form)
-                    form.put(route('question.update'))
+                    
+                    form.post(route('question.update'))
                 }
 
                 if(result.isDismissed)
