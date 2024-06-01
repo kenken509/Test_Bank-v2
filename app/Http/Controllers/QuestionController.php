@@ -235,14 +235,6 @@ class QuestionController extends Controller
             }
             else
             {
-                //     question:'',
-                //     type:'text',
-                //     term: '',
-                //     attached_image:'',
-                //     term:'',
-                //     subject_code_id:'',
-                //     author_id:user.id,
-                //     options:[],
                 try
                 {
                     DB::beginTransaction();
@@ -324,6 +316,16 @@ class QuestionController extends Controller
     {
         
         //dd($request);
+        //dd($request->attached_image);
+        // question_id:data.question.id,
+        // question:data.question.question,
+        // type:data.question.type,
+        // term: data.question.term,
+        // attached_image:'',
+        // hasExistingAttached_image:data.question.attached_image ? 'true':'false',
+        // subject_code_id:'',
+        // editor_id:user.id,
+        // options:[],
        $questionToUpdate = Question::with('options')->findOrFail($request->question_id);
     
         
@@ -334,50 +336,185 @@ class QuestionController extends Controller
                 // existing attached image not changed
                 if($request->attached_image == $questionToUpdate->attached_image)
                 { 
-                    //dd($request);
-                    $questionToUpdate->question         = $request->question;
-                    $questionToUpdate->type             = $request->type;
-                    $questionToUpdate->term             = $request->term;
-                    $questionToUpdate->subject_code_id  = $request->subject_code_id;
-                    $questionToUpdate->editor_id        = $request->editor_id;
-                    $questionToUpdate->save();
-                
-                    foreach($request->options as $option)
+                    try
                     {
-                        $answer = '';
-                        if($option['isCorrect']=='true')
+                        DB::beginTransaction();
+                        $questionToUpdate->question         = $request->question;
+                        $questionToUpdate->type             = $request->type;
+                        $questionToUpdate->term             = $request->term;
+                        $questionToUpdate->subject_code_id  = $request->subject_code_id;
+                        $questionToUpdate->editor_id        = $request->editor_id;
+                        $questionToUpdate->save();
+                    
+                        foreach($request->options as $option)
                         {
-                            $answer = 'true';
-                        }
-                        else
-                        {
-                            $answer = 'false';
+                            $answer = '';
+                            if($option['isCorrect']=='true')
+                            {
+                                $answer = 'true';
+                            }
+                            else
+                            {
+                                $answer = 'false';
+                            }
+
+                            $optionToUpdate = Option::findOrFail($option['option_id']);
+
+                            $optionToUpdate->option = $option['option'];
+                            $optionToUpdate->isCorrect = $answer;
+                            $optionToUpdate->save();
                         }
 
-                        $optionToUpdate = Option::findOrFail($option['option_id']);
-
-                        $optionToUpdate->option = $option['option'];
-                        $optionToUpdate->isCorrect = $answer;
-                        $optionToUpdate->save();
+                        DB::commit();
+                        return redirect()->route('questions.show')->with('success', 'Question updated successfully.');
                     }
+                    catch(\Exception $e)
+                    {
+                        DB::rollback();
+                        Log::error('error updating question 1: '.$e->getMessage());
 
-                
-
-                    return redirect()->route('questions.show')->with('success', 'Question updated successfully.');
+                        return redirect()->back()->with('error','Failed to updated question.');
+                    }
+                    
                 }
                 else
                 {
                     //attached image replaced
                     if($request->hasFile('attached_image'))
                     {
-                        $filename = $questionToUpdate->attached_image;
-                        Storage::disk('public')->delete('Images/' . $filename);
+                        $tempImage = [];
+                        try
+                        {
+                            DB::beginTransaction();
+                            $filename = $questionToUpdate->attached_image;
+                                    
+                            $file = $request->file('attached_image');
+                            $path = $file->store('Images','public');
+                            $imagePath = basename($path);
+
+                            $tempImage[] = $imagePath;
+
+                            $questionToUpdate->attached_image   = $imagePath;
+                            $questionToUpdate->question         = $request->question;
+                            $questionToUpdate->type             = $request->type;
+                            $questionToUpdate->term             = $request->term;
+                            $questionToUpdate->subject_code_id  = $request->subject_code_id;
+                            $questionToUpdate->editor_id        = $request->editor_id;
+                            $questionToUpdate->save();
+
+                            foreach($request->options as $option)
+                            {
+                                $answer = '';
+                                if($option['isCorrect']=='true')
+                                {
+                                    $answer = 'true';
+                                }
+                                else
+                                {
+                                    $answer = 'false';
+                                }
+
+                                $optionToUpdate = Option::findOrFail($option['option_id']);
+
+                                $optionToUpdate->option = $option['option'];
+                                $optionToUpdate->isCorrect = $answer;
+                                $optionToUpdate->save();
+                            }
+                                DB::commit();
+                                Storage::disk('public')->delete('Images/' . $filename);
+                                return redirect()->route('questions.show')->with('success', 'Question updated successfully.');
+                            }
+                            catch(\Exception $e)
+                            {
+                                DB::rollback();
+                                Log::error('error updating question 2: '.$e->getMessage);
+
+                                foreach($tempImage as $fileName)
+                                {
+                                    if(Storage::exists($fileName))
+                                    {
+                                        Storage::delete($fileName);
+                                    }
+                                }
+
+                                return redirect()->back()->with('error', 'Failed to update the question.');
+                            }
                         
-                        $file = $request->file('attached_image');
-                        $path = $file->store('Images','public');
-                        $imagePath = basename($path);
+
+                    }
+                    else
+                    {
+                        dd('attached image was deleted.');
+                    }
+                };
+            }
+            else
+            {
+                // no existing image but request has image
+                $tempAttachedImage = [];
+                if($request->hasFile('attached_image'))
+                {
+                   try
+                   {
+                        DB::beginTransaction();
+                        $file        = $request->file('attached_image');
+                        $path        = $file->store('Images','public');
+                        $imagePath   = basename($path);
+
+                        $tempAttachedImage[] = $imagePath;
 
                         $questionToUpdate->attached_image   = $imagePath;
+                        $questionToUpdate->question         = $request->question;
+                        $questionToUpdate->type             = $request->type;
+                        $questionToUpdate->term             = $request->term;
+                        $questionToUpdate->subject_code_id  = $request->subject_code_id;
+                        $questionToUpdate->editor_id        = $request->editor_id;
+                        $questionToUpdate->save();
+    
+                        foreach($request->options as $option)
+                        {
+                            $answer = '';
+                            if($option['isCorrect']=='true')
+                            {
+                                $answer = 'true';
+                            }
+                            else
+                            {
+                                $answer = 'false';
+                            }
+
+                            $optionToUpdate = Option::findOrFail($option['option_id']);
+
+                            $optionToUpdate->option = $option['option'];
+                            $optionToUpdate->isCorrect = $answer;
+                            $optionToUpdate->save();
+                        }
+
+                        DB::commit();
+                        return redirect()->route('questions.show')->with('success', 'Question updated successfully.');
+                   }
+                   catch(\Exception $e)
+                   {
+                        DB::rollback();
+                        Log::error('error updating question 3: '.$e->getMessage());
+
+                        foreach($tempAttachedImage as $fileName)
+                        {
+                            if(Storage::exists($fileName))
+                            {
+                                Storage::delete($fileName);
+                            }
+                        }
+
+                        return redirect()->back()->with('error', 'Failed to update the question.');
+                   } 
+                   
+                }
+                else // request doesnt have image
+                {
+                    try
+                    {
+                        DB::beginTransaction();
                         $questionToUpdate->question         = $request->question;
                         $questionToUpdate->type             = $request->type;
                         $questionToUpdate->term             = $request->term;
@@ -403,37 +540,47 @@ class QuestionController extends Controller
                             $optionToUpdate->isCorrect = $answer;
                             $optionToUpdate->save();
                         }
-
+                        DB::commit();
                         return redirect()->route('questions.show')->with('success', 'Question updated successfully.');
-
                     }
-                    else
+                    catch(\Exception $e)
                     {
-                        dd('attached image was deleted.');
+                        DB::rollback();
+                        Log::error('error updating question 4: '.$e->getMessage());
+
+                        return redirect()->back()->with('error', 'Failed to update the question.');
                     }
-                };
+                    
+                }
             }
-            else
+            
+            
+            
+        }
+       
+        if($request->type == 'image')
+        { 
+            if($questionToUpdate->attached_image)
             {
-                // no existing image but request has image
-                if($request->hasFile('attached_image'))
+                $tempOptionImages = [];
+                $tempAttachedImage = [];
+                //delete the attached image and proceed to updating;
+                if($request->attached_image == $questionToUpdate->attached_image)
                 {
-                   $file        = $request->file('attached_image');
-                   $path        = $file->store('Images','public');
-                   $imagePath   = basename($path);
+                    try
+                    {
+                        DB::beginTransaction();
+                        $questionToUpdate->question             = $request->question;
+                        $questionToUpdate->type                 = $request->type;
+                        $questionToUpdate->term                 = $request->term;
+                        $questionToUpdate->subject_code_id      = $request->subject_code_id;
+                        $questionToUpdate->editor_id            = $request->editor_id;
+                        $questionToUpdate->save();
 
-                   $questionToUpdate->attached_image   = $imagePath;
-                   $questionToUpdate->question         = $request->question;
-                   $questionToUpdate->type             = $request->type;
-                   $questionToUpdate->term             = $request->term;
-                   $questionToUpdate->subject_code_id  = $request->subject_code_id;
-                   $questionToUpdate->editor_id        = $request->editor_id;
-                   $questionToUpdate->save();
-
-                   foreach($request->options as $option)
+                        foreach($request->options as $option)
                         {
                             $answer = '';
-                            if($option['isCorrect']=='true')
+                            if($option['isCorrect']==='true')
                             {
                                 $answer = 'true';
                             }
@@ -441,107 +588,114 @@ class QuestionController extends Controller
                             {
                                 $answer = 'false';
                             }
+                            
+                            $optionToUpdate = Option::findOrFail($option['option_id']);
+                            $file = $option['option'];
+                            $path = $file->store('Images','public');
+                            $imagePath = basename($path);
+                            
+                            
+                            $tempOptionImages[] = $imagePath;
 
+                            $optionToUpdate->option = $imagePath;
+                            $optionToUpdate->isCorrect = $answer;
+                            $optionToUpdate->save();
+
+                        }
+
+                        DB::commit();
+                        return redirect()->route('questions.show')->with('success', 'Successfully updated a question.');
+                    }
+                    catch(\Exception $e)
+                    {
+                        DB::rollback();
+                        Log::error('error updating question 5: '.$e->getMessage());
+
+                        foreach($tempOptionImages as $fileName)
+                        {
+                            if(Storage::exists($fileName))
+                            {
+                                Storage::delete($fileName);
+                            }
+                        }
+
+                        return redirect()->back()->with('error', 'Failed to update the question');
+                    }
+                    
+                }
+                else
+                {
+                    //new image
+                    try
+                    {
+                        DB::beginTransaction();
+                        $file = $request->file('attached_image');
+                        $path = $file->store('Images','public');
+                        $imagePath = basename($path);
+                        
+                        $tempAttachedImage[] = $imagePath;
+
+                        $questionToUpdate->attached_image       = $imagePath;
+                        $questionToUpdate->question             = $request->question;
+                        $questionToUpdate->type                 = $request->type;
+                        $questionToUpdate->term                 = $request->term;
+                        $questionToUpdate->subject_code_id      = $request->subject_code_id;
+                        $questionToUpdate->editor_id            = $request->editor_id;
+                        $questionToUpdate->save();
+
+                        foreach($request->options as $option)
+                        {
+                            $answer = $option['isCorrect'] == 'true' ? 'true':'false';
                             $optionToUpdate = Option::findOrFail($option['option_id']);
 
-                            $optionToUpdate->option = $option['option'];
+                            $optionImagePath = $optionToUpdate->option;
+                            //delete existing image
+                            if(Storage::exists($optionImagePath))
+                            {
+                                Storage::delete($optionImagePath);
+                            }
+
+
+                            $file = $option['option'];
+                            $path = $file->store("Images",'public');
+                            $imagePath = basename($path);
+
+                            $tempOptionImages[] = $imagePath;
+
+                            $optionToUpdate->option = $imagePath;
                             $optionToUpdate->isCorrect = $answer;
                             $optionToUpdate->save();
                         }
 
-                        return redirect()->route('questions.show')->with('success', 'Question updated successfully.');
-                }
-                else // request doesnt have image
-                {
-                    $questionToUpdate->question         = $request->question;
-                    $questionToUpdate->type             = $request->type;
-                    $questionToUpdate->term             = $request->term;
-                    $questionToUpdate->subject_code_id  = $request->subject_code_id;
-                    $questionToUpdate->editor_id        = $request->editor_id;
-                    $questionToUpdate->save();
-
-                    foreach($request->options as $option)
+                        DB::commit();
+                        return redirect()->route('questions.show')->with('success', 'Successfully updated a question.');
+                    }
+                    catch(\Exception $e)
                     {
-                        $answer = '';
-                        if($option['isCorrect']=='true')
+                        DB::rollback();
+                        Log::error('error updating question 6: '.$e->getMessage());
+
+                        foreach($tempAttachedImage as $fileName)
                         {
-                            $answer = 'true';
-                        }
-                        else
-                        {
-                            $answer = 'false';
+                            if(Storage::exists($fileName))
+                            {
+                                Storage::delete($fileName);
+                            }
                         }
 
-                        $optionToUpdate = Option::findOrFail($option['option_id']);
+                        foreach($tempOptionImages as $fileName)
+                        {
+                            if(Storage::exists($fileName))
+                            {
+                                Storage::delete($fileName);
+                            }
+                        }
 
-                        $optionToUpdate->option = $option['option'];
-                        $optionToUpdate->isCorrect = $answer;
-                        $optionToUpdate->save();
+                        return redirect()->back()->with('error', 'Failed to update the question.');
+
                     }
 
-                    return redirect()->route('questions.show')->with('success', 'Question updated successfully.');
-                }
-            }
-            
-            
-            
-        }
-         //dd($request);
-        //dd($request->attached_image);
-        // question_id:data.question.id,
-        // question:data.question.question,
-        // type:data.question.type,
-        // term: data.question.term,
-        // attached_image:'',
-        // hasExistingAttached_image:data.question.attached_image ? 'true':'false',
-        // subject_code_id:'',
-        // editor_id:user.id,
-        // options:[],
-        if($request->type == 'image')
-        { 
-            if($questionToUpdate->attached_image)
-            {
-                
-                //delete the attached image and proceed to updating;
-                if($request->attached_image == $questionToUpdate->attached_image)
-                {
                     
-                    $questionToUpdate->question             = $request->question;
-                    $questionToUpdate->type                 = $request->type;
-                    $questionToUpdate->term                 = $request->term;
-                    $questionToUpdate->subject_code_id      = $request->subject_code_id;
-                    $questionToUpdate->editor_id            = $request->editor_id;
-                    $questionToUpdate->save();
-
-                    foreach($request->options as $option)
-                    {
-                        $answer = '';
-                        if($option['isCorrect']==='true')
-                        {
-                            $answer = 'true';
-                        }
-                        else
-                        {
-                            $answer = 'false';
-                        }
-                        
-                        $optionToUpdate = Option::findOrFail($option['option_id']);
-                        $file = $option['option'];
-                        $path = $file->store('Images','public');
-                        $imagePath = basename($path);
-                        
-                        
-                        $optionToUpdate->option = $imagePath;
-                        $optionToUpdate->isCorrect = $answer;
-                        $optionToUpdate->save();
-
-                    }
-
-                    return redirect()->route('questions.show')->with('success', 'Successfully updated a question.');
-                }
-                else
-                {
-                    dd('existing image was changed');
                 }
             }
         }

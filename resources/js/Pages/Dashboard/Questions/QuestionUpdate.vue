@@ -3,8 +3,8 @@
         <div class="flex items-center justify-between border-bot-only py-4 mb-6">
             <span class="text-[20px] font-bold text-gray-500 ">New Question Page </span> 
         </div>
-        <!-- {{ form }} >>>> {{ options }} --> {{ options }}
-       {{ selectedOption }}
+        <!-- {{ form }} >>>> {{ options }} --> 
+       <!-- {{ selectedOption }} -->
         <form @submit.prevent="submit" id="questionUpdateForm">    
             <div class="" > 
                 <div class=" flex w-full mb-4 flex-col lg:flex-row "> 
