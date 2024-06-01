@@ -325,19 +325,7 @@ class QuestionController extends Controller
         
         //dd($request);
        $questionToUpdate = Question::with('options')->findOrFail($request->question_id);
-       
-       
-        //dd($request);
-        //dd($request->attached_image);
-        // question_id:data.question.id,
-        // question:data.question.question,
-        // type:data.question.type,
-        // term: data.question.term,
-        // attached_image:'',
-        // hasExistingAttached_image:data.question.attached_image ? 'true':'false',
-        // subject_code_id:'',
-        // editor_id:user.id,
-        // options:[],
+    
         
         if($request->type == 'text')
         {
@@ -498,12 +486,63 @@ class QuestionController extends Controller
             
             
         }
-        
+         //dd($request);
+        //dd($request->attached_image);
+        // question_id:data.question.id,
+        // question:data.question.question,
+        // type:data.question.type,
+        // term: data.question.term,
+        // attached_image:'',
+        // hasExistingAttached_image:data.question.attached_image ? 'true':'false',
+        // subject_code_id:'',
+        // editor_id:user.id,
+        // options:[],
         if($request->type == 'image')
-        {
+        { 
             if($questionToUpdate->attached_image)
             {
+                
                 //delete the attached image and proceed to updating;
+                if($request->attached_image == $questionToUpdate->attached_image)
+                {
+                    
+                    $questionToUpdate->question             = $request->question;
+                    $questionToUpdate->type                 = $request->type;
+                    $questionToUpdate->term                 = $request->term;
+                    $questionToUpdate->subject_code_id      = $request->subject_code_id;
+                    $questionToUpdate->editor_id            = $request->editor_id;
+                    $questionToUpdate->save();
+
+                    foreach($request->options as $option)
+                    {
+                        $answer = '';
+                        if($option['isCorrect']==='true')
+                        {
+                            $answer = 'true';
+                        }
+                        else
+                        {
+                            $answer = 'false';
+                        }
+                        
+                        $optionToUpdate = Option::findOrFail($option['option_id']);
+                        $file = $option['option'];
+                        $path = $file->store('Images','public');
+                        $imagePath = basename($path);
+                        
+                        
+                        $optionToUpdate->option = $imagePath;
+                        $optionToUpdate->isCorrect = $answer;
+                        $optionToUpdate->save();
+
+                    }
+
+                    return redirect()->route('questions.show')->with('success', 'Successfully updated a question.');
+                }
+                else
+                {
+                    dd('existing image was changed');
+                }
             }
         }
         

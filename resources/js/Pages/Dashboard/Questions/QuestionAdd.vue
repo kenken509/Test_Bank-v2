@@ -4,7 +4,7 @@
             <span class="text-[20px] font-bold text-gray-500 ">New Question Page </span> 
         </div>
         <!-- {{ form }} >>>> {{ options }} -->
-        <form @submit.prevent="submit">    
+        <form @submit.prevent="submit">    sdfsdfsdf
             <div class="" > 
                 <div class=" flex w-full mb-4 flex-col lg:flex-row "> 
                     <div class="flex items-center w-[150px] ">

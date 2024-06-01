@@ -174,7 +174,7 @@
                 </div>
             </div>
             <!--header-->
-
+            {{ viewQuestionInfo.options[0].option }}
             <!--BODY-->
             <div class=" border-t-0 rounded-bl-md rounded-br-md p-2">
                 <div class="flex justify-between my-4 border-b-2 pb-2">

@@ -508,39 +508,39 @@ const submit = ()=>{
         submitConfirmation()
     }
     
-    // if(form.type === 'image')
-    // {
+     if(form.type === 'image')
+     {
        
-    //     if(imageOptionURL_0.value === '' || imageOptionURL_1.value === '' || imageOptionURL_2.value === '' || imageOptionURL_3.value === '')
-    //     {
+         if(imageOptionURL_0.value === '' || imageOptionURL_1.value === '' || imageOptionURL_2.value === '' || imageOptionURL_3.value === '')
+         {
             
-    //         imageOptionValidator.value = 'Fill out all image options.'
-    //         noError.value = false
-    //     }
-    //     else
-    //     {
-    //         if(selectedOption.value === null || selectedOption.value === '')
-    //         {
-    //             imageOptionValidator.value = "Please select correct answer."
-    //             noError.value = false
-    //         }
-    //         else
-    //         {
+             imageOptionValidator.value = 'Fill out all image options.'
+             noError.value = false
+         }
+         else
+         {
+             if(selectedOption.value === null || selectedOption.value === '')
+             {
+                 imageOptionValidator.value = "Please select correct answer."
+                 noError.value = false
+             }
+             else
+             {
                 
-    //             imageOptionValidator.value = ''
-    //             noError.value = true
-    //         }
-    //     }
+                 imageOptionValidator.value = ''
+                 noError.value = true
+             }
+         }
         
         
 
-    //     if(noError.value)
-    //     {
-    //         form.options = options.value
-    //         console.log(form)
-    //         submitConfirmation();
-    //     }
-    // }
+         if(noError.value)
+         {
+             form.options = options.value
+             console.log(form)
+             submitConfirmation();
+         }
+     }
 }
 
 
