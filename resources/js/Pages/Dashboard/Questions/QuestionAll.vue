@@ -174,7 +174,7 @@
                 </div>
             </div>
             <!--header-->
-            {{ viewQuestionInfo.options[0].option }}
+           
             <!--BODY-->
             <div class=" border-t-0 rounded-bl-md rounded-br-md p-2">
                 <div class="flex justify-between my-4 border-b-2 pb-2">
@@ -185,7 +185,8 @@
                         </div>
                         <div>
                             <span class="text-lg font-semibold"> Description : </span>
-                            <span>{{ selectedSubjectCode.description }}</span> 
+                            <input class="" :placeholder="selectedSubjectCode.description"/>
+                            
                         </div>
                         
                     </div>
@@ -201,18 +202,19 @@
                 
 
                 
-                <div class="w-full flex gap-2 border border-gray-300 pl-2 py-2 rounded-md shadow-sm ">
+                <div class="flex flex-col lg:flex-row gap-2  h-full">
                      <!--Left box-->
-                    <div class="w-[60%] h-full ">
-                        <textarea class="w-full h-[50%] mb-2" cols="40" rows="5" :value="viewQuestionInfo.question">
+                    <div class="w-full lg:w-[60%] border flex flex-col border-gray-900 p-2 rounded-md shadow-md">
+                        <textarea class="w-full rounded-md" cols="40" rows="5" :value="viewQuestionInfo.question">
                         </textarea>
-                        <div class=" relative flex  max-h-[30%]  flex-col  ">
-                            <div class=" border border-2 border-gray-300 flex flex-col items-center max-w-[150px] p-2">
-                                <img :src="viewQuestionInfo.attached_image ? optionUrl+viewQuestionInfo.attached_image:optionUrl+'no_image.png' " alt="error" class=" rounded-md max-h-[100px] max-w-[100px] mb-2 "/>
-                                <span>
+                        <div class="flex justify-center items-center lg:justify-start  mt-auto mb-2 ">
+                            <div class="flex flex-col  justify-center items-center gap-2 mt-2  p-2 border border-gray-900 rounded-md shadow-md">
+                                <img :src="viewQuestionInfo.attached_image ? optionUrl+viewQuestionInfo.attached_image:optionUrl+'no_image.png' " alt="error" class="border border-gray-400  shadow-md rounded-md max-h-[100px] max-w-[100px] mb-2 "/>
+                                <span class="bg-gray-200 p-2 rounded-md" v-if="viewQuestionInfo.attached_image">
                                     Attached Image
                                 </span>
-                                <i v-if="!viewQuestionInfo.attached_image" class="pi pi-ban text-red-400 text-[30px] top-8 absolute z-50"></i>
+                                <span v-else class="bg-gray-200 p-2 rounded-md text-red-500">No Attached Image</span>
+                                
                             </div>
                             
                         </div>
@@ -223,7 +225,7 @@
                     
                     
                     <!--right box-->
-                    <div class=" w-[40%] pr-2">
+                    <div class="w-full lg:w-[40%] border flex flex-col rounded-md border-gray-900 px-2 bg-gray-100 shadow-md py-2">
                         <!--text option-->
                         <div v-if="textTab" >
                             

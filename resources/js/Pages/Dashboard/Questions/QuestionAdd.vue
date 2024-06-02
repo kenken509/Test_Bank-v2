@@ -30,12 +30,12 @@
                     </select>
                 </div>
                 
-                <div class=" flex flex-col lg:flex-row w-full mb-4">
+                <div class=" flex flex-col lg:flex-row w-full mb-4 bg-red">
                     <div class="flex items-center w-[150px] ">
                         <span class="font-semibold text-lg py-2 " >Description : </span>
                     </div>
                     
-                    <input type="text" disabled :value="selectedSubjectCode.description" class="rounded-md w-[100$] lg:w-[60%] bg-gray-100 "/>
+                    <input type="text" disabled :value="selectedSubjectCode.description" placeholder="Subject description" class="rounded-md w-full lg:w-[60%] bg-gray-100 "/>
                 </div>
                 <hr class="border-gray-400  mb-4">
                 
@@ -50,7 +50,7 @@
                             <div class="flex flex-col w-[160px] justify-center items-center gap-2"> 
                                 <img :src="attachedImagePreviewUrl || (imageUrl + 'image_attachment.png') " alt="Image attachment" class="border border-gray-400 rounded-md shadow-md max-w-[150px] max-h-[150px]"/>
                                 <input @change="handleAttachedImageChange"  type="file" ref="fileInput" accept=".jpg, .jpeg" hidden/>
-
+                                
                                 <button @click="triggerFileInput" type="button" class="bg-gray-200 hover:bg-gray-300 border border-gray-800 p-2 max-w-[150px] w-full rounded-md">Add Image</button>
                             </div>
                             <span v-if="attachedImageValidator" class="text-red-500 ml-2">{{ attachedImageValidator }}</span>

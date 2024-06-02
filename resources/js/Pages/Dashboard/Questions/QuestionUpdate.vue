@@ -198,6 +198,7 @@ const imageTab  = ref(false)
 
 
 const imageTabClicked = ()=>{
+    
     imageTab.value = true
     textTab.value = false
     form.type = 'image'
@@ -361,7 +362,8 @@ const options = ref([
 function clearOptions(){
     const temp = ref([])
 
-    options.value.forEach((option)=>{
+    options.value.forEach((option,index)=>{
+       
         option.option = ''
         option.isCorrect = 'false'
     })
