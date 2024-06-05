@@ -100,6 +100,7 @@ class QuestionController extends Controller
 
     public function storeQuestion(Request $request)
     {
+        dd($request);
         // const form = useForm({
         //     question:'',
         //     type:'text',
@@ -285,6 +286,12 @@ class QuestionController extends Controller
             }
         }
     }
+
+    public function storeQuestionModal(Request $request)
+    {
+        return redirect()->back()->with('success','test success');
+    }
+
 
     public function showUpdate($id)
     {
