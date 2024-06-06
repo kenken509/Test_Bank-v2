@@ -65,8 +65,8 @@ Route::controller(QuestionController::class)->group(function(){
     Route::get('/test_bank/questions', 'showQuestions')->name('questions.show');
     Route::delete('/test_bank/questions/delete/{id}', 'destroy')->name('questions.delete');
     Route::get('/test_bank/questions/add', 'showAddQuestion')->name('question.add');
-    //Route::post('/test_bank/question/store', 'storeQuestion')->name('question.store');
-    Route::post('/test_bank/question/store', 'storeQuestion')->name('question.store.modal');
+    Route::post('/test_bank/question/store', 'storeQuestion')->name('question.store');
+    //Route::post('/test_bank/question/store', 'storeQuestion')->name('question.store.modal');
     Route::get('/test_bank/question/update/{id}', 'showUpdate')->name('question.update.show');
     Route::post('/test_bank/question/update', 'update')->name('question.update');
 

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
 class QuestionController extends Controller
@@ -100,7 +101,10 @@ class QuestionController extends Controller
 
     public function storeQuestion(Request $request)
     {
-        dd($request);
+        $randomNumber = rand(1,10000000);
+        $time = now();
+        
+        //return redirect()->back()->with('success', 'successfull post.'.$randomNumber.$time);
         // const form = useForm({
         //     question:'',
         //     type:'text',
@@ -139,7 +143,7 @@ class QuestionController extends Controller
                 $question->author_id        = $request->author_id;
                 $question->save();
 
-                throw new \Exception('simulated error');
+                // throw new \Exception('simulated error');
                 //dd($request);
                 // Save each option related to the question
                 foreach ($request->options as $option) {
@@ -153,7 +157,7 @@ class QuestionController extends Controller
                 }
 
                 DB::commit();
-                return redirect()->route('questions.show')->with('success', 'Successfully created new question.');
+                return redirect()->route('questions.show')->with('success', 'Successfully created new question.'.$question->id.$time);
             }catch (\Exception $e)
             {
                 DB::rollback();
@@ -164,7 +168,7 @@ class QuestionController extends Controller
                     Storage::disk('public')->delete('Images/' . $filename);
                 }
 
-                return redirect()->back()->with('error', 'Failed to create new question.');
+                return redirect()->back()->with('error', 'Failed to create new question.'.$question->id.$time);
             }
             
         }
@@ -217,7 +221,7 @@ class QuestionController extends Controller
                     //throw new \Exception('Simulated error after saving the attached image');
 
                     DB::commit();
-                    return redirect()->route('questions.show')->with('success', 'Successfully created new question.');
+                    return redirect()->route('questions.show')->with('success', 'Successfully created new question.'.$question->id.$time);
                 
                 }
                 catch (\Exception $e)
@@ -230,7 +234,7 @@ class QuestionController extends Controller
                         Storage::disk('public')->delete('Images/' . $filename);
                     }
 
-                    return redirect()->back()->with('error', 'Failed to create new question');
+                    return redirect()->back()->with('error', 'Failed to create new question'.$time);
                 }
                 
             }
@@ -268,7 +272,7 @@ class QuestionController extends Controller
 
                     //throw new \Exception('simulated error');
                     DB::commit();
-                    return redirect()->route('questions.show')->with('success','Successfully created new question.');
+                    return redirect()->route('questions.show')->with('success','Successfully created new question.'.$question->id.$time);
                     
                 }
                 catch(\Exception $e)
@@ -281,7 +285,7 @@ class QuestionController extends Controller
                         Storage::disk('public')->delete('Images/' . $filename);
                     }
                     
-                    return redirect()->back()->with('error', 'Failed to create new question.');
+                    return redirect()->back()->with('error', 'Failed to create new question.'.$time);
                 }
             }
         }
@@ -289,6 +293,7 @@ class QuestionController extends Controller
 
     public function storeQuestionModal(Request $request)
     {
+        dd('im here');
         return redirect()->back()->with('success','test success');
     }
 
@@ -713,7 +718,8 @@ class QuestionController extends Controller
     public function destroy($id)
     {
         $questionToDelete = Question::findOrFail($id);
-
+        $randomNumber = rand(1,10000000);
+        $time = now();
         if($questionToDelete->type == 'text')
         {
             try{
@@ -739,13 +745,16 @@ class QuestionController extends Controller
 
                 DB::commit();
 
-                return redirect()->back()->with('success', 'Successfully Deleted a Question.');
+                return redirect()->route('questions.show')->with([
+                    'success'   => 'Successfully Deleted a Questions.'.$time.$randomNumber,
+                    'action'    => 'reload'
+                ]);
             }catch(\Exception $e)
             {
                 DB::rollback();
                 Log::error('error deleting question: '.$e->getMessage());
 
-                return redirect()->back()->with('error', 'Failed to delete question. Please try again.');
+                return redirect()->back()->with('error', 'Failed to delete question. Please try again.'.$time.$randomNumber);
             }
             
         }

@@ -24,7 +24,7 @@
                 <div class="w-full" >
                     <div class="flex w-full flex-col md:items-center  md:flex-row gap-2">
                         <span class="w-full font-semibold text-lg py-2 max-w-[150px] " >Subject Code : </span>
-                        <input  class="rounded-md border-gray-400 bg-gray-200 shadow-md hover:cursor-pointer p-2"  :placeholder="subjectCode.name" disabled/>
+                        <input  class="rounded-md border-gray-400 bg-gray-200 shadow-md hover:cursor-pointer p-2"  :placeholder="selectedSubjectCode.name" disabled/>
                     </div>
                 </div>
                 <div class="w-full  flex justify-end">
