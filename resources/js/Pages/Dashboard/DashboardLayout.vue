@@ -288,7 +288,7 @@
 
 
                         <div class="w-full">
-                            <button  class="flex w-full items-center justify-between pr-8 ">
+                            <Link  :href="route('testGen.show')"  class="flex w-full items-center justify-between pr-8 ">
                                 Test Generator
                                 <svg v-if="showUserManagementMenu" class="w-6 h-6  text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
@@ -296,7 +296,7 @@
                                 <svg v-else class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
                                 </svg>
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -359,13 +359,20 @@
                 <slot></slot>
             </div>
         </div>
+
+        <!-- <CustomModal :isOpen="customModalOpen" @close="closeModal">
+            TEST Generator : {{testGenModalOpen}}
+        </CustomModal> -->
     </div>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue';
 import { usePage, Link, router } from '@inertiajs/vue3';
+import CustomModal from '../Global Component/CustomModal.vue';
 
+
+const customModalOpen = ref(true)
 
 
 const visible = ref(null)
@@ -430,6 +437,10 @@ const questionBankToggleMenu = () =>
     clickedItem.value = 0
 }
 
+// EXAM GENERATOR
+const testGenModalOpen = ref(true);
 
-
+const closeModal = () => {
+    customModalOpen.value = false;
+};
 </script>

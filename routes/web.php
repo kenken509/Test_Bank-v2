@@ -7,6 +7,7 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SubjectCodeController;
+use App\Http\Controllers\TestGeneratorController;
 use App\Http\Controllers\UserManagementController;
 
 Route::get('/', function () {
@@ -70,4 +71,10 @@ Route::controller(QuestionController::class)->group(function(){
     Route::get('/test_bank/question/update/{id}', 'showUpdate')->name('question.update.show');
     Route::post('/test_bank/question/update', 'update')->name('question.update');
 
+});
+
+Route::controller(TestGeneratorController::class)->group(function(){
+    Route::get('/test_bank/test_generator', 'showTestGenerator')->name('testGen.show');
+    Route::match(['get', 'post'], '/test_bank/generated_test', 'showGeneratedExam')->name('testGen.generated');
+    Route::post('/test_bank/generated_test', 'showGeneratedExam')->name('testGen.test');
 });
