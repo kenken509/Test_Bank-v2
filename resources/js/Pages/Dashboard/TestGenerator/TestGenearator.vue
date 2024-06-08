@@ -142,6 +142,7 @@
                         <button @click="handleResetButtonClicked" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md "  >Reset</button>
                         <button  type="submit" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >Preview</button>
                         <button @click="handleSave" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >Cancel</button>
+                        <button @click="testRandom(10)" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >TEST BUTTON</button>
                     </div>
                     <div class="save-data">
                         <span>
@@ -436,6 +437,8 @@ const handlePreviewButtonClicked = ()=>{
     console.log('gpt generate an array accoridingly')
 
     seperateQuestionPerTerm(selectedSubjectCode.value);
+
+    //testRandom(10)
 }
 
 
@@ -467,6 +470,29 @@ function seperateQuestionPerTerm(code){
     questionPerTerm.value.midTerm = code.questions.filter((question)=> question.term === 'mid-term')
     questionPerTerm.value.prefinal = code.questions.filter((question)=> question.term === 'pre-final')
     questionPerTerm.value.final = code.questions.filter((question)=> question.term === 'final')
+}
+
+function testRandom(num)
+{
+    console.log('im herre');
+    let randomizedNumbers = []
+    for (let i = 0; i < num; i++) {
+        let rand = Math.floor(Math.random() * num);
+        
+        if (!randomizedNumbers.includes(rand)) {
+            randomizedNumbers.push(rand);
+            console.log('included');
+        } else {
+            while (randomizedNumbers.includes(rand)) {
+                rand = Math.floor(Math.random() * num);
+                console.log('rerandom a number');
+            }
+            randomizedNumbers.push(rand);
+        }
+        console.log(randomizedNumbers);
+    }
+
+    
 }
 </script>
 
