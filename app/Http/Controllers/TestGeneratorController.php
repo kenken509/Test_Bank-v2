@@ -10,20 +10,30 @@ class TestGeneratorController extends Controller
 {
     public function showTestGenerator()
     {
-        $subjectCodes = SubjectCode::with(['questions' => function ($query){
-            $query->with(['author','options']);
-        }])->latest()->get();
+        // $subjectCodes = SubjectCode::with(['questions' => function ($query){
+        //     $query->with(['author','options']);
+        // }])->latest()->get();
 
-        $department = Department::with(['subjectCodes' => function($query){
+        $departments = Department::with(['subjectCodes' => function($query){
             $query->with(['questions' => function ($query){
                 $query->with(['author','options']);
             }]);
         },'divisions'])->get();
 
+        // $departments = Department::with(['subjectCodes' => function($query){
+        //     $query->with(['questions' => function ($query){
+        //         $query->with(['author'])
+        //               ->with(['options' => function ($query) {
+        //                   $query->inRandomOrder();
+        //               }])
+        //               ->inRandomOrder();
+        //     }]);
+        // }, 'divisions'])->get();
+
       
-       // dd($department);
+       //dd($departments);
         return inertia('Dashboard/TestGenerator/TestGenearator',[
-            'department' => $department,
+            'department' => $departments
         ]);
     }
 

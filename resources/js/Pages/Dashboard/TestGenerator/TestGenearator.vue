@@ -2,7 +2,10 @@
     <DashboardLayout>
         <Dialog v-model:visible="customModalOpen" modal  :style="{ width: '50rem' }">
             <ModalHeader title="Test Gen">
-                
+              <!-- random option check: {{ department[0].subject_codes[0].questions[0].options[0] }} -->
+               <!-- prelim: {{ isPrelim }} || midter: {{ isMidterm }} || prefinal: {{ isPrefinal }} || final: {{ isFinal }} -->
+               <!--prelim: {{ prelimItems }} || midterm: {{ midTermItems }} || prefinal: {{ preFinalItems }} || final: {{ finalItems }}-->
+              prelim count: {{prelimQuestionCount}} || total items: {{ totalItems }}
                 <form>   
                     <div class="w-full">
                         <div class="flex w-full pr-4 gap-2 flex-col  md:items-center md:flex-row py-2 ">
@@ -38,55 +41,56 @@
                     <div class="w-full m-auto border px-4 bg-blue-100 rounded-md shadow-inner ">
                         <div class="w-full grid grid-cols-5 gap-2 my-2">
                             <div class="col-span-1 flex items-center gap-2 ">
-                                <input v-model="selectedTerm" id="prelim_radio" type="radio" class="hover:cursor-pointer" value="prelim" />
-                                <label for="prelim_radio" class="hover:cursor-pointer text-black">Prelim</label>
+                                <input v-model="isPrelim" id="prelim_chkbx" type="checkbox" class="hover:cursor-pointer rounded-sm" value="prelim" />
+                                <label for="prelim_chkbx" class="hover:cursor-pointer text-black">Prelim</label>
                             </div>
                             <div class="col-span-1 flex items-center ">
                                 <label class="text-black">Print : </label>
                             </div>
                             <div class="col-span-3 flex items-center justify-evenly ">
-                                <input class="max-w-[100px] rounded-md mr-2" it="testNum" type="number" max="50"/>  of  <input class="max-w-[100px] rounded-md ml-2  shadow-md" id="maxTestNum" type="number" :max="prelimItems.length" :placeholder="prelimItems.length" disabled/>
+                                <input v-model="prelimQuestionCount" class="max-w-[100px] rounded-md mr-2" it="testNum" type="number" max="50" min="0"/>  of  <input class="max-w-[100px] rounded-md ml-2  shadow-md" id="maxTestNum" type="number" :max="prelimItems.length" :placeholder="prelimItems.length" disabled/>
                             </div>
                         </div>
 
                         <div class="w-full grid grid-cols-5 gap-2 my-2">
                             <div class="col-span-1 flex items-center gap-2 ">
-                                <input v-model="selectedTerm" id="midterm_radio" type="radio" class="hover:cursor-pointer" value="mid-term" />
-                                <label for="midterm_radio" class="hover:cursor-pointer text-black">Mid-term</label>
+                                <input v-model="isMidterm" id="midterm_chkbx" type="checkbox" class="hover:cursor-pointer rounded-sm" value="prelim" />
+                                <label for="midterm_chkbx" class="hover:cursor-pointer text-black">Mid-term</label>
                             </div>
                             <div class="col-span-1 flex items-center ">
-                                <label class="text-black">Print: </label>
+                                <label class="text-black">Print : </label>
                             </div>
-                            <div class="col-span-3 flex items-center justify-evenly  ">
-                                <input class="max-w-[100px] rounded-md mr-2" it="testNum" type="number" max="50"/>  of  <input class="max-w-[100px] rounded-md ml-2  shadow-md" id="maxTestNum" type="number" :max="midTermItems.length" :placeholder="midTermItems.length" disabled/>
+                            <div class="col-span-3 flex items-center justify-evenly ">
+                                <input v-model="midtermQuestionCount" class="max-w-[100px] rounded-md mr-2" it="testNum" type="number" max="50" min="0"/>  of  <input class="max-w-[100px] rounded-md ml-2  shadow-md" id="maxTestNum" type="number" :max="midTermItems.length" :placeholder="midTermItems.length" disabled/>
                             </div>
                         </div>
-                        
+
                         <div class="w-full grid grid-cols-5 gap-2 my-2">
                             <div class="col-span-1 flex items-center gap-2 ">
-                                <input v-model="selectedTerm" id="prefinal_radio" type="radio" class="hover:cursor-pointer" value="pre-final" />
-                                <label for="prefinal_radio" class="hover:cursor-pointer">Pre-final</label>
+                                <input v-model="isPrefinal" id="prefinal_chkbx" type="checkbox" class="hover:cursor-pointer rounded-sm" value="prelim" />
+                                <label for="prefinal_chkbx" class="hover:cursor-pointer text-black">Pre-final</label>
                             </div>
                             <div class="col-span-1 flex items-center ">
-                                <label>Print: </label>
+                                <label class="text-black">Print : </label>
                             </div>
-                            <div class="col-span-3 flex items-center justify-evenly  ">
-                                <input class="max-w-[100px] rounded-md mr-2" it="testNum" type="number" max="50"/>  of  <input class="max-w-[100px] rounded-md ml-2  shadow-md" id="maxTestNum" type="number" max="50" :max="preFinalItems.length" :placeholder="preFinalItems.length" disabled/>
+                            <div class="col-span-3 flex items-center justify-evenly ">
+                                <input v-model="prefinalQuestionCount" class="max-w-[100px] rounded-md mr-2" it="testNum" type="number" max="50" min="0"/>  of  <input class="max-w-[100px] rounded-md ml-2  shadow-md" id="maxTestNum" type="number" :max="preFinalItems.length" :placeholder="preFinalItems.length" disabled/>
                             </div>
                         </div>
-                           
+
                         <div class="w-full grid grid-cols-5 gap-2 my-2">
                             <div class="col-span-1 flex items-center gap-2 ">
-                                <input v-model="selectedTerm" id="Final_radio" type="radio" class="hover:cursor-pointer" value="final" />
-                                <label for="Final_radio" class="hover:cursor-pointer">final</label>
+                                <input v-model="isFinal" id="final_chkbx" type="checkbox" class="hover:cursor-pointer rounded-sm" value="prelim" />
+                                <label for="prefinal_chkbx" class="hover:cursor-pointer text-black">Final</label>
                             </div>
                             <div class="col-span-1 flex items-center ">
-                                <label>Print: </label>
+                                <label class="text-black">Print : </label>
                             </div>
-                            <div class="col-span-3 flex items-center justify-evenly  ">
-                                <input class="max-w-[100px] rounded-md mr-2" it="testNum" type="number" max="50"/>  of  <input class="max-w-[100px] rounded-md ml-2 shadow-md" id="maxTestNum" type="number" max="50" :max="finalItems.length" :placeholder="finalItems.length" disabled/>
+                            <div class="col-span-3 flex items-center justify-evenly ">
+                                <input v-model="finalQuestionCount" class="max-w-[100px] rounded-md mr-2" it="testNum" type="number" max="50" min="0"/>  of  <input class="max-w-[100px] rounded-md ml-2  shadow-md" id="maxTestNum" type="number" :max="finalItems.length" :placeholder="finalItems.length" disabled/>
                             </div>
                         </div>
+                      
                        
                     </div>
                     <div class="mt-2">
@@ -184,24 +188,84 @@ const departmentOptions = computed(()=>{
 })
 const selectedTerm = ref('');
 
+const isPrelim = ref(false);
+const isMidterm = ref(false);
+const isPrefinal = ref(false);
+const isFinal = ref(false);
+
 const prelimItems   = ref([]);
 const midTermItems  = ref([]);
 const preFinalItems = ref([]);
 const finalItems    = ref([]);
+const totalItems    = computed(()=>{
+    let count = 0
+    count = prelimItems.value.length+midTermItems.value.length+preFinalItems.value.length+finalItems.value.length
+
+    return count
+});
+
+const prelimQuestionCount   = ref('');
+watch(prelimQuestionCount,(count)=>{
+    
+   if(count > prelimItems.value.length)
+   {
+        prelimQuestionCount.value = ''
+   }
+})
+const midtermQuestionCount  = ref('');
+watch(midtermQuestionCount,(count)=>{
+    
+    if(count > midTermItems.value.length)
+    {
+        midtermQuestionCount.value = ''
+    }
+ })
+const prefinalQuestionCount = ref('');
+watch(prefinalQuestionCount,(count)=>{
+    
+    if(count > preFinalItems.value.length)
+    {
+        prefinalQuestionCount.value = ''
+    }
+ })
+const finalQuestionCount    = ref('');
+watch(finalQuestionCount,(count)=>{
+    
+    if(count > finalItems.value.length)
+    {
+        finalQuestionCount.value = ''
+    }
+ })
+const totalQuestionCount = ref('')
 
 watch(selectedSubjectCode,(code)=>{
-    prelimItems.value   = code.questions.filter((question)=> question.term==='prelim')
-    midTermItems.value  = code.questions.filter((question)=> question.term==='mid-term')
-    preFinalItems.value = code.questions.filter((question)=> question.term==='pre-final')
-    finalItems.value    = code.questions.filter((question)=> question.term==='final')
+    
+    if(code)
+    {
+        prelimItems.value   = code.questions.filter((question)=> question.term==='prelim')
+        midTermItems.value  = code.questions.filter((question)=> question.term==='mid-term')
+        preFinalItems.value = code.questions.filter((question)=> question.term==='pre-final')
+        finalItems.value    = code.questions.filter((question)=> question.term==='final')
+    }
+    else
+    {
+        prelimItems.value   = [];
+        midTermItems.value  = [];
+        preFinalItems.value = [];
+        finalItems.value    = [];
+    }
+    
 })
 
 
 //watchers
 watch(selectedDepartment,(val)=>{
-    selectedSubjectCode.value = ''
+   
+   
+    selectedSubjectCode.value = '';
+   
+   
 })
-
 
 const schoolYear = ref([
     '2024-2025',

@@ -11,7 +11,7 @@
         </div>
         
         <!-- <div v-if="$page.props.flash.error" > {{ $page.props.flash.error }}</div> -->
-            
+            <span class="text-red-500 text-[30px]">bug: check box filter</span>
             <div class="flex  flex-col ">
                 <div class="grid grid-cols-10 items-center my-2 ">
                     <div class="col-span-1">
