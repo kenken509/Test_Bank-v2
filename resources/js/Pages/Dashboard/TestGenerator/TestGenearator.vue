@@ -19,7 +19,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="question in prelimGeneratedQuestions" :key="question.id">
+                    <tr v-for="question in finalGeneratedQuestions" :key="question.id">
                         <td>
                             {{ question.question }}
                         </td>
@@ -321,7 +321,7 @@ const totalItems    = computed(()=>{
 const prelimGeneratedQuestions = ref([])
 const prelimQuestionCount   = ref('');
 watch(prelimQuestionCount,(count)=>{
-    let test = 10
+   
     prelimGeneratedQuestions.value = []
    if(count > prelimItems.value.length)
    {
@@ -331,7 +331,6 @@ watch(prelimQuestionCount,(count)=>{
    {
         let monitoredRandomNumbers = []
 
-       
         //solution
         for (let i = 0; i < count; i++) {
             let rand = Math.floor(Math.random() * prelimItems.value.length);
@@ -362,35 +361,146 @@ watch(prelimQuestionCount,(count)=>{
             //console.log('option monitored numbers: ' + Array.from(optionMonitoredRandomNumber));
             prelimGeneratedQuestions.value.push(tempData);
         }
-
-
-        //solution
+        //solution  
    }
 
    //console.log(prelimGeneratedQuestions.value)
 })
+
+const midTermGeneratedQuestions = ref([])
 const midtermQuestionCount  = ref('');
 watch(midtermQuestionCount,(count)=>{
-    
+    midTermGeneratedQuestions.value = []
     if(count > midTermItems.value.length)
     {
         midtermQuestionCount.value = ''
     }
+    else
+   {
+        let monitoredRandomNumbers = []
+
+        //solution
+        for (let i = 0; i < count; i++) {
+            let rand = Math.floor(Math.random() * midTermItems.value.length);
+
+            while (monitoredRandomNumbers.includes(rand)) {
+                rand = Math.floor(Math.random() * midTermItems.value.length);
+            }
+
+            // store the random question to a temporary data for processing
+            let tempData = { ...midTermItems.value[rand], options: [] };
+            
+            monitoredRandomNumbers.push(rand);
+
+            let optionMonitoredRandomNumber = new Set();
+
+            for (let j = 0; j < 4; j++) {
+                let optionRandNumber = Math.floor(Math.random() * 4);
+
+                while (optionMonitoredRandomNumber.has(optionRandNumber)) {
+                    optionRandNumber = Math.floor(Math.random() * 4);
+                }
+
+                optionMonitoredRandomNumber.add(optionRandNumber);
+                tempData.options.push(midTermItems.value[rand].options[optionRandNumber]);
+                //console.log('push this: ' + prelimItems.value[rand].options[optionRandNumber].option);
+            }
+
+            //console.log('option monitored numbers: ' + Array.from(optionMonitoredRandomNumber));
+            midTermGeneratedQuestions.value.push(tempData);
+        }
+        //solution  
+    }
  })
+
+ const prefinalGeneratedQuestions = ref([])
 const prefinalQuestionCount = ref('');
 watch(prefinalQuestionCount,(count)=>{
-    
+    prefinalGeneratedQuestions.value = []
     if(count > preFinalItems.value.length)
     {
         prefinalQuestionCount.value = ''
     }
+    else
+   {
+        let monitoredRandomNumbers = []
+
+        //solution
+        for (let i = 0; i < count; i++) {
+            let rand = Math.floor(Math.random() * preFinalItems.value.length);
+
+            while (monitoredRandomNumbers.includes(rand)) {
+                rand = Math.floor(Math.random() * preFinalItems.value.length);
+            }
+
+            // store the random question to a temporary data for processing
+            let tempData = { ...preFinalItems.value[rand], options: [] };
+            
+            monitoredRandomNumbers.push(rand);
+
+            let optionMonitoredRandomNumber = new Set();
+
+            for (let j = 0; j < 4; j++) {
+                let optionRandNumber = Math.floor(Math.random() * 4);
+
+                while (optionMonitoredRandomNumber.has(optionRandNumber)) {
+                    optionRandNumber = Math.floor(Math.random() * 4);
+                }
+
+                optionMonitoredRandomNumber.add(optionRandNumber);
+                tempData.options.push(preFinalItems.value[rand].options[optionRandNumber]);
+                //console.log('push this: ' + prelimItems.value[rand].options[optionRandNumber].option);
+            }
+
+            //console.log('option monitored numbers: ' + Array.from(optionMonitoredRandomNumber));
+            prefinalGeneratedQuestions.value.push(tempData);
+        }
+        //solution  
+    }
  })
+ const finalGeneratedQuestions = ref([])
 const finalQuestionCount    = ref('');
 watch(finalQuestionCount,(count)=>{
-    
+    finalGeneratedQuestions.value = []
     if(count > finalItems.value.length)
     {
         finalQuestionCount.value = ''
+    }
+    else
+   {
+        let monitoredRandomNumbers = []
+
+        //solution
+        for (let i = 0; i < count; i++) {
+            let rand = Math.floor(Math.random() * finalItems.value.length);
+
+            while (monitoredRandomNumbers.includes(rand)) {
+                rand = Math.floor(Math.random() * finalItems.value.length);
+            }
+
+            // store the random question to a temporary data for processing
+            let tempData = { ...finalItems.value[rand], options: [] };
+            
+            monitoredRandomNumbers.push(rand);
+
+            let optionMonitoredRandomNumber = new Set();
+
+            for (let j = 0; j < 4; j++) {
+                let optionRandNumber = Math.floor(Math.random() * 4);
+
+                while (optionMonitoredRandomNumber.has(optionRandNumber)) {
+                    optionRandNumber = Math.floor(Math.random() * 4);
+                }
+
+                optionMonitoredRandomNumber.add(optionRandNumber);
+                tempData.options.push(finalItems.value[rand].options[optionRandNumber]);
+                //console.log('push this: ' + prelimItems.value[rand].options[optionRandNumber].option);
+            }
+
+            //console.log('option monitored numbers: ' + Array.from(optionMonitoredRandomNumber));
+            finalGeneratedQuestions.value.push(tempData);
+        }
+        //solution  
     }
  })
 const totalQuestionsCount = computed(()=>{
@@ -568,6 +678,13 @@ function testRandom(num)
 
     
 }
+
+
+function generateRandomQuestion(count,prelimItems,prelimGeneratedQuestions)
+{
+
+}
+
 </script>
 
 
