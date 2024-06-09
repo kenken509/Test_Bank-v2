@@ -6,38 +6,43 @@
                <!-- prelim: {{ isPrelim }} || midter: {{ isMidterm }} || prefinal: {{ isPrefinal }} || final: {{ isFinal }} -->
                <!--prelim: {{ prelimItems }} || midterm: {{ midTermItems }} || prefinal: {{ preFinalItems }} || final: {{ finalItems }}-->
                 <!-- PRELIM ITEMS: {{ prelimItems }} || MIDTER ITEMS : {{ midTermItems }} -->
-              <table class="w-full ">
-                <thead class="bg-green-100">
-                    <tr>
-                        <td>
-                            Question
-                        </td>
-                        <td>option a</td>
-                        <td>option b</td>
-                        <td>option c</td>
-                        <td>option c</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="question in finalGeneratedQuestions" :key="question.id">
-                        <td>
-                            {{ question.question }}
-                        </td>
-                        <td>
-                            {{ question.options[0].option }}
-                        </td>
-                        <td>
-                            {{ question.options[1].option }}
-                        </td>
-                        <td>
-                            {{ question.options[2].option }}
-                        </td>
-                        <td>
-                            {{ question.options[3].option }}
-                        </td>
-                    </tr>
-                </tbody>
-              </table>
+                 <div class="bg-red-300">
+                    <span class="flex justify-center font-bold">TRIAL GENERATED QUESTIONS DATA</span>
+                 </div>
+                 <div class="border border-black rounded-md p-2">           
+                    <table class="w-full ">
+                        <thead class="bg-green-100">
+                            <tr>
+                                <td>
+                                    Question
+                                </td>
+                                <td>option a</td>
+                                <td>option b</td>
+                                <td>option c</td>
+                                <td>option c</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="question in generatedExamQuestions" :key="question.id">
+                                <td>
+                                    {{ question.question }}
+                                </td>
+                                <td>
+                                    {{ question.options[0].option }}
+                                </td>
+                                <td>
+                                    {{ question.options[1].option }}
+                                </td>
+                                <td>
+                                    {{ question.options[2].option }}
+                                </td>
+                                <td>
+                                    {{ question.options[3].option }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                 </div>
                 <form @submit.prevent="handlePreviewButtonClicked">   
                     <div class="w-full">
                         <div class="flex w-full pr-4 gap-2 flex-col  md:items-center md:flex-row py-2 ">
@@ -103,7 +108,7 @@
                                 <label for="prefinal_chkbx" class="hover:cursor-pointer text-black">Pre-final</label>
                             </div>
                             <div class="col-span-1 flex items-center ">
-                                <label class="text-black">Print : sdf{{ isPrefinal }} </label>
+                                <label class="text-black">Print :  </label>
                             </div>
                             <div class="col-span-3 flex items-center justify-evenly ">
                                 <input v-model="prefinalQuestionCount" class="max-w-[100px] rounded-md mr-2 shadow-md" it="testNum" type="number" max="50" min="0" :disabled="!isPrefinal" :class="{'bg-gray-200':!isPrefinal}" :required="isPrefinal"/>  of  <input class="max-w-[100px] rounded-md ml-2  shadow-md" id="maxTestNum" type="number" :max="preFinalItems.length" :placeholder="preFinalItems.length" disabled/>
@@ -307,6 +312,7 @@ watch(isFinal,(val)=>{
     }
 })
 
+
 const prelimItems   = ref([]);
 const midTermItems  = ref([]);
 const preFinalItems = ref([]);
@@ -413,7 +419,7 @@ watch(midtermQuestionCount,(count)=>{
     }
  })
 
- const prefinalGeneratedQuestions = ref([])
+const prefinalGeneratedQuestions = ref([])
 const prefinalQuestionCount = ref('');
 watch(prefinalQuestionCount,(count)=>{
     prefinalGeneratedQuestions.value = []
@@ -458,7 +464,7 @@ watch(prefinalQuestionCount,(count)=>{
         //solution  
     }
  })
- const finalGeneratedQuestions = ref([])
+const finalGeneratedQuestions = ref([])
 const finalQuestionCount    = ref('');
 watch(finalQuestionCount,(count)=>{
     finalGeneratedQuestions.value = []
@@ -509,6 +515,14 @@ const totalQuestionsCount = computed(()=>{
     return count
 })
 
+const generatedExamQuestions = computed(()=>{
+    return [
+    ...prelimGeneratedQuestions.value,
+    ...midTermGeneratedQuestions.value,
+    ...prefinalGeneratedQuestions.value,
+    ...finalGeneratedQuestions.value
+  ];
+})
 watch(selectedSubjectCode,(code)=>{
     
     if(code)
@@ -680,10 +694,7 @@ function testRandom(num)
 }
 
 
-function generateRandomQuestion(count,prelimItems,prelimGeneratedQuestions)
-{
 
-}
 
 </script>
 
