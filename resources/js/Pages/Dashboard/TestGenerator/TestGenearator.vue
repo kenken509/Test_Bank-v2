@@ -5,7 +5,39 @@
               <!-- random option check: {{ department[0].subject_codes[0].questions[0].options[0] }} -->
                <!-- prelim: {{ isPrelim }} || midter: {{ isMidterm }} || prefinal: {{ isPrefinal }} || final: {{ isFinal }} -->
                <!--prelim: {{ prelimItems }} || midterm: {{ midTermItems }} || prefinal: {{ preFinalItems }} || final: {{ finalItems }}-->
-                question per term: {{ questionPerTerm }}
+                <!-- PRELIM ITEMS: {{ prelimItems }} || MIDTER ITEMS : {{ midTermItems }} -->
+              <table class="w-full ">
+                <thead class="bg-green-100">
+                    <tr>
+                        <td>
+                            Question
+                        </td>
+                        <td>option a</td>
+                        <td>option b</td>
+                        <td>option c</td>
+                        <td>option c</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="question in prelimGeneratedQuestions" :key="question.id">
+                        <td>
+                            {{ question.question }}
+                        </td>
+                        <td>
+                            {{ question.options[0].option }}
+                        </td>
+                        <td>
+                            {{ question.options[1].option }}
+                        </td>
+                        <td>
+                            {{ question.options[2].option }}
+                        </td>
+                        <td>
+                            {{ question.options[3].option }}
+                        </td>
+                    </tr>
+                </tbody>
+              </table>
                 <form @submit.prevent="handlePreviewButtonClicked">   
                     <div class="w-full">
                         <div class="flex w-full pr-4 gap-2 flex-col  md:items-center md:flex-row py-2 ">
@@ -286,13 +318,56 @@ const totalItems    = computed(()=>{
     return count
 });
 
+const prelimGeneratedQuestions = ref([])
 const prelimQuestionCount   = ref('');
 watch(prelimQuestionCount,(count)=>{
-    
+    let test = 10
+    prelimGeneratedQuestions.value = []
    if(count > prelimItems.value.length)
    {
         prelimQuestionCount.value = ''
    }
+   else
+   {
+        let monitoredRandomNumbers = []
+
+       
+        //solution
+        for (let i = 0; i < count; i++) {
+            let rand = Math.floor(Math.random() * prelimItems.value.length);
+
+            while (monitoredRandomNumbers.includes(rand)) {
+                rand = Math.floor(Math.random() * prelimItems.value.length);
+            }
+
+            // store the random question to a temporary data for processing
+            let tempData = { ...prelimItems.value[rand], options: [] };
+            
+            monitoredRandomNumbers.push(rand);
+
+            let optionMonitoredRandomNumber = new Set();
+
+            for (let j = 0; j < 4; j++) {
+                let optionRandNumber = Math.floor(Math.random() * 4);
+
+                while (optionMonitoredRandomNumber.has(optionRandNumber)) {
+                    optionRandNumber = Math.floor(Math.random() * 4);
+                }
+
+                optionMonitoredRandomNumber.add(optionRandNumber);
+                tempData.options.push(prelimItems.value[rand].options[optionRandNumber]);
+                //console.log('push this: ' + prelimItems.value[rand].options[optionRandNumber].option);
+            }
+
+            //console.log('option monitored numbers: ' + Array.from(optionMonitoredRandomNumber));
+            prelimGeneratedQuestions.value.push(tempData);
+        }
+
+
+        //solution
+   }
+
+   //console.log(prelimGeneratedQuestions.value)
 })
 const midtermQuestionCount  = ref('');
 watch(midtermQuestionCount,(count)=>{
@@ -436,8 +511,7 @@ const handlePreviewButtonClicked = ()=>{
     
     console.log('gpt generate an array accoridingly')
 
-    seperateQuestionPerTerm(selectedSubjectCode.value);
-
+    
     //testRandom(10)
 }
 
