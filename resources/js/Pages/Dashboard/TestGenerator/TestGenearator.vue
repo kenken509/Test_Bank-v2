@@ -177,7 +177,7 @@
                     </div>
                     <div class="flex flex-col  w-full mt-5 ">
                         <button @click="handleResetButtonClicked" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md "  >Reset</button>
-                        <button  type="submit" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >Preview</button>
+                        <button @click="saveExam"  type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >Preview</button>
                         <button @click="handleSave" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >Cancel</button>
                         <button @click="testRandom(10)" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >TEST BUTTON</button>
                     </div>
@@ -694,6 +694,77 @@ function testRandom(num)
 }
 
 
+
+// saving logic
+
+const saveExam = ()=>{
+
+     
+    //create new windon
+    const previewWindow = window.open('', '_blank');
+
+     // Write the printable content to the new window
+    previewWindow.document.write('<html><head><title>Test Preview</title>');
+
+    //Manually include some Tailwind CSS styles
+    previewWindow.document.write('<style>');
+    previewWindow.document.write('body { font-family: "Arial", sans-serif; background-color:white; }');
+    previewWindow.document.write('.text-red-500 { color: #ef4444; }'); // Example Tailwind class 
+    
+    
+    previewWindow.document.write('.header-container-1{background-color: #034515; padding:4px}')
+    previewWindow.document.write('.header-container-2{   }')
+    previewWindow.document.write('.header-container-3{ display:flex; justify-content: space-between; color:whitesmoke   }')
+    previewWindow.document.write('.logo{ width: 100px; height: 100px}')
+    previewWindow.document.write('.left-header{ display:flex; align-items:center }')
+    previewWindow.document.write('.right-header-container{ display:flex; flex-direction: column;   justify-content:center; align-items:center;  margin-right:10px;}')
+    previewWindow.document.write('.school-info-container{ display:flex; flex-direction: column; margin-left:2px}')
+        
+    //previewWindow.document.write('.table-title-container{ display:flex; justify-content:center }')
+    
+    //<div class="flex flex-col md:flex-row justify-between text-gray-700 text-[20px] my-2 student-info-container">
+    previewWindow.document.write('.student-info-container{ display:flex; justify-content:space-between; align-items:center; padding:4px; }')
+    previewWindow.document.write('table{ width:100% }')
+    previewWindow.document.write('.table-title{ grid-column: span 4;  }')
+    previewWindow.document.write('th{ color:whitesmoke; padding:10px; text-transform: uppercase; }')
+    previewWindow.document.write('th{ color:whitesmoke; padding:10px; text-transform: uppercase; }')
+    previewWindow.document.write('td{ text-align:center; padding:2px; }')
+    previewWindow.document.write('.table-header{ background-color: #034515 }')
+    //Include other styles as needed
+    previewWindow.document.write('</style>');
+
+    // Complete the head section and start the body
+    previewWindow.document.write('</head><body>');
+
+
+    // cpmtemts here *****
+    previewWindow.document.write('SAVE THIS AS PDF')
+    // Complete the body and HTML
+
+
+
+    
+    previewWindow.document.write('</body></html>');
+
+    //script
+    previewWindow.document.write(`
+        <script>
+          document.addEventListener('DOMContentLoaded', function () {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.html(document.body, {
+              callback: function (doc) {
+                doc.save('test_preview.pdf');
+              },
+              x: 10,
+              y: 10
+            });
+          });
+        <\/script>
+      `);
+
+}
 
 
 </script>
