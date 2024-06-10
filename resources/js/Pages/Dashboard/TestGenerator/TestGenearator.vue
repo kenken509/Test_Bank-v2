@@ -2,11 +2,12 @@
     <DashboardLayout>
         <Dialog v-model:visible="customModalOpen" modal  :style="{ width: '60rem' }">
             <ModalHeader title="Test Gen">
+                
               <!-- random option check: {{ department[0].subject_codes[0].questions[0].options[0] }} -->
                <!-- prelim: {{ isPrelim }} || midter: {{ isMidterm }} || prefinal: {{ isPrefinal }} || final: {{ isFinal }} -->
                <!--prelim: {{ prelimItems }} || midterm: {{ midTermItems }} || prefinal: {{ preFinalItems }} || final: {{ finalItems }}-->
                 <!-- PRELIM ITEMS: {{ prelimItems }} || MIDTER ITEMS : {{ midTermItems }} -->
-                 <div class="bg-red-300">
+                 <!-- <div class="bg-red-300">
                     <span class="flex justify-center font-bold">TRIAL GENERATED QUESTIONS DATA</span>
                  </div>
                  <div class="border border-black rounded-md p-2">           
@@ -23,7 +24,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="question in generatedExamQuestions" :key="question.id">
+                            <tr v-for="question in setA" :key="question.id">
                                 <td>
                                     {{ question.question }}
                                 </td>
@@ -42,7 +43,7 @@
                             </tr>
                         </tbody>
                     </table>
-                 </div>
+                 </div> -->
                 <form @submit.prevent="handlePreviewButtonClicked">   
                     <div class="w-full">
                         <div class="flex w-full pr-4 gap-2 flex-col  md:items-center md:flex-row py-2 ">
@@ -145,8 +146,8 @@
                     </div>
                     <div class="mt-4 flex gap-2 w-full flex-col md:flex-row justify-between px-2" >
                         <div class="flex gap-2  flex-col md:flex-row md:items-center">
-                            <label for="schoolyr" class="font-semibold">School Year : </label>
-                            <select v-model="selectedSchoolYear"  id="schoolyr" class="rounded-md ">
+                            <label for="schoolyr" class="font-semibold">SY: </label>
+                            <select v-model="selectedSchoolYear"  id="schoolyr" class="rounded-md " >
                                 <option value="" hidden disabled>Select school year</option>
                                 <option v-for="(year,index) in schoolYear" :key="index" >
                                     {{ year }}
@@ -154,17 +155,26 @@
                             </select>
                         </div>
                         <div class="flex gap-2  flex-col md:flex-row md:items-center">
+                            <label for="semester" class="font-semibold">Sem: </label>
+                            <select v-model="selectedSemester" id="semester" class="rounded-md" >
+                                <option value="" hidden disabled>Select sem</option>
+                                <option v-for="(sem,index) in semesters" :key="index" >
+                                    {{ sem }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="flex gap-2  flex-col md:flex-row md:items-center">
                             <label for="term" class="font-semibold">Term: </label>
-                            <select v-model="selectedTerm" id="term" class="rounded-md">
+                            <select v-model="selectedTerm" id="term" class="rounded-md" >
                                 <option value="" hidden disabled>Select a term</option>
                                 <option v-for="(term,index) in terms" :key="index" >
                                     {{ term }}
                                 </option>
                             </select>
-                        </div>
+                        </div>{{ totalQuestionsCount }}
                         <div class="flex gap-2  flex-col md:flex-row md:items-center">
                             <label for="sets" class="font-semibold">Set: </label>
-                            <select v-model="selectedSet" id="sets" class="rounded-md">
+                            <select v-model="selectedSet" id="sets" class="rounded-md" :disabled="!totalQuestionsCount" >
                                 <option value="" hidden disabled>Select a set</option>
                                 <option v-for="(set,index) in sets" :key="index" >
                                     {{ set }}
@@ -178,20 +188,40 @@
                     <div class="flex flex-col  w-full mt-5 ">
                         <button @click="handleResetButtonClicked" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md "  >Reset</button>
                         <button @click="saveExam"  type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >Preview</button>
-                        <button @click="handleSave" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >Cancel</button>
-                        <button @click="testRandom(10)" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >TEST BUTTON</button>
+                        <!-- <button @click="handleSave" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >Cancel</button> -->
+                        <!-- <button @click="testRandom2" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >TEST BUTTON</button> -->
                     </div>
-                    <div class="save-data">
-                        <span>
-                            {{ data.department[0].name }} aries
-                        </span>
-                    </div>
+                    
                 </form>
+                set b:{{ setB }}
             </ModalHeader>
            <!-- <span class="text-red-500"> {{ department }}</span> -->
-           
+          
         </Dialog>
-        
+
+        <!--save data-->
+        <div id="pdf-content" class="w-full">
+
+            <div class="flex justify-center p-0 m-0  gap-4 w-full bg-red-200">
+                <div class=" w-16 h-16 pt-2">
+                    <img :src="logoUrl" alt="Ncst Logo"/>
+                </div>
+                <div class="flex flex-col justify-center items-center pb-2 pt-1">
+                    <span class="font-bold text-[18px]">NATIONAL COLLEGE OF SCIENCE AND TECHNOLOGY</span>
+                    <span>Amafel Building Aguinaldo Highway, Dasmariñas, Cavite</span>
+                    <span>Tel. no. (1234-1234) </span>
+                    <a href="https://ncst.edu.ph/" target="_blank">www.ncst.edu.ph</a>
+                    
+                    <span v-if="selectedDepartment.division_id"  class="text-[18px] font-bold mt-2"  >
+                        {{ getDivisionName(selectedDepartment.id,selectedDepartment.division_id) }} Department
+                    </span>
+                    <span v-else class="text-[18px] font-bold"  >{{ selectedDepartment.name }} Department</span>
+                    <span class="text-[18px] font-bold">{{ convertTerm(selectedTerm) }} Exam in {{ selectedSubjectCode.name }} {{ selectedSubjectCode.description }} </span>
+                    <span class="text-[18px] font-bold" ></span>
+                </div>
+            </div>
+        </div>
+       
     </DashboardLayout>
 </template>
 
@@ -201,8 +231,11 @@ import Swal from 'sweetalert2/dist/sweetalert2.js'
 import ModalHeader from '../Components/ModalHeader.vue'
 import {ref,onMounted, computed,watch} from 'vue'
 import { useForm } from '@inertiajs/vue3';
-const customModalOpen = ref(true)
+import jsPDF from 'jspdf';
+import html2pdf from 'html2pdf.js'; // Ensure the correct import path
 
+const customModalOpen = ref(true)
+const logoUrl = ref('/storage/Images/ncstLogo.png');
 const closeModal = () => {
    customModalOpen.value = false;
 };
@@ -514,6 +547,12 @@ const totalQuestionsCount = computed(()=>{
     count = prelimQuestionCount.value+midtermQuestionCount.value+prefinalQuestionCount.value+finalQuestionCount.value
     return count
 })
+watch(totalQuestionsCount,(val)=>{
+    if(val < 1)
+    {
+        selectedSet.value = ''
+    }
+})
 
 const generatedExamQuestions = computed(()=>{
     return [
@@ -523,6 +562,8 @@ const generatedExamQuestions = computed(()=>{
     ...finalGeneratedQuestions.value
   ];
 })
+
+
 watch(selectedSubjectCode,(code)=>{
     
     if(code)
@@ -554,6 +595,7 @@ watch(selectedDepartment,(val)=>{
     selectedSchoolYear.value    = ''
     selectedTerm.value          = ''
     selectedSet.value           = ''
+    selectedSemester.value      = ''
    
 })
 
@@ -580,7 +622,19 @@ const terms = ref([
     'final',
 ])
 
+const selectedSemester = ref('');
+const semesters = ref([
+    '1st',
+    '2nd',
+])
 const selectedSet = ref('')
+watch(selectedSet,(val)=>{
+    //create set a b c
+
+    
+})
+
+
 const sets = ref([
     'A',
     'B',
@@ -595,49 +649,7 @@ const handleResetButtonClicked = ()=>{
     selectedDepartment.value=''
 }
 
-const handlePreviewButtonClicked = ()=>{
-    if(!selectedDepartment.value)
-    {
-        errorMessage('Please select a department.')
-        return
-    }
 
-    if(!selectedSubjectCode.value)
-    {
-        errorMessage('Please select a subject code.')
-        return;
-    }
-
-    if(!termQuestionSelection.value.length)
-    {
-        errorMessage('Please select at least 1 term for question selection.')
-        return
-    }
-
-    if(!selectedSchoolYear.value)
-    {
-        errorMessage('Please select a school year.')
-        return
-    }
-
-    if(!selectedTerm.value)
-    {
-        errorMessage("'Please select the exam's term.")
-        return
-    }
-
-    if(!selectedSet.value)
-    {
-        errorMessage("'Please select exam's set.")
-        return
-    }
-
-    
-    console.log('gpt generate an array accoridingly')
-
-    
-    //testRandom(10)
-}
 
 
 //sweet alerts
@@ -657,18 +669,18 @@ function errorMessage(message) {
 
 
 // question generation logic
-const questionPerTerm = ref({
-    prelim:[],
-    midTerm:[],
-    prefinal:[],
-    final:[],
-})
-function seperateQuestionPerTerm(code){
-    questionPerTerm.value.prelim = code.questions.filter((question)=> question.term === 'prelim')
-    questionPerTerm.value.midTerm = code.questions.filter((question)=> question.term === 'mid-term')
-    questionPerTerm.value.prefinal = code.questions.filter((question)=> question.term === 'pre-final')
-    questionPerTerm.value.final = code.questions.filter((question)=> question.term === 'final')
-}
+// const questionPerTerm = ref({
+//     prelim:[],
+//     midTerm:[],
+//     prefinal:[],
+//     final:[],
+// })
+// function seperateQuestionPerTerm(code){
+//     questionPerTerm.value.prelim = code.questions.filter((question)=> question.term === 'prelim')
+//     questionPerTerm.value.midTerm = code.questions.filter((question)=> question.term === 'mid-term')
+//     questionPerTerm.value.prefinal = code.questions.filter((question)=> question.term === 'pre-final')
+//     questionPerTerm.value.final = code.questions.filter((question)=> question.term === 'final')
+// }
 
 function testRandom(num)
 {
@@ -697,76 +709,321 @@ function testRandom(num)
 
 // saving logic
 
-const saveExam = ()=>{
+const saveExam = () => {
+    if(!selectedDepartment.value)
+    {
+        errorMessage('Please select a department.')
+        return
+    }
 
-     
-    //create new windon
-    const previewWindow = window.open('', '_blank');
+    if(!selectedSubjectCode.value)
+    {
+        errorMessage('Please select a subject code.')
+        return;
+    }
 
-     // Write the printable content to the new window
-    previewWindow.document.write('<html><head><title>Test Preview</title>');
+    if(!termQuestionSelection.value.length)
+    {
+        errorMessage('Please select at least 1 term for question selection.')
+        return
+    }
 
-    //Manually include some Tailwind CSS styles
-    previewWindow.document.write('<style>');
-    previewWindow.document.write('body { font-family: "Arial", sans-serif; background-color:white; }');
-    previewWindow.document.write('.text-red-500 { color: #ef4444; }'); // Example Tailwind class 
-    
-    
-    previewWindow.document.write('.header-container-1{background-color: #034515; padding:4px}')
-    previewWindow.document.write('.header-container-2{   }')
-    previewWindow.document.write('.header-container-3{ display:flex; justify-content: space-between; color:whitesmoke   }')
-    previewWindow.document.write('.logo{ width: 100px; height: 100px}')
-    previewWindow.document.write('.left-header{ display:flex; align-items:center }')
-    previewWindow.document.write('.right-header-container{ display:flex; flex-direction: column;   justify-content:center; align-items:center;  margin-right:10px;}')
-    previewWindow.document.write('.school-info-container{ display:flex; flex-direction: column; margin-left:2px}')
+    if(isPrelim.value)
+    { 
         
-    //previewWindow.document.write('.table-title-container{ display:flex; justify-content:center }')
+        if(!prelimQuestionCount.value)
+        {
+            errorMessage('Please define the number of questions coming from prelim questions.')
+            return
+        }
+    }
+
+    if(isMidterm.value)
+    { 
+        if(!midtermQuestionCount.value)
+        {
+            errorMessage('Please define the number of questions coming from midterm questions.')
+            return
+        }
+    }
+
+    if(isPrefinal.value)
+    { 
+        if(!prefinalQuestionCount.value)
+        {
+            errorMessage('Please define the number of questions coming from prefinal questions.')
+            return
+        }
+    }
+
+    if(isFinal.value)
+    { 
+        if(!finalQuestionCount.value)
+        {
+            errorMessage('Please define the number of questions coming from final questions.')
+            return
+        }
+    }
+
+    if(!selectedSchoolYear.value)
+    {
+        errorMessage('Please select a school year.')
+        return
+    }
+
+    if(!selectedSemester.value)
+    {
+        errorMessage('Please select a semester.')
+        return
+    }
+
+    if(!selectedTerm.value)
+    {
+        errorMessage("'Please select the exam's term.")
+        return
+    }
+
+    if(!selectedSet.value)
+    {
+        errorMessage("'Please select exam's set.")
+        return
+    }
     
-    //<div class="flex flex-col md:flex-row justify-between text-gray-700 text-[20px] my-2 student-info-container">
-    previewWindow.document.write('.student-info-container{ display:flex; justify-content:space-between; align-items:center; padding:4px; }')
-    previewWindow.document.write('table{ width:100% }')
-    previewWindow.document.write('.table-title{ grid-column: span 4;  }')
-    previewWindow.document.write('th{ color:whitesmoke; padding:10px; text-transform: uppercase; }')
-    previewWindow.document.write('th{ color:whitesmoke; padding:10px; text-transform: uppercase; }')
-    previewWindow.document.write('td{ text-align:center; padding:2px; }')
-    previewWindow.document.write('.table-header{ background-color: #034515 }')
-    //Include other styles as needed
-    previewWindow.document.write('</style>');
-
-    // Complete the head section and start the body
-    previewWindow.document.write('</head><body>');
-
-
-    // cpmtemts here *****
-    previewWindow.document.write('SAVE THIS AS PDF')
-    // Complete the body and HTML
-
-
-
+    console.log('im here')
+    if(generatedExamQuestions.value.length)
+    {
+        setB.value =  randomizeQuestionSet(generatedExamQuestions.value)
+    }
     
-    previewWindow.document.write('</body></html>');
+    if(setB.value.length)
+    {
+        setC.value =  randomizeQuestionSet(setB.value);
+    }
+    
 
-    //script
-    previewWindow.document.write(`
-        <script>
-          document.addEventListener('DOMContentLoaded', function () {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            doc.html(document.body, {
-              callback: function (doc) {
-                doc.save('test_preview.pdf');
-              },
-              x: 10,
-              y: 10
-            });
-          });
-        <\/script>
-      `);
-
+    // const element = document.getElementById('pdf-content'); // Replace 'pdf-content' with the ID of the content you want to convert to PDF
+    // const opt = {
+    //     margin: [0.4, 1, 0.4, 1], // [top, left, bottom, right].
+    //     filename:     'document.pdf',
+    //     image:        { type: 'jpeg', quality: 0.98 },
+    //     html2canvas:  { scale: 2 },
+    //     jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    // };
+    // html2pdf().from(element).set(opt).save().then(() => {
+    //     console.log('Set A PDF saved successfully.');
+    // }).catch((error) => {
+    //     console.error('Error generating Set PDF:', error);
+    // });
+    
+    
+    
+    
+    
 }
 
 
+function convertTerm(term)
+{
+    let converted = ''
+    switch(term)
+    {
+        case 'prelim':
+            converted = 'Prelim'
+            break
+        case 'mid-term':
+            converted = 'Midterm'
+            break
+        case 'pre-final':
+            converted = 'Prefinal'
+            break
+        case 'final':
+            converted = 'final'
+            break
+        default:
+            converted = 'Selected Term'
+    }
+
+    return converted
+}
+
+function getDivisionName(depId,divId)
+{
+    let  divisionName = []
+    //console.log(data.department)
+    // console.log('department id'+depId)
+    // console.log("division id: "+divId)
+    
+    data.department.forEach((dep)=>{
+        if(dep.id === depId)
+        {
+            // dep.divisions.foreach((div)=>{
+            //     if(div.id === divId)
+            //     {
+            //         divisionName.push(div);
+            //     }
+            // })
+            dep.divisions.forEach((div)=>{
+                if(div.id === divId)
+                {
+                    divisionName.push(div)
+                }
+            })
+        }
+    })
+    //dep.id === depId && dep.division_id === divId
+
+    //console.log('division: '+divisionName[0].divisions[0].name)
+    //console.log('division: '+divisionName[0])
+   return divisionName[0].name
+}
+
+const setA = ref([])
+const setB = ref([])
+const setC = ref([])
+
+const testRandom2 = ()=>{
+    setA.value = randomizeQuestionSet(testQuestion);
+}
+function randomizeQuestionSet(questionSet){
+    let question = questionSet;
+    let newQuestionSet = []
+    let randomQuestionIndexList = []
+
+    for(let i = 0; i < question.length; i++)
+    {
+        
+        
+        let randomQuestionIndex = Math.floor(Math.random() * question.length)
+        
+        
+
+        while(randomQuestionIndexList.includes(randomQuestionIndex))
+        {
+            randomQuestionIndex = Math.floor(Math.random() * question.length)
+        }
+
+        randomQuestionIndexList.push(randomQuestionIndex)
+        let tempQuestion = {...question[randomQuestionIndex],options:[]}
+        
+
+        let randomOptionIndexList = new Set()
+
+        for(let j = 0 ; j < 4; j++)
+        {
+            
+            let randomOptionIndex = Math.floor(Math.random() * 4)
+            
+            while(randomOptionIndexList.has(randomOptionIndex))
+            {
+                 randomOptionIndex = Math.floor(Math.random() * 4)
+            }
+
+            randomOptionIndexList.add(randomOptionIndex)
+            tempQuestion.options.push(question[randomQuestionIndex].options[randomOptionIndex])
+        }
+        
+        newQuestionSet.push(tempQuestion)
+        console.log('question index list: '+randomQuestionIndexList)
+        console.log('options index list: '+randomOptionIndexList);;
+    }
+
+    console.log('expected new question: '+question)
+    return newQuestionSet
+}
+
+
+const testQuestion = [
+    {
+        id:'1',
+        question:'question 1',
+        options:[
+            {
+                option:'option A 1',
+                isCorrect:'false'
+            },
+            {
+                option:'option B 1',
+                isCorrect:'false',
+            },
+            {
+                option:'option C 1',
+                isCorrect:'false',
+            },
+            {
+                option:'option D 1',
+                isCorrect:'true',
+            }
+        ]
+    },
+    {
+        id:'2',
+        question:'question 2',
+        options:[
+            {
+                option:'option A 2',
+                isCorrect:'false',
+            },
+            {
+                option:'option B 2',
+                isCorrect:'true',
+            },
+            {
+                option:'option C 2',
+                isCorrect:'false',
+            },
+            {
+                option:'option D 2',
+                isCorrect:'false',
+            }
+        ]
+    },
+    {
+        id:'3',
+        question:'question 3',
+        options:[
+            {
+                option:'option A 3',
+                isCorrect:'true',
+
+            },
+            {
+                option:'option B 3',
+                isCorrect:'false',
+            },
+            {
+                option:'option C 3',
+                isCorrect:'false',
+            },
+            {
+                option:'option D 3',
+                isCorrect:'false',
+            }
+        ]
+    },
+    {
+        id:'4',
+        question:'question 4',
+        options:[
+            {
+                option:'option A 4',
+                isCorrect:'false',
+            },
+            {
+                option:'option B 4',
+                isCorrect:'true',
+            },
+            {
+                option:'option C 4',
+                isCorrect:'false',
+            },
+            {
+                option:'option D 4',
+                isCorrect:'false',
+            }
+        ]
+    }
+
+]
 </script>
 
 
