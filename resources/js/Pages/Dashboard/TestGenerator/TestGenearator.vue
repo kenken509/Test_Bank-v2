@@ -7,8 +7,9 @@
                <!-- prelim: {{ isPrelim }} || midter: {{ isMidterm }} || prefinal: {{ isPrefinal }} || final: {{ isFinal }} -->
                <!--prelim: {{ prelimItems }} || midterm: {{ midTermItems }} || prefinal: {{ preFinalItems }} || final: {{ finalItems }}-->
                 <!-- PRELIM ITEMS: {{ prelimItems }} || MIDTER ITEMS : {{ midTermItems }} -->
-                 <!-- <div class="bg-red-300">
-                    <span class="flex justify-center font-bold">TRIAL GENERATED QUESTIONS DATA</span>
+                 <!-- SET A-->
+                 <div class="bg-red-300">
+                    <span class="flex justify-center font-bold">TRIAL GENERATED QUESTIONS SET A</span>
                  </div>
                  <div class="border border-black rounded-md p-2">           
                     <table class="w-full ">
@@ -16,6 +17,9 @@
                             <tr>
                                 <td>
                                     Question
+                                </td>
+                                <td>
+                                    term
                                 </td>
                                 <td>option a</td>
                                 <td>option b</td>
@@ -27,6 +31,9 @@
                             <tr v-for="question in setA" :key="question.id">
                                 <td>
                                     {{ question.question }}
+                                </td>
+                                <td>
+                                    {{ question.term }}
                                 </td>
                                 <td>
                                     {{ question.options[0].option }}
@@ -43,7 +50,100 @@
                             </tr>
                         </tbody>
                     </table>
-                 </div> -->
+                 </div>
+                 <!-- SET A-->
+                 
+                 <!-- SET B-->
+                 <div class="bg-red-300">
+                    <span class="flex justify-center font-bold">TRIAL GENERATED QUESTIONS SET B</span>
+                 </div>
+                 <div class="border border-black rounded-md p-2">           
+                    <table class="w-full ">
+                        <thead class="bg-green-100">
+                            <tr>
+                                <td>
+                                    Question
+                                </td>
+                                <td>
+                                    Term
+                                </td>
+                                <td>option a</td>
+                                <td>option b</td>
+                                <td>option c</td>
+                                <td>option c</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="question in setB" :key="question.id">
+                                <td>
+                                    {{ question.question }}
+                                </td>
+                                <td>
+                                    {{ question.term }}
+                                </td>
+                                <td>
+                                    {{ question.options[0].option }}
+                                </td>
+                                <td>
+                                    {{ question.options[1].option }}
+                                </td>
+                                <td>
+                                    {{ question.options[2].option }}
+                                </td>
+                                <td>
+                                    {{ question.options[3].option }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                 </div>
+                 <!-- SET B-->
+
+                 <!-- SET C-->
+                 <div class="bg-red-300">
+                    <span class="flex justify-center font-bold">TRIAL GENERATED QUESTIONS SET C</span>
+                 </div>
+                 <div class="border border-black rounded-md p-2">           
+                    <table class="w-full ">
+                        <thead class="bg-green-100">
+                            <tr>
+                                <td>
+                                    Question
+                                </td>
+                                <td>
+                                    Term
+                                </td>
+                                <td>option a</td>
+                                <td>option b</td>
+                                <td>option c</td>
+                                <td>option c</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="question in setC" :key="question.id">
+                                <td>
+                                    {{ question.question }}
+                                </td>
+                                <td>
+                                    {{ question.term }}
+                                </td>
+                                <td>
+                                    {{ question.options[0].option }}
+                                </td>
+                                <td>
+                                    {{ question.options[1].option }}
+                                </td>
+                                <td>
+                                    {{ question.options[2].option }}
+                                </td>
+                                <td>
+                                    {{ question.options[3].option }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                 </div>
+                 <!-- SET C-->
                 <form @submit.prevent="handlePreviewButtonClicked">   
                     <div class="w-full">
                         <div class="flex w-full pr-4 gap-2 flex-col  md:items-center md:flex-row py-2 ">
@@ -789,18 +889,23 @@ const saveExam = () => {
         return
     }
     
-    console.log('im here')
+    
     if(generatedExamQuestions.value.length)
     {
-        setB.value =  randomizeQuestionSet(generatedExamQuestions.value)
+        setA.value =  randomizeQuestionSet(generatedExamQuestions.value)
+    }
+    
+    if(setA.value.length)
+    {
+        setB.value =  randomizeQuestionSet(setA.value);
     }
     
     if(setB.value.length)
     {
-        setC.value =  randomizeQuestionSet(setB.value);
+        setC.value = randomizeQuestionSet(setB.value)
     }
-    
-
+    console.log('set a')
+    console.log(setA.value)
     // const element = document.getElementById('pdf-content'); // Replace 'pdf-content' with the ID of the content you want to convert to PDF
     // const opt = {
     //     margin: [0.4, 1, 0.4, 1], // [top, left, bottom, right].
@@ -923,11 +1028,10 @@ function randomizeQuestionSet(questionSet){
         }
         
         newQuestionSet.push(tempQuestion)
-        console.log('question index list: '+randomQuestionIndexList)
-        console.log('options index list: '+randomOptionIndexList);;
+       
     }
 
-    console.log('expected new question: '+question)
+    
     return newQuestionSet
 }
 
