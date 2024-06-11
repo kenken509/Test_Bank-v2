@@ -154,7 +154,7 @@
                         <div class="flex w-full pr-4 gap-2 flex-col  md:items-center md:flex-row py-2 ">
                             <label for="department" class="text-black font-semibold w-full max-w-[150px]">Department: </label>
                             <select id="department" v-model="selectedDepartment" class="rounded-md w-full text-xs "  >
-                                <option value=""  disabled >Select department </option>
+                                <option value=""  disabled hidden>Select department </option>
                                 <option v-for="dep in departmentOptions" :key="dep.id" :value="dep">
                                     {{ dep.name }} 
                                 </option>
