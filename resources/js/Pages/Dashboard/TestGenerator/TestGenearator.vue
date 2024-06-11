@@ -294,7 +294,7 @@
                         <button @click="handleResetButtonClicked" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md "  >Reset</button>
                         <button @click="saveExam"  type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >Preview</button>
                         <!-- <button @click="handleSave" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >Cancel</button> -->
-                        <!-- <button @click="getCorrectAnswer(testQuestion)" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >TEST BUTTON</button> -->
+                        <!-- <button @click="testDownloadCsv(testAnswers)" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >TEST BUTTON</button> -->
                     </div>
                     
                 </form>
@@ -342,26 +342,46 @@
         </Dialog>
 
         <!--save data-->
-        <div id="set-a-pdf" class="w-full">
-
-            <div class="flex justify-center p-0 m-0  gap-4 w-full bg-red-200">
-                <div class=" w-16 h-16 pt-2">
-                    <img :src="logoUrl" alt="Ncst Logo"/>
-                </div>
-                <div class="flex flex-col justify-center items-center pb-2 pt-1">
-                    <span class="font-bold text-[18px]">NATIONAL COLLEGE OF SCIENCE AND TECHNOLOGY</span>
-                    <span>Amafel Building Aguinaldo Highway, Dasmariñas, Cavite</span>
-                    <span>Tel. no. (1234-1234) </span>
-                    <a href="https://ncst.edu.ph/" target="_blank">www.ncst.edu.ph</a>
-                    
-                    <span v-if="selectedDepartment.division_id"  class="text-[18px] font-bold mt-2"  >
-                        {{ getDivisionName(selectedDepartment.id,selectedDepartment.division_id) }} Department
-                    </span>
-                    <span v-else class="text-[18px] font-bold"  >{{ selectedDepartment.name }} Department</span>
-                    <span class="text-[18px] font-bold">{{ convertTerm(selectedTerm) }} Exam in {{ selectedSubjectCode.name }} {{ selectedSubjectCode.description }} </span>
-                    <span class="text-[18px] font-bold" ></span>
-                </div>
+        <div id="pdf-convert" class="w-full">
+            <!--heading-->
+            <div class="flex justify-center gap-2 w-full ">
+                <div class="flex justify-between gap-4 ">
+                    <div class=" w-20 h-20 mt-[18px] ">
+                        <img :src="logoUrl" alt="Ncst Logo"/>
+                    </div>
+                    <div class="flex flex-col justify-center items-center mb-2 mt-1 ">
+                        <span class="font-bold text-[18px]">NATIONAL COLLEGE OF SCIENCE AND TECHNOLOGY</span>
+                        <span>Amafel Building Aguinaldo Highway, Dasmariñas, Cavite</span>
+                        <span>Tel. no. (1234-1234) </span>
+                        <a href="https://ncst.edu.ph/" target="_blank">www.ncst.edu.ph</a>
+                        
+                        <span v-if="selectedDepartment.division_id"  class="text-[16px] font-bold mt-2"  >
+                            {{ getDivisionName(selectedDepartment.id,selectedDepartment.division_id) }} Department
+                        </span>
+                        <span v-else class="text-[16px] font-bold mt-2"  >{{ selectedDepartment.name }} Department</span>
+                        <span class="text-[16px] font-bold">{{ convertTerm(selectedTerm) }} Exam in {{ selectedSubjectCode.name }} {{ selectedSubjectCode.description }} </span>
+                        <span class="text-[16px] font-bold" >{{ selectedSemester }} Semester SY: {{ selectedSchoolYear }} </span>
+                        <span class="text-[16px] font-bold" >Set {{ selectedSet }}</span>
+                        
+                    </div>
+                </div> 
             </div>
+            <!--heading-->
+            <div class="mt-4 py-2 ">
+                <span class="font-bold text-[16px]">{{ direction }}</span>
+            </div>
+            <!--questions-->
+            <div class="w-full flex flex-wrap whitespace-nowrap flex-col py-2  " v-for="(question,index) in setA" :key="question.id">
+                <span>{{index+1}}. {{ question.question }}</span>
+                <!--options-->
+                <div class="flex flex-row flex-wrap gap-3 w-full pl-4 ">
+                    <template v-for="(option,index) in question.options">
+                        <span class="flex   w-full">{{ optionLetters[index] }}. {{ option.option }}</span>
+                    </template>
+                </div>
+                 <!--options-->   
+            </div>
+            <!--questions-->
         </div>
         
     </DashboardLayout>
@@ -951,24 +971,67 @@ const saveExam = () => {
     setBKeyToCorrection.value = getCorrectAnswer(setB.value)
     setCKeyToCorrection.value = getCorrectAnswer(setB.value)
 
-    console.log('selected set: ')
-    console.log(selectedSet.value)
 
-    if(selectedSet.value === 'A')
+
+
+    // console.log('selected set: ')
+    // console.log(selectedSet.value)
+
+    if(selectedSet.value === 'A' || selectedSet.value === 'B' || selectedSet.value === 'C')
     {
-        const element = document.getElementById('set-a-pdf'); // Replace 'pdf-content' with the ID of the content you want to convert to PDF
+        const element = document.getElementById('pdf-convert'); // Replace 'pdf-content' with the ID of the content you want to convert to PDF
         const opt = {
-            margin: [0.4, 1, 0.4, 1], // [top, left, bottom, right].
+            margin: [0.4,0.4, 0.4, 0.4], // [top, left, bottom, right].
             filename:     'document.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2 },
-            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
         };
-        html2pdf().from(element).set(opt).save().then(() => {
-            console.log('Set A PDF saved successfully.');
+
+         // Function to add footers to each page
+         function addFooters(pdf) {
+            const pageCount = pdf.internal.getNumberOfPages();
+            const currentDate = new Date().toLocaleDateString();
+            pdf.setFontSize(8); // Set font size to 10px
+
+            for (let i = 1; i <= pageCount; i++) {
+                pdf.setPage(i);
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+
+                // Draw a line at the bottom of the page
+                // Draw a thinner line at the bottom of the page
+                pdf.setLineWidth(0.01); // Set line width to the smallest visible value
+                pdf.line(0.5, pageHeight - 0.6, pageWidth - 0.5, pageHeight - 0.6);
+
+                // Adding current date on the left
+                pdf.text(currentDate, 0.5, pageHeight - 0.4);
+
+                // Calculate the width of the text
+                const pageText = `Page ${i} of ${pageCount}`;
+                const textWidth = pdf.getTextDimensions(pageText).w;
+
+                // Adding page number on the right
+                pdf.text(pageText, pageWidth - textWidth - 0.5, pageHeight - 0.4);
+            }
+        }
+
+        // Generate the PDF
+        html2pdf().from(document.getElementById('pdf-convert')).set(opt).toPdf().get('pdf').then((pdf) => {
+            addFooters(pdf);
+        }).save().then(() => {
+            console.log('PDF saved successfully.');
         }).catch((error) => {
-            console.error('Error generating Set PDF:', error);
+            console.error('Error generating PDF:', error);
         });
+
+
+        // html2pdf().from(element).set(opt).save().then(() => {
+        //     console.log('Set A PDF saved successfully.');
+        // }).catch((error) => {
+        //     console.error('Error generating Set PDF:', error);
+        // });
     }
 
 
@@ -1043,6 +1106,8 @@ const setC = ref([])
 const setAKeyToCorrection = ref([])
 const setBKeyToCorrection = ref([])
 const setCKeyToCorrection = ref([])
+const optionLetters = ['A','B','C','D']
+const direction = ref('DIRECTIONS: Multiple choice. Read the statement carefully. Use the provided answer sheet. choose the letter that correspond to the correct answer. STRICLY NO ERASURE.')
 
 const testRandom2 = ()=>{
     setA.value = randomizeQuestionSet(testQuestion);
@@ -1187,7 +1252,14 @@ const testQuestion = [
 
 ]
 
-
+const testAnswers = [
+    'a',
+    'b',
+    'a',
+    'd',
+    'e',
+    'b'
+]
 function getCorrectAnswer(questions){
     let answers = []
     const letter = ['a','b','c','d']
@@ -1205,7 +1277,34 @@ function getCorrectAnswer(questions){
     return answers
 }
 
+function saveAnswerKeyCsV(answers)
+{
+    let tempData = ['*','*','*','*','*',...answers]
 
+    const blob = new Blob([tempData], { type: 'text/csv' });
+    
+    // Create a link element
+    const link = document.createElement('a');
+    // Set the URL of the link to the blob
+    link.href = URL.createObjectURL(blob);
+    // Set the download attribute of the link
+    link.download = 'testAnswers.csv';
+    // Append the link to the document
+    document.body.appendChild(link);
+    // Programmatically click the link to trigger the download
+    link.click();
+    // Remove the link from the document
+    document.body.removeChild(link);
+}
+
+function saveAnswerKeyPdf()
+{
+    
+}
+function saveExamToPdf(questionSet)
+{
+
+}
 </script>
 
 

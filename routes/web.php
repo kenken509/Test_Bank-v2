@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\TestPageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SubjectCodeController;
@@ -77,4 +78,8 @@ Route::controller(TestGeneratorController::class)->group(function(){
     Route::get('/test_bank/test_generator', 'showTestGenerator')->name('testGen.show');
     Route::match(['get', 'post'], '/test_bank/generated_test', 'showGeneratedExam')->name('testGen.generated');
     Route::post('/test_bank/generated_test', 'showGeneratedExam')->name('testGen.test');
+});
+
+Route::controller(TestPageController::class)->group(function(){
+    Route::get('/test', 'showTestPage')->name('testPage');
 });
