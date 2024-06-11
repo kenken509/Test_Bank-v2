@@ -1,16 +1,17 @@
 <template>
     <DashboardLayout>
         <Dialog v-model:visible="customModalOpen" modal  :style="{ width: '60rem' }">
-            <ModalHeader title="Test Gen">
+            <ModalHeader title="Test Generator">
                 
               <!-- random option check: {{ department[0].subject_codes[0].questions[0].options[0] }} -->
                <!-- prelim: {{ isPrelim }} || midter: {{ isMidterm }} || prefinal: {{ isPrefinal }} || final: {{ isFinal }} -->
                <!--prelim: {{ prelimItems }} || midterm: {{ midTermItems }} || prefinal: {{ preFinalItems }} || final: {{ finalItems }}-->
                 <!-- PRELIM ITEMS: {{ prelimItems }} || MIDTER ITEMS : {{ midTermItems }} -->
                  <!-- SET A-->
-                 <div class="bg-red-300">
+                 <!-- <div class="bg-red-300">
                     <span class="flex justify-center font-bold">TRIAL GENERATED QUESTIONS SET A</span>
                  </div>
+                 Key: <span class="text-red-500 font-bold text-[24px]">{{ setAKeyToCorrection }}</span>
                  <div class="border border-black rounded-md p-2">           
                     <table class="w-full ">
                         <thead class="bg-green-100">
@@ -50,13 +51,14 @@
                             </tr>
                         </tbody>
                     </table>
-                 </div>
+                 </div> -->
                  <!-- SET A-->
                  
                  <!-- SET B-->
-                 <div class="bg-red-300">
+                 <!-- <div class="bg-red-300">
                     <span class="flex justify-center font-bold">TRIAL GENERATED QUESTIONS SET B</span>
                  </div>
+                 Key: <span class="text-red-500 font-bold text-[24px]">{{ setBKeyToCorrection }}</span>
                  <div class="border border-black rounded-md p-2">           
                     <table class="w-full ">
                         <thead class="bg-green-100">
@@ -96,13 +98,14 @@
                             </tr>
                         </tbody>
                     </table>
-                 </div>
+                 </div> -->
                  <!-- SET B-->
 
                  <!-- SET C-->
-                 <div class="bg-red-300">
+                 <!-- <div class="bg-red-300">
                     <span class="flex justify-center font-bold">TRIAL GENERATED QUESTIONS SET C</span>
                  </div>
+                 Key: <span class="text-red-500 font-bold text-[24px]">{{ setCKeyToCorrection }}</span>
                  <div class="border border-black rounded-md p-2">           
                     <table class="w-full ">
                         <thead class="bg-green-100">
@@ -142,14 +145,16 @@
                             </tr>
                         </tbody>
                     </table>
-                 </div>
+                 </div> -->
                  <!-- SET C-->
+
+
                 <form @submit.prevent="handlePreviewButtonClicked">   
                     <div class="w-full">
                         <div class="flex w-full pr-4 gap-2 flex-col  md:items-center md:flex-row py-2 ">
                             <label for="department" class="text-black font-semibold w-full max-w-[150px]">Department: </label>
-                            <select id="department" v-model="selectedDepartment" class="rounded-md w-full"  >
-                                <option value="" hidden disabled>Select department </option>
+                            <select id="department" v-model="selectedDepartment" class="rounded-md w-full text-xs "  >
+                                <option value=""  disabled >Select department </option>
                                 <option v-for="dep in departmentOptions" :key="dep.id" :value="dep">
                                     {{ dep.name }} 
                                 </option>
@@ -158,7 +163,7 @@
                        
                         <div class="flex w-full pr-4 gap-2 flex-col py-2 md:items-center md:flex-row">
                             <label for="subject_codes" class="text-black font-semibold w-full max-w-[150px]">Subject Code: </label>
-                            <select id="subject_codes" v-model="selectedSubjectCode" class="rounded-md w-full" >
+                            <select id="subject_codes" v-model="selectedSubjectCode" class="rounded-md w-full text-xs" >
                                 <option  value="" hidden disabled>Select subject code </option>
                                 <option v-for="code in selectedDepartment.subject_codes" :key="code.id" :value="code">
                                     {{ code.name }}
@@ -167,7 +172,7 @@
                         </div>
                         <div class="flex w-full pr-4 gap-2 flex-col py-2 md:items-center md:flex-row">
                             <label for="description" class="text-black font-semibold w-full max-w-[150px]">Subject Code: </label>
-                            <input id="description" type="text" :placeholder="selectedSubjectCode.description" class="bg-gray-100 rounded-md w-full" disabled/>
+                            <input id="description" type="text" :placeholder="selectedSubjectCode.description" class="bg-gray-100 rounded-md w-full text-xs" disabled />
                         </div>
                     </div>
                     <div class="mt-2">
@@ -186,7 +191,7 @@
                                 <label class="text-black">Print : </label>
                             </div>
                             <div class="col-span-3 flex items-center justify-evenly ">
-                                <input v-model="prelimQuestionCount" class="max-w-[100px] rounded-md mr-2 shadow-md" it="testNum" type="number" max="50" min="0" :disabled="!isPrelim" :class="{'bg-gray-200':!isPrelim}" :required="isPrelim"/>  of  <input class="max-w-[100px] rounded-md ml-2  shadow-md" id="maxTestNum" type="number" :max="prelimItems.length" :placeholder="prelimItems.length" disabled/>
+                                <input v-model="prelimQuestionCount" class="max-w-[100px] rounded-md mr-2 shadow-md text-xs" it="testNum" type="number" max="50" min="0" :disabled="!isPrelim" :class="{'bg-gray-200':!isPrelim}" :required="isPrelim"/>  of  <input class="max-w-[100px] rounded-md ml-2  shadow-md text-xs" id="maxTestNum" type="number" :max="prelimItems.length" :placeholder="prelimItems.length" disabled/>
                             </div>
                         </div>
 
@@ -199,7 +204,7 @@
                                 <label class="text-black">Print : </label>
                             </div>
                             <div class="col-span-3 flex items-center justify-evenly ">
-                                <input v-model="midtermQuestionCount" class="max-w-[100px] rounded-md mr-2 shadow-md" it="testNum" type="number" max="50" min="0" :disabled="!isMidterm" :class="{'bg-gray-200':!isMidterm}" :required="isMidterm"/>  of  <input class="max-w-[100px] rounded-md ml-2  shadow-md" id="maxTestNum" type="number" :max="midTermItems.length" :placeholder="midTermItems.length" disabled/>
+                                <input v-model="midtermQuestionCount" class="max-w-[100px] rounded-md mr-2 shadow-md text-xs" it="testNum" type="number" max="50" min="0" :disabled="!isMidterm" :class="{'bg-gray-200':!isMidterm}" :required="isMidterm"/>  of  <input class="max-w-[100px] rounded-md ml-2  shadow-md text-xs" id="maxTestNum" type="number" :max="midTermItems.length" :placeholder="midTermItems.length" disabled/>
                             </div>
                         </div>
 
@@ -212,7 +217,7 @@
                                 <label class="text-black">Print :  </label>
                             </div>
                             <div class="col-span-3 flex items-center justify-evenly ">
-                                <input v-model="prefinalQuestionCount" class="max-w-[100px] rounded-md mr-2 shadow-md" it="testNum" type="number" max="50" min="0" :disabled="!isPrefinal" :class="{'bg-gray-200':!isPrefinal}" :required="isPrefinal"/>  of  <input class="max-w-[100px] rounded-md ml-2  shadow-md" id="maxTestNum" type="number" :max="preFinalItems.length" :placeholder="preFinalItems.length" disabled/>
+                                <input v-model="prefinalQuestionCount" class="max-w-[100px] rounded-md mr-2 shadow-md text-xs" it="testNum" type="number" max="50" min="0" :disabled="!isPrefinal" :class="{'bg-gray-200':!isPrefinal}" :required="isPrefinal"/>  of  <input class="max-w-[100px] rounded-md ml-2  shadow-md text-xs" id="maxTestNum" type="number" :max="preFinalItems.length" :placeholder="preFinalItems.length" disabled/>
                             </div>
                         </div>
 
@@ -225,7 +230,7 @@
                                 <label class="text-black">Print : </label>
                             </div>
                             <div class="col-span-3 flex items-center justify-evenly ">
-                                <input v-model="finalQuestionCount" class="max-w-[100px] rounded-md mr-2 shadow-md" it="testNum" type="number" max="50" min="0" :disabled="!isFinal" :class="{'bg-gray-200':!isFinal}" :required="isFinal"/>  of  <input class="max-w-[100px] rounded-md ml-2  shadow-md" id="maxTestNum" type="number" :max="finalItems.length" :placeholder="finalItems.length" disabled/>
+                                <input v-model="finalQuestionCount" class="max-w-[100px] rounded-md mr-2 shadow-md text-xs" it="testNum" type="number" max="50" min="0" :disabled="!isFinal" :class="{'bg-gray-200':!isFinal}" :required="isFinal"/>  of  <input class="max-w-[100px] rounded-md ml-2  shadow-md text-xs" id="maxTestNum" type="number" :max="finalItems.length" :placeholder="finalItems.length" disabled/>
                             </div>
                         </div>
                         <div class="mt-2 ">
@@ -237,7 +242,7 @@
                             </div>
                             
                             <div class="col-span-3 flex items-center justify-evenly ">
-                                <input v-model="totalQuestionsCount" class="max-w-[100px] rounded-md mr-2 shadow-md" it="testNum" type="number" max="50" min="0" disabled :class="{'bg-gray-200':!totalQuestionsCount}"/>  of  <input class="max-w-[100px] rounded-md ml-2  shadow-md" id="maxTestNum" type="number" :max="finalItems.length" :placeholder="totalItems" disabled/>
+                                <input v-model="totalQuestionsCount" class="max-w-[100px] rounded-md mr-2 shadow-md text-xs" it="testNum" type="number" max="50" min="0" disabled :class="{'bg-gray-200':!totalQuestionsCount}"/>  of  <input class="max-w-[100px] rounded-md ml-2  shadow-md text-xs" id="maxTestNum" type="number" :max="finalItems.length" :placeholder="totalItems" disabled/>
                             </div>
                         </div>
                     </div>
@@ -247,7 +252,7 @@
                     <div class="mt-4 flex gap-2 w-full flex-col md:flex-row justify-between px-2" >
                         <div class="flex gap-2  flex-col md:flex-row md:items-center">
                             <label for="schoolyr" class="font-semibold">SY: </label>
-                            <select v-model="selectedSchoolYear"  id="schoolyr" class="rounded-md " >
+                            <select v-model="selectedSchoolYear"  id="schoolyr" class="rounded-md text-xs" >
                                 <option value="" hidden disabled>Select school year</option>
                                 <option v-for="(year,index) in schoolYear" :key="index" >
                                     {{ year }}
@@ -256,7 +261,7 @@
                         </div>
                         <div class="flex gap-2  flex-col md:flex-row md:items-center">
                             <label for="semester" class="font-semibold">Sem: </label>
-                            <select v-model="selectedSemester" id="semester" class="rounded-md" >
+                            <select v-model="selectedSemester" id="semester" class="rounded-md text-xs" >
                                 <option value="" hidden disabled>Select sem</option>
                                 <option v-for="(sem,index) in semesters" :key="index" >
                                     {{ sem }}
@@ -265,16 +270,16 @@
                         </div>
                         <div class="flex gap-2  flex-col md:flex-row md:items-center">
                             <label for="term" class="font-semibold">Term: </label>
-                            <select v-model="selectedTerm" id="term" class="rounded-md" >
+                            <select v-model="selectedTerm" id="term" class="rounded-md text-xs" >
                                 <option value="" hidden disabled>Select a term</option>
                                 <option v-for="(term,index) in terms" :key="index" >
                                     {{ term }}
                                 </option>
                             </select>
-                        </div>{{ totalQuestionsCount }}
+                        </div>
                         <div class="flex gap-2  flex-col md:flex-row md:items-center">
                             <label for="sets" class="font-semibold">Set: </label>
-                            <select v-model="selectedSet" id="sets" class="rounded-md" :disabled="!totalQuestionsCount" >
+                            <select v-model="selectedSet" id="sets" class="rounded-md text-xs" :disabled="!totalQuestionsCount" >
                                 <option value="" hidden disabled>Select a set</option>
                                 <option v-for="(set,index) in sets" :key="index" >
                                     {{ set }}
@@ -289,18 +294,55 @@
                         <button @click="handleResetButtonClicked" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md "  >Reset</button>
                         <button @click="saveExam"  type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >Preview</button>
                         <!-- <button @click="handleSave" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >Cancel</button> -->
-                        <!-- <button @click="testRandom2" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >TEST BUTTON</button> -->
+                        <!-- <button @click="getCorrectAnswer(testQuestion)" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >TEST BUTTON</button> -->
                     </div>
                     
                 </form>
-                set b:{{ setB }}
+                <!-- test answers:{{ testAnswer }} -->
             </ModalHeader>
            <!-- <span class="text-red-500"> {{ department }}</span> -->
-          
+            <!--TEST QUESTION-->
+           <!-- <div class="border border-black rounded-md p-2">           
+            <table class="w-full ">
+                <thead class="bg-green-100">
+                    <tr>
+                        <td>
+                            Question
+                        </td>
+                        
+                        <td>option a</td>
+                        <td>option b</td>
+                        <td>option c</td>
+                        <td>option c</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="question in testQuestion" :key="question.id">
+                        <td>
+                            {{ question.question }}
+                        </td>
+                        
+                        <td>
+                            {{ question.options[0].isCorrect }}
+                        </td>
+                        <td>
+                            {{ question.options[1].isCorrect }}
+                        </td>
+                        <td>
+                            {{ question.options[2].isCorrect }}
+                        </td>
+                        <td>
+                            {{ question.options[3].isCorrect }}
+                        </td>
+                    </tr>
+                </tbody>
+                </table>
+            </div> -->
+            <!--TEST QUESTION-->
         </Dialog>
 
         <!--save data-->
-        <div id="pdf-content" class="w-full">
+        <div id="set-a-pdf" class="w-full">
 
             <div class="flex justify-center p-0 m-0  gap-4 w-full bg-red-200">
                 <div class=" w-16 h-16 pt-2">
@@ -321,7 +363,7 @@
                 </div>
             </div>
         </div>
-       
+        
     </DashboardLayout>
 </template>
 
@@ -904,21 +946,34 @@ const saveExam = () => {
     {
         setC.value = randomizeQuestionSet(setB.value)
     }
-    console.log('set a')
-    console.log(setA.value)
-    // const element = document.getElementById('pdf-content'); // Replace 'pdf-content' with the ID of the content you want to convert to PDF
-    // const opt = {
-    //     margin: [0.4, 1, 0.4, 1], // [top, left, bottom, right].
-    //     filename:     'document.pdf',
-    //     image:        { type: 'jpeg', quality: 0.98 },
-    //     html2canvas:  { scale: 2 },
-    //     jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-    // };
-    // html2pdf().from(element).set(opt).save().then(() => {
-    //     console.log('Set A PDF saved successfully.');
-    // }).catch((error) => {
-    //     console.error('Error generating Set PDF:', error);
-    // });
+   
+    setAKeyToCorrection.value = getCorrectAnswer(setA.value)
+    setBKeyToCorrection.value = getCorrectAnswer(setB.value)
+    setCKeyToCorrection.value = getCorrectAnswer(setB.value)
+
+    console.log('selected set: ')
+    console.log(selectedSet.value)
+
+    if(selectedSet.value === 'A')
+    {
+        const element = document.getElementById('set-a-pdf'); // Replace 'pdf-content' with the ID of the content you want to convert to PDF
+        const opt = {
+            margin: [0.4, 1, 0.4, 1], // [top, left, bottom, right].
+            filename:     'document.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().from(element).set(opt).save().then(() => {
+            console.log('Set A PDF saved successfully.');
+        }).catch((error) => {
+            console.error('Error generating Set PDF:', error);
+        });
+    }
+
+
+
+    
     
     
     
@@ -985,6 +1040,9 @@ function getDivisionName(depId,divId)
 const setA = ref([])
 const setB = ref([])
 const setC = ref([])
+const setAKeyToCorrection = ref([])
+const setBKeyToCorrection = ref([])
+const setCKeyToCorrection = ref([])
 
 const testRandom2 = ()=>{
     setA.value = randomizeQuestionSet(testQuestion);
@@ -1043,7 +1101,7 @@ const testQuestion = [
         options:[
             {
                 option:'option A 1',
-                isCorrect:'false'
+                isCorrect:'true'
             },
             {
                 option:'option B 1',
@@ -1055,7 +1113,7 @@ const testQuestion = [
             },
             {
                 option:'option D 1',
-                isCorrect:'true',
+                isCorrect:'false',
             }
         ]
     },
@@ -1128,6 +1186,26 @@ const testQuestion = [
     }
 
 ]
+
+
+function getCorrectAnswer(questions){
+    let answers = []
+    const letter = ['a','b','c','d']
+   
+    questions.forEach((q)=>{
+        
+       q.options.findIndex((option,index)=> {
+            if(option.isCorrect === 'true')
+            {
+                answers.push(letter[index])
+            }
+       })
+    })
+
+    return answers
+}
+
+
 </script>
 
 
