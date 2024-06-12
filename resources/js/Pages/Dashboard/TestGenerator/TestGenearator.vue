@@ -1020,22 +1020,32 @@ const saveExam = () => {
 
     if(selectedSet.value === 'A' || selectedSet.value === 'B' || selectedSet.value === 'C')
     {
+        let filename = ''
+        let dateFormat = questionSetDateFormat()
+        let term    = selectedTerm.value
+        let code    = selectedSubjectCode.value.name
+        let set     = selectedSet.value
+
         switch(selectedSet.value)
         {
             case 'A':
                 questionSetPdf.value = setA.value
+                filename = term+'-'+code+'-'+set+'-'+dateFormat
                 break
             case 'B':
                 questionSetPdf.value = setB.value
+                filename = selectedTerm+'-'+selectedSubjectCode+'-'+selectedSet+'-'+dateFormat
                 break;
             case 'C':
                 questionSetPdf.value = setC.value
+                filename = selectedTerm+'-'+selectedSubjectCode+'-'+selectedSet+'-'+dateFormat
+                break
         }
-        
+
         const element = document.getElementById('pdf-convert'); // Replace 'pdf-content' with the ID of the content you want to convert to PDF
         const opt = {
             margin: [0.4,0.4, 0.4, 0.4], // [top, left, bottom, right].
-            filename:     'document.pdf',
+            filename:     filename+'.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2 },
             jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
@@ -1438,6 +1448,23 @@ function answerKeyDateFormat() {
     
     // Construct the formatted date string
     const formattedDate = `${day}/${month}/${year} ${hours}.${minutes}.${seconds}`;
+    
+    return formattedDate;
+}
+
+function questionSetDateFormat() {
+    const date = new Date();
+    
+    // Extract components
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    
+    // Construct the formatted date string
+    const formattedDate = `${day}-${month}-${year}-${hours}-${minutes}-${seconds}`;
     
     return formattedDate;
 }
