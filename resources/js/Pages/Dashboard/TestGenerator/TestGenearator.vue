@@ -292,9 +292,9 @@
                     </div>
                     <div class="flex flex-col  w-full mt-5 ">
                         <button @click="handleResetButtonClicked" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md "  >Reset</button>
-                        <button @click="saveExam"  type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >Preview</button>
+                        <button @click="saveExam"  type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >Generate</button>
                         <!-- <button @click="handleSave" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >Cancel</button> -->
-                        <button @click="saveAnswerKeysToPDF(testAnswers)" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >TEST BUTTON</button>
+                        <!-- <button @click="saveAnswerKeysToPDF(testAnswers)" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >TEST BUTTON</button> -->
                     </div>
                     
                 </form>
@@ -1000,102 +1000,233 @@ const saveExam = () => {
     
     if(setA.value.length)
     {
-        setB.value =  randomizeQuestionSet(setA.value);
+        setB.value =  randomizeQuestionSet(generatedExamQuestions.value);
     }
     
     if(setB.value.length)
     {
-        setC.value = randomizeQuestionSet(setB.value)
+        setC.value = randomizeQuestionSet(generatedExamQuestions.value)
     }
     
     setAKeyToCorrection.value = getCorrectAnswer(setA.value)
     setBKeyToCorrection.value = getCorrectAnswer(setB.value)
-    setCKeyToCorrection.value = getCorrectAnswer(setB.value)
+    setCKeyToCorrection.value = getCorrectAnswer(setC.value)
 
 
-
+    console.log('set a')
+    console.log(setA.value)
+    console.log('set b')
+    console.log(setB.value)
+    console.log('set c')
+    console.log(setC.value)
+    console.log('set A key to correction')
+    console.log(setAKeyToCorrection.value)
+    console.log('set B key to correction')
+    console.log(setBKeyToCorrection.value)
+    console.log('set C key to correction')
+    console.log(setCKeyToCorrection.value)
 
     // console.log('selected set: ')
     // console.log(selectedSet.value)
 
-    if(selectedSet.value === 'A' || selectedSet.value === 'B' || selectedSet.value === 'C')
+    // if(selectedSet.value === 'A' || selectedSet.value === 'B' || selectedSet.value === 'C')
+    // {
+    //     let filename = ''
+    //     let dateFormat = questionSetDateFormat()
+    //     let term    = convertTerm(selectedTerm.value).toString()
+    //     let code    = selectedSubjectCode.value.name.toString()
+    //     let set     = selectedSet.value.toString()
+    //     let keyToCorrection = ref([])
+    //     // set the questionnaire data
+    //     switch(selectedSet.value)
+    //     {
+    //         case 'A':
+    //             questionSetPdf.value = setA.value
+    //             filename = term+'-'+code+'-'+set+'-'+dateFormat
+    //             keyToCorrection.value = setAKeyToCorrection.value 
+    //             break
+    //         case 'B':
+    //             questionSetPdf.value = setB.value
+    //             filename = term+'-'+code+'-'+set+'-'+dateFormat
+    //             keyToCorrection.value = setBKeyToCorrection.value 
+    //             break;
+    //         case 'C':
+    //             questionSetPdf.value = setC.value
+    //             filename = term+'-'+code+'-'+set+'-'+dateFormat
+    //             keyToCorrection.value = setCKeyToCorrection.value 
+    //             break
+    //     }
+
+    //     const element = document.getElementById('pdf-convert'); // Replace 'pdf-content' with the ID of the content you want to convert to PDF
+    //     const opt = {
+    //         margin: [0.4,0.4, 0.4, 0.4], // [top, left, bottom, right].
+    //         filename:     filename+'.pdf',
+    //         image:        { type: 'jpeg', quality: 0.98 },
+    //         html2canvas:  { scale: 2 },
+    //         jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+    //         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    //     };
+
+    //      // Function to add footers to each page
+    //      function addFooters(pdf) {
+    //         const pageCount = pdf.internal.getNumberOfPages();
+    //         const currentDate = new Date().toLocaleDateString();
+    //         pdf.setFontSize(8); // Set font size to 10px
+
+    //         for (let i = 1; i <= pageCount; i++) {
+    //             pdf.setPage(i);
+    //             const pageWidth = pdf.internal.pageSize.getWidth();
+    //             const pageHeight = pdf.internal.pageSize.getHeight();
+
+    //             // Draw a line at the bottom of the page
+    //             // Draw a thinner line at the bottom of the page
+    //             pdf.setLineWidth(0.01); // Set line width to the smallest visible value
+    //             pdf.line(0.5, pageHeight - 0.6, pageWidth - 0.5, pageHeight - 0.6);
+
+    //             // Adding current date on the left
+    //             pdf.text(currentDate, 0.5, pageHeight - 0.4);
+
+    //             // Calculate the width of the text
+    //             const pageText = `Page ${i} of ${pageCount}`;
+    //             const textWidth = pdf.getTextDimensions(pageText).w;
+
+    //             // Adding page number on the right
+    //             pdf.text(pageText, pageWidth - textWidth - 0.5, pageHeight - 0.4);
+    //         }
+    //     }
+
+    //     // Generate the PDF
+    //     html2pdf().from(document.getElementById('pdf-convert')).set(opt).toPdf().get('pdf').then((pdf) => {
+    //         addFooters(pdf);
+    //     }).save().then(() => {
+    //         console.log('PDF saved successfully.');
+    //     }).catch((error) => {
+    //         console.error('Error generating PDF:', error);
+    //     });
+
+        
+    //     // generate key to correction in pdf and in csv as well
+    //     // console.log('questions')
+    //     // console.log(questionSetPdf.value)
+    //     // console.log('answer Key:')
+    //     // console.log(keyToCorrection.value)
+
+    //     let keyToCorrectionFileName = term+'-'+code+'-ANSWER-'+set+'-'+dateFormat
+        
+    //     saveAnswerKeysToPDF(keyToCorrection.value, keyToCorrectionFileName);
+    //     saveAnswerKeyToCsV(keyToCorrection.value,keyToCorrectionFileName);
+
+        
+    // }
+
+    // 'A B',
+    // 'A C',
+    // 'A B C',
+    //andito ako
+    if(selectedSet.value ==='A B' || selectedSet.value === 'A C' || selectedSet.value === 'A B C')
     {
-        let filename = ''
-        let dateFormat = questionSetDateFormat()
-        let term    = convertTerm(selectedTerm.value).toString()
-        let code    = selectedSubjectCode.value.name.toString()
-        let set     = selectedSet.value.toString()
+       
 
-        switch(selectedSet.value)
+        let setArray = selectedSet.value.split(' ');
+        
+        let keyToCorrection = ref([])
+        for(let i=0;i<setArray.length;i++)
         {
-            case 'A':
-                questionSetPdf.value = setA.value
-                filename = term+'-'+code+'-'+set+'-'+dateFormat
-                break
-            case 'B':
-                questionSetPdf.value = setB.value
-                filename = term+'-'+code+'-'+set+'-'+dateFormat
-                break;
-            case 'C':
-                questionSetPdf.value = setC.value
-                filename = term+'-'+code+'-'+set+'-'+dateFormat
-                break
-        }
-
-        const element = document.getElementById('pdf-convert'); // Replace 'pdf-content' with the ID of the content you want to convert to PDF
-        const opt = {
-            margin: [0.4,0.4, 0.4, 0.4], // [top, left, bottom, right].
-            filename:     filename+'.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 },
-            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
-            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-        };
-
-         // Function to add footers to each page
-         function addFooters(pdf) {
-            const pageCount = pdf.internal.getNumberOfPages();
-            const currentDate = new Date().toLocaleDateString();
-            pdf.setFontSize(8); // Set font size to 10px
-
-            for (let i = 1; i <= pageCount; i++) {
-                pdf.setPage(i);
-                const pageWidth = pdf.internal.pageSize.getWidth();
-                const pageHeight = pdf.internal.pageSize.getHeight();
-
-                // Draw a line at the bottom of the page
-                // Draw a thinner line at the bottom of the page
-                pdf.setLineWidth(0.01); // Set line width to the smallest visible value
-                pdf.line(0.5, pageHeight - 0.6, pageWidth - 0.5, pageHeight - 0.6);
-
-                // Adding current date on the left
-                pdf.text(currentDate, 0.5, pageHeight - 0.4);
-
-                // Calculate the width of the text
-                const pageText = `Page ${i} of ${pageCount}`;
-                const textWidth = pdf.getTextDimensions(pageText).w;
-
-                // Adding page number on the right
-                pdf.text(pageText, pageWidth - textWidth - 0.5, pageHeight - 0.4);
+            keyToCorrection.value = []
+            let filename = ''
+            let dateFormat = questionSetDateFormat()
+            let term    = convertTerm(selectedTerm.value).toString()
+            let code    = selectedSubjectCode.value.name.toString()
+            let set     = setArray[i]
+            let keyToCorrectionFileName = ''
+            // set the questionnaire data
+            switch(setArray[i])
+            {
+                
+                case 'A':
+                    questionSetPdf.value = setA.value
+                    filename = term+'-'+code+'-'+set+'-'+dateFormat
+                    keyToCorrectionFileName = term+'-'+code+'-ANSWER-'+set+'-'+dateFormat
+                    saveAnswerKeysToPDF(setAKeyToCorrection.value , keyToCorrectionFileName)
+                    saveAnswerKeyToCsV(setAKeyToCorrection.value,keyToCorrectionFileName);
+                    break
+                case 'B':
+                    questionSetPdf.value = setB.value
+                    filename = term+'-'+code+'-'+set+'-'+dateFormat
+                    keyToCorrectionFileName = term+'-'+code+'-ANSWER-'+set+'-'+dateFormat
+                    saveAnswerKeysToPDF(setBKeyToCorrection.value , keyToCorrectionFileName)
+                    saveAnswerKeyToCsV(setBKeyToCorrection.value,keyToCorrectionFileName);
+                    break;
+                case 'C':
+                    questionSetPdf.value = setC.value
+                    filename = term+'-'+code+'-'+set+'-'+dateFormat
+                     keyToCorrectionFileName = term+'-'+code+'-ANSWER-'+set+'-'+dateFormat
+                    saveAnswerKeysToPDF(setCKeyToCorrection.value , keyToCorrectionFileName)
+                    saveAnswerKeyToCsV(setCKeyToCorrection.value, keyToCorrectionFileName);
+                    break
             }
+
+            const element = document.getElementById('pdf-convert'); // Replace 'pdf-content' with the ID of the content you want to convert to PDF
+            const opt = {
+                margin: [0.4,0.4, 0.4, 0.4], // [top, left, bottom, right].
+                filename:     filename+'.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+            };
+
+            // Function to add footers to each page
+            function addFooters(pdf) {
+                const pageCount = pdf.internal.getNumberOfPages();
+                const currentDate = new Date().toLocaleDateString();
+                pdf.setFontSize(8); // Set font size to 10px
+
+                for (let i = 1; i <= pageCount; i++) {
+                    pdf.setPage(i);
+                    const pageWidth = pdf.internal.pageSize.getWidth();
+                    const pageHeight = pdf.internal.pageSize.getHeight();
+
+                    // Draw a line at the bottom of the page
+                    // Draw a thinner line at the bottom of the page
+                    pdf.setLineWidth(0.01); // Set line width to the smallest visible value
+                    pdf.line(0.5, pageHeight - 0.6, pageWidth - 0.5, pageHeight - 0.6);
+
+                    // Adding current date on the left
+                    pdf.text(currentDate, 0.5, pageHeight - 0.4);
+
+                    // Calculate the width of the text
+                    const pageText = `Page ${i} of ${pageCount}`;
+                    const textWidth = pdf.getTextDimensions(pageText).w;
+
+                    // Adding page number on the right
+                    pdf.text(pageText, pageWidth - textWidth - 0.5, pageHeight - 0.4);
+                }
+            }
+
+            // Generate the PDF
+            html2pdf().from(document.getElementById('pdf-convert')).set(opt).toPdf().get('pdf').then((pdf) => {
+                addFooters(pdf);
+            }).save().then(() => {
+                console.log('PDF saved successfully.');
+            }).catch((error) => {
+                console.error('Error generating PDF:', error);
+            });
+
+            
+            // generate key to correction in pdf and in csv as well
+            // console.log('questions')
+            // console.log(questionSetPdf.value)
+            // console.log('answer Key:')
+            // console.log(keyToCorrection.value)
+            
+            
+            
+            
+            
         }
-
-        // Generate the PDF
-        html2pdf().from(document.getElementById('pdf-convert')).set(opt).toPdf().get('pdf').then((pdf) => {
-            addFooters(pdf);
-        }).save().then(() => {
-            console.log('PDF saved successfully.');
-        }).catch((error) => {
-            console.error('Error generating PDF:', error);
-        });
-
-
-        // html2pdf().from(element).set(opt).save().then(() => {
-        //     console.log('Set A PDF saved successfully.');
-        // }).catch((error) => {
-        //     console.error('Error generating Set PDF:', error);
-        // });
     }
+
 
 
 
@@ -1341,7 +1472,7 @@ function getCorrectAnswer(questions){
     return answers
 }
 
-function saveAnswerKeyToCsV(answers)
+function saveAnswerKeyToCsV(answers,filename)
 {
     let tempData = ['*','*','*','*','*',...answers]
 
@@ -1352,7 +1483,7 @@ function saveAnswerKeyToCsV(answers)
     // Set the URL of the link to the blob
     link.href = URL.createObjectURL(blob);
     // Set the download attribute of the link
-    link.download = 'testAnswers.csv';
+    link.download = filename+'.csv';
     // Append the link to the document
     document.body.appendChild(link);
     // Programmatically click the link to trigger the download
@@ -1381,14 +1512,7 @@ const state = reactive({
 });
 
 
-// Options for PDF generation
-var opt = {
-  margin:       [0.1,0.4,0.2,0.4],
-  filename:     'myfile.pdf',
-  image:        { type: 'jpeg', quality: 0.98 },
-  html2canvas:  { scale: 2 },
-  jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-};
+
 
 // Function to process answers and update the reactive state
 function processAnswers(answers) 
@@ -1413,14 +1537,22 @@ function processAnswers(answers)
 }
 
 // Method to download PDF
-const saveAnswerKeysToPDF = (keyToCorrection) => {
+const saveAnswerKeysToPDF = (keyToCorrection,filename) => {
   
   try {
     // Process the answers to update the state
+    
+    state.chunksToShow = []
     processAnswers(keyToCorrection);
 
     const element = document.getElementById('answers-pdf');
-    html2pdf().set(opt).from(element).save()
+    html2pdf().set({
+            margin:       [0.1,0.4,0.2,0.4],
+            filename:     filename,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        }).from(element).save()
       .then(() => {
         state.downloadStatus = 'success';
         state.downloadMessage = 'PDF downloaded successfully!';
