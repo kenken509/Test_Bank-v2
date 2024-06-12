@@ -1022,9 +1022,9 @@ const saveExam = () => {
     {
         let filename = ''
         let dateFormat = questionSetDateFormat()
-        let term    = selectedTerm.value
-        let code    = selectedSubjectCode.value.name
-        let set     = selectedSet.value
+        let term    = convertTerm(selectedTerm.value).toString()
+        let code    = selectedSubjectCode.value.name.toString()
+        let set     = selectedSet.value.toString()
 
         switch(selectedSet.value)
         {
@@ -1034,11 +1034,11 @@ const saveExam = () => {
                 break
             case 'B':
                 questionSetPdf.value = setB.value
-                filename = selectedTerm+'-'+selectedSubjectCode+'-'+selectedSet+'-'+dateFormat
+                filename = term+'-'+code+'-'+set+'-'+dateFormat
                 break;
             case 'C':
                 questionSetPdf.value = setC.value
-                filename = selectedTerm+'-'+selectedSubjectCode+'-'+selectedSet+'-'+dateFormat
+                filename = term+'-'+code+'-'+set+'-'+dateFormat
                 break
         }
 
