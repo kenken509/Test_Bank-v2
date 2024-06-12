@@ -1122,109 +1122,59 @@ const saveExam = () => {
     // 'A B',
     // 'A C',
     // 'A B C',
-    //andito ako
-    if(selectedSet.value ==='A B' || selectedSet.value === 'A C' || selectedSet.value === 'A B C')
+    //andito ako 1
+    if(selectedSet.value)
     {
-       
-
-        let setArray = selectedSet.value.split(' ');
-        
-        let keyToCorrection = ref([])
-        for(let i=0;i<setArray.length;i++)
-        {
-            keyToCorrection.value = []
-            let filename = ''
-            let dateFormat = questionSetDateFormat()
-            let term    = convertTerm(selectedTerm.value).toString()
-            let code    = selectedSubjectCode.value.name.toString()
-            let set     = setArray[i]
-            let keyToCorrectionFileName = ''
-            // set the questionnaire data
-            switch(setArray[i])
-            {
+        downloadQuestionairePDF(selectedSet.value)
+        downloadAnswerKeysPDF(selectedSet.value)
+        downloadAnswerKeysCSV(selectedSet.value)
+        // for(let i=0;i<setArray.length;i++)
+        // {
+            
+        //     let filename = ''
+        //     let dateFormat = questionSetDateFormat()
+        //     let term    = convertTerm(selectedTerm.value).toString()
+        //     let code    = selectedSubjectCode.value.name.toString()
+        //     let set     = setArray[i]
+        //     let keyToCorrectionFileName = ''
+        //     // set the questionnaire data
+        //     switch(setArray[i])
+        //     {
                 
-                case 'A':
-                    questionSetPdf.value = setA.value
-                    filename = term+'-'+code+'-'+set+'-'+dateFormat
-                    keyToCorrectionFileName = term+'-'+code+'-ANSWER-'+set+'-'+dateFormat
-                    saveAnswerKeysToPDF(setAKeyToCorrection.value , keyToCorrectionFileName)
-                    saveAnswerKeyToCsV(setAKeyToCorrection.value,keyToCorrectionFileName);
-                    break
-                case 'B':
-                    questionSetPdf.value = setB.value
-                    filename = term+'-'+code+'-'+set+'-'+dateFormat
-                    keyToCorrectionFileName = term+'-'+code+'-ANSWER-'+set+'-'+dateFormat
-                    saveAnswerKeysToPDF(setBKeyToCorrection.value , keyToCorrectionFileName)
-                    saveAnswerKeyToCsV(setBKeyToCorrection.value,keyToCorrectionFileName);
-                    break;
-                case 'C':
-                    questionSetPdf.value = setC.value
-                    filename = term+'-'+code+'-'+set+'-'+dateFormat
-                     keyToCorrectionFileName = term+'-'+code+'-ANSWER-'+set+'-'+dateFormat
-                    saveAnswerKeysToPDF(setCKeyToCorrection.value , keyToCorrectionFileName)
-                    saveAnswerKeyToCsV(setCKeyToCorrection.value, keyToCorrectionFileName);
-                    break
-            }
-
-            const element = document.getElementById('pdf-convert'); // Replace 'pdf-content' with the ID of the content you want to convert to PDF
-            const opt = {
-                margin: [0.4,0.4, 0.4, 0.4], // [top, left, bottom, right].
-                filename:     filename+'.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-            };
-
-            // Function to add footers to each page
-            function addFooters(pdf) {
-                const pageCount = pdf.internal.getNumberOfPages();
-                const currentDate = new Date().toLocaleDateString();
-                pdf.setFontSize(8); // Set font size to 10px
-
-                for (let i = 1; i <= pageCount; i++) {
-                    pdf.setPage(i);
-                    const pageWidth = pdf.internal.pageSize.getWidth();
-                    const pageHeight = pdf.internal.pageSize.getHeight();
-
-                    // Draw a line at the bottom of the page
-                    // Draw a thinner line at the bottom of the page
-                    pdf.setLineWidth(0.01); // Set line width to the smallest visible value
-                    pdf.line(0.5, pageHeight - 0.6, pageWidth - 0.5, pageHeight - 0.6);
-
-                    // Adding current date on the left
-                    pdf.text(currentDate, 0.5, pageHeight - 0.4);
-
-                    // Calculate the width of the text
-                    const pageText = `Page ${i} of ${pageCount}`;
-                    const textWidth = pdf.getTextDimensions(pageText).w;
-
-                    // Adding page number on the right
-                    pdf.text(pageText, pageWidth - textWidth - 0.5, pageHeight - 0.4);
-                }
-            }
-
-            // Generate the PDF
-            html2pdf().from(document.getElementById('pdf-convert')).set(opt).toPdf().get('pdf').then((pdf) => {
-                addFooters(pdf);
-            }).save().then(() => {
-                console.log('PDF saved successfully.');
-            }).catch((error) => {
-                console.error('Error generating PDF:', error);
-            });
+        //         case 'A':
+        //             questionSetPdf.value = setA.value
+        //             filename = term+'-'+code+'-'+set+'-'+dateFormat
+        //             keyToCorrectionFileName = term+'-'+code+'-ANSWER-'+set+'-'+dateFormat
+        //             saveAnswerKeyToCsV(setAKeyToCorrection.value,keyToCorrectionFileName);
+        //             break
+        //         case 'B':
+        //             questionSetPdf.value = setB.value
+        //             filename = term+'-'+code+'-'+set+'-'+dateFormat
+        //             keyToCorrectionFileName = term+'-'+code+'-ANSWER-'+set+'-'+dateFormat
+        //             saveAnswerKeyToCsV(setBKeyToCorrection.value,keyToCorrectionFileName);
+        //             break;
+        //         case 'C':
+        //             questionSetPdf.value = setC.value
+        //             filename = term+'-'+code+'-'+set+'-'+dateFormat
+        //             keyToCorrectionFileName = term+'-'+code+'-ANSWER-'+set+'-'+dateFormat
+        //             saveAnswerKeyToCsV(setCKeyToCorrection.value, keyToCorrectionFileName);
+        //             break
+        //     }
 
             
-            // generate key to correction in pdf and in csv as well
-            // console.log('questions')
-            // console.log(questionSetPdf.value)
-            // console.log('answer Key:')
-            // console.log(keyToCorrection.value)
+
+            
+        //     // generate key to correction in pdf and in csv as well
+        //     // console.log('questions')
+        //     // console.log(questionSetPdf.value)
+        //     // console.log('answer Key:')
+        //     // console.log(keyToCorrection.value)
             
             
             
             
             
-        }
+        // }
     }
 
 
@@ -1492,10 +1442,31 @@ function saveAnswerKeyToCsV(answers,filename)
     document.body.removeChild(link);
 }
 
-
-function saveExamToPdf(questionSet)
+//andito ako 3
+async function downloadAnswerKeysCSV(set)
 {
+    let selectedSet = set.split(' ')
 
+    let dateFormat = answerKeyDateFormat()
+    let term    = convertTerm(selectedTerm.value).toString()
+    let code    = selectedSubjectCode.value.name.toString()
+
+    let name = term+'-'+code
+    for (const set of selectedSet) {
+        switch (set) {
+        case 'A':
+            saveAnswerKeyToCsV(setAKeyToCorrection.value, name+'-ANSWER-A-'+dateFormat+'.csv');
+            break;
+        case 'B':
+            saveAnswerKeyToCsV(setBKeyToCorrection.value, name+'-ANSWER-B-'+dateFormat+'.csv');
+            break;
+        case 'C':
+            saveAnswerKeyToCsV(setCKeyToCorrection.value, name+'-ANSWER-C-'+dateFormat+'.csv');
+            break;
+        }
+    } 
+
+    await new Promise(resolve => setTimeout(resolve, 1000)); // 1-second delay
 }
 
 // saveAnswerKeysToPDF logic *******************************************************
@@ -1602,9 +1573,106 @@ function questionSetDateFormat() {
 }
 
 // Initialize the state with the default answers
-processAnswers(answerKeySet.value);
+// processAnswers(answerKeySet.value);
+//andito ako 2
+async function downloadAnswerKeysPDF(set)
+{
+    let selectedSet = set.split(' ')
+    let dateFormat = answerKeyDateFormat()
+    let term    = convertTerm(selectedTerm.value).toString()
+    let code    = selectedSubjectCode.value.name.toString()
 
+    let name = term+'-'+code
+    
+    for (const set of selectedSet) {
+        switch (set) {
+        case 'A':
+            await saveAnswerKeysToPDF(setAKeyToCorrection.value, name+'-ANSWER-A-'+dateFormat+'.pdf');
+            break;
+        case 'B':
+            await saveAnswerKeysToPDF(setBKeyToCorrection.value, name+'-ANSWER-B-'+dateFormat+'.pdf');
+            break;
+        case 'C':
+            await saveAnswerKeysToPDF(setCKeyToCorrection.value, name+'-ANSWER-C-'+dateFormat+'.pdf');
+            break;
+        }
+    } 
+}
 
+async function downloadQuestionairePDF(set)
+{
+    let selectedSet = set.split('')
+    let dateFormat = questionSetDateFormat()
+    let term    = convertTerm(selectedTerm.value).toString()
+    let code    = selectedSubjectCode.value.name.toString()
+    
+    let name = term+'-'+code
+    
+    for (const set of selectedSet) {
+        switch (set) {
+        case 'A':
+            await saveQuestionareToPDF(setA.value, name+'-A-'+dateFormat);
+            break;
+        case 'B':
+            await saveQuestionareToPDF(setB.value, name+'-B-'+dateFormat);
+            break;
+        case 'C':
+            await saveQuestionareToPDF(setC.value, name+'-C-'+dateFormat);
+            break;
+        }
+    } 
+}
+
+function saveQuestionareToPDF(questions,filename)
+{
+    questionSetPdf.value = questions
+    const element = document.getElementById('pdf-convert'); // Replace 'pdf-content' with the ID of the content you want to convert to PDF
+    const opt = {
+        margin: [0.4,0.4, 0.4, 0.4], // [top, left, bottom, right].
+        filename:     filename+'.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    // Function to add footers to each page
+    function addFooters(pdf) {
+        const pageCount = pdf.internal.getNumberOfPages();
+        const currentDate = new Date().toLocaleDateString();
+        pdf.setFontSize(8); // Set font size to 10px
+
+        for (let i = 1; i <= pageCount; i++) {
+            pdf.setPage(i);
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+
+            // Draw a line at the bottom of the page
+            // Draw a thinner line at the bottom of the page
+            pdf.setLineWidth(0.01); // Set line width to the smallest visible value
+            pdf.line(0.5, pageHeight - 0.6, pageWidth - 0.5, pageHeight - 0.6);
+
+            // Adding current date on the left
+            pdf.text(currentDate, 0.5, pageHeight - 0.4);
+
+            // Calculate the width of the text
+            const pageText = `Page ${i} of ${pageCount}`;
+            const textWidth = pdf.getTextDimensions(pageText).w;
+
+            // Adding page number on the right
+            pdf.text(pageText, pageWidth - textWidth - 0.5, pageHeight - 0.4);
+        }
+    }
+
+    // Generate the PDF
+    html2pdf().from(document.getElementById('pdf-convert')).set(opt).toPdf().get('pdf').then((pdf) => {
+        addFooters(pdf);
+    }).save().then(() => {
+        console.log('PDF saved successfully.');
+    }).catch((error) => {
+        console.error('Error generating PDF:', error);
+    });
+}
 // saveAnswerKeysToPDF logic *******************************************************
 </script>
 

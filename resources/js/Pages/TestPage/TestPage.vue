@@ -28,7 +28,7 @@
     </div>
   </div>
   <!-- Button to download PDF -->
-  <button class="btn-primary w-full mt-4" @click="saveAnswerKeysToPDF(testAnswers)">Download PDF</button>
+  <button class="btn-primary w-full mt-4" @click="downloadAnswerKeysPDF(set)">Download PDF</button>
   <div v-if="state.downloadStatus" :class="{'text-green-500': state.downloadStatus === 'success', 'text-red-500': state.downloadStatus === 'error'}">
     {{ state.downloadMessage }}
   </div>
@@ -39,15 +39,23 @@ import { ref, reactive } from 'vue';
 import html2pdf from 'html2pdf.js';
 
 // Sample data
-const testAnswers = [
-    'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b',
-    'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b',
-    'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b',
-    'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b',
-    'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b',
-    'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b',
+const setA = [
+    'a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a',
+    'a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a',
+    'a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a',
 ];
-    
+ 
+const setB = [
+    'b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b',
+    'b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b',
+    'b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b','b',
+]
+
+const setC = [
+    'c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c',
+    'c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c',
+    'c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c',
+]
 
 // Define the maximum number of elements to display per column
 const maxChunkSize = 33;
@@ -96,31 +104,43 @@ function processAnswers(answers)
 }
 
 // Method to download PDF
-const saveAnswerKeysToPDF = (keyToCorrection) => {
-  
+const saveAnswerKeysToPDF = async (keyToCorrection, setName) => {
   try {
-    // Process the answers to update the state
     processAnswers(keyToCorrection);
-
     const element = document.getElementById('answers-pdf');
-    html2pdf().set(opt).from(element).save()
-      .then(() => {
-        state.downloadStatus = 'success';
-        state.downloadMessage = 'PDF downloaded successfully!';
-      })
-      .catch((error) => {
-        state.downloadStatus = 'error';
-        state.downloadMessage = `Error downloading PDF: ${error.message}`;
-      });
+    opt.filename = `Set_${setName}_Answers.pdf`;
+    await html2pdf().set(opt).from(element).save();
+    state.downloadStatus = 'success';
+    state.downloadMessage = 'PDF downloaded successfully!';
   } catch (error) {
     state.downloadStatus = 'error';
-    state.downloadMessage = `Error processing answers: ${error.message}`;
+    state.downloadMessage = `Error downloading PDF: ${error.message}`;
   }
 };
 
 // Initialize the state with the default answers
-processAnswers(testAnswers);
+//processAnswers(testAnswers);
 
+const set = 'A B C'
+
+async function downloadAnswerKeysPDF(arr,filename)
+{
+    let selectedSet = arr.split(' ')
+
+    for (const set of selectedSet) {
+    switch (set) {
+      case 'A':
+        await saveAnswerKeysToPDF(setA, 'Answer-A');
+        break;
+      case 'B':
+        await saveAnswerKeysToPDF(setB, 'Answer-B');
+        break;
+      case 'C':
+        await saveAnswerKeysToPDF(setC, 'Answer-C');
+        break;
+    }
+  } 
+}
 </script>
 
 <style scoped>
