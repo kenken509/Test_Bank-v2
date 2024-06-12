@@ -19,50 +19,52 @@
       </div> 
     </div>
     <!-- Grid -->
-    <div class="grid pb-2" :class="`grid-cols-${columns}`" :style="{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }">
-      <div v-for="(chunk, colIndex) in chunksToShow" :key="colIndex" class="col-span-1">
+    <div class="grid pb-2" :class="`grid-cols-${state.columns}`" :style="{ gridTemplateColumns: `repeat(${state.columns}, minmax(0, 1fr))` }">
+      <div v-for="(chunk, colIndex) in state.chunksToShow" :key="colIndex" class="col-span-1">
         <div v-for="(ans, index) in chunk" :key="index">
-          <span >{{ index + 1 + colIndex * maxChunkSize }}. {{ ans }}</span>
+          <span>{{ index + 1 + colIndex * maxChunkSize }}. {{ ans }}</span>
         </div>
       </div>
     </div>
-    
   </div>
   <!-- Button to download PDF -->
-  <button class="btn-primary w-full mt-4" @click="downloadPDF">Download PDF</button>
+  <button class="btn-primary w-full mt-4" @click="saveAnswerKeysToPDF(testAnswers)">Download PDF</button>
+  <div v-if="state.downloadStatus" :class="{'text-green-500': state.downloadStatus === 'success', 'text-red-500': state.downloadStatus === 'error'}">
+    {{ state.downloadMessage }}
+  </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, reactive } from 'vue';
 import html2pdf from 'html2pdf.js';
 
 // Sample data
 const testAnswers = [
     'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b',
-    
+    'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b',
+    'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b',
+    'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b',
+    'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b',
+    'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b',
 ];
+    
+
 // Define the maximum number of elements to display per column
 const maxChunkSize = 33;
-const maxElementsPerColumn = 33 * 7; // 35 elements per column * 6 columns
+const maxElementsPerColumn = 33 * 7; // 33 elements per column * 7 columns
 
-// Helper function to chunk array
-function chunkArray(arr, size) {
-  const chunks = [];
-  for (let i = 0; i < arr.length; i += size) {
-    chunks.push(arr.slice(i, i + size));
-  }
-  return chunks;
-}
+// Reactive state to store the columns and chunks to show
+const state = reactive({
+  columns: 1,
+  chunksToShow: [],
+  downloadStatus: '',
+  downloadMessage: ''
+});
 
-// Split testAnswers into chunks of max 35 elements
-const chunks = chunkArray(testAnswers, maxChunkSize);
+// Logo URL
+const logoUrl = ref('/storage/Images/ncstLogo.png');
 
-// Calculate the number of columns based on the number of chunks
-const columns = computed(() => Math.min(7, chunks.length));
-
-// Determine how many chunks to display
-const chunksToShow = computed(() => chunks.slice(0, Math.ceil(maxElementsPerColumn / maxChunkSize)));
-
+// Options for PDF generation
 var opt = {
   margin:       [0.1,0.4,0.2,0.4],
   filename:     'myfile.pdf',
@@ -70,14 +72,54 @@ var opt = {
   html2canvas:  { scale: 2 },
   jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
 };
+
+// Function to process answers and update the reactive state
+function processAnswers(answers) 
+{
+  // Helper function to chunk array
+  function chunkArray(arr, size) {
+    const chunks = [];
+    for (let i = 0; i < arr.length; i += size) {
+      chunks.push(arr.slice(i, i + size));
+    }
+    return chunks;
+  }
+
+  // Split answers into chunks of maxChunkSize elements
+  const chunks = chunkArray(answers, maxChunkSize);
+
+  // Calculate the number of columns based on the number of chunks
+  state.columns = Math.min(7, chunks.length);
+
+  // Determine how many chunks to display
+  state.chunksToShow = chunks.slice(0, Math.ceil(maxElementsPerColumn / maxChunkSize));
+}
+
 // Method to download PDF
-const downloadPDF = () => {
-  const element = document.getElementById('answers-pdf');
-  html2pdf().set(opt).from(element).save();
+const saveAnswerKeysToPDF = (keyToCorrection) => {
+  
+  try {
+    // Process the answers to update the state
+    processAnswers(keyToCorrection);
+
+    const element = document.getElementById('answers-pdf');
+    html2pdf().set(opt).from(element).save()
+      .then(() => {
+        state.downloadStatus = 'success';
+        state.downloadMessage = 'PDF downloaded successfully!';
+      })
+      .catch((error) => {
+        state.downloadStatus = 'error';
+        state.downloadMessage = `Error downloading PDF: ${error.message}`;
+      });
+  } catch (error) {
+    state.downloadStatus = 'error';
+    state.downloadMessage = `Error processing answers: ${error.message}`;
+  }
 };
 
-// Logo URL
-const logoUrl = ref('/storage/Images/ncstLogo.png');
+// Initialize the state with the default answers
+processAnswers(testAnswers);
 
 </script>
 

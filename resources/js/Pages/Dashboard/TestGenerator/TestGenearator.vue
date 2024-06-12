@@ -294,7 +294,7 @@
                         <button @click="handleResetButtonClicked" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md "  >Reset</button>
                         <button @click="saveExam"  type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >Preview</button>
                         <!-- <button @click="handleSave" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >Cancel</button> -->
-                        <!-- <button @click="testDownloadCsv(testAnswers)" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >TEST BUTTON</button> -->
+                        <button @click="saveAnswerKeysToPDF(testAnswers)" type="button" class="w-full btn-primary py-2 px-4 m-2 border shadow-md " >TEST BUTTON</button>
                     </div>
                     
                 </form>
@@ -341,7 +341,7 @@
             <!--TEST QUESTION-->
         </Dialog>
 
-        <!--save data-->
+        <!--save question set-->
         <div id="pdf-convert" class="w-full">
             <!--heading-->
             <div class="flex justify-center gap-2 w-full ">
@@ -371,19 +371,55 @@
                 <span class="font-bold text-[16px]">{{ direction }}</span>
             </div>
             <!--questions-->
-            <div class="w-full flex flex-wrap whitespace-nowrap flex-col py-2  " v-for="(question,index) in setA" :key="question.id">
+            <div class="w-full flex flex-wrap whitespace-nowrap flex-col py-2  " v-for="(question,index) in questionSetPdf" :key="question.id">
                 <span>{{index+1}}. {{ question.question }}</span>
                 <!--options-->
                 <div class="flex flex-row flex-wrap gap-3 w-full pl-4 ">
                     <template v-for="(option,index) in question.options">
-                        <span class="flex   w-full">{{ optionLetters[index] }}. {{ option.option }}</span>
+                        <span class="flex   w-full text-[12px]">{{ optionLetters[index] }}. {{ option.option }}</span>
                     </template>
                 </div>
                  <!--options-->   
             </div>
             <!--questions-->
         </div>
-        
+
+        <!--save answer keys to pdf-->
+        <div id="answers-pdf">
+            <!-- Heading -->
+            <div class="flex justify-center gap-2 w-full pb-2">
+            <div class="flex justify-between gap-4">
+                <div class="w-20 h-20 mt-[18px]">
+                <img :src="logoUrl" alt="Ncst Logo"/>
+                </div>
+                <div class="flex flex-col justify-center items-center mb-2 mt-1">
+                <span class="font-bold text-[18px]">NATIONAL COLLEGE OF SCIENCE AND TECHNOLOGY</span>
+                <span>Amafel Building Aguinaldo Highway, Dasmariñas, Cavite</span>
+                <span>Tel. no. (1234-1234)</span>
+                <a href="https://ncst.edu.ph/" target="_blank">www.ncst.edu.ph</a>
+                <span v-if="selectedDepartment.division_id"  class="text-[14px] font-bold mt-2"  >
+                    {{ getDivisionName(selectedDepartment.id,selectedDepartment.division_id) }} Department
+                </span>
+                <span v-else class="text-[14px] font-bold mt-2"  >{{ selectedDepartment.name }} Department</span>
+                <span class="text-[14px] font-bold">{{ convertTerm(selectedTerm) }} Exam in {{ selectedSubjectCode.name }} {{ selectedSubjectCode.description }} </span>
+                <span class="text-[14px] font-bold">{{ selectedSemester }} Semester SY: {{ selectedSchoolYear }}</span>
+                <span class="text-[14px] font-bold mt-2">Set {{ selectedSet }}</span>
+                <span class="text-[14px] font-bold">Answer Key</span>
+                <span class="text-[12px] ">{{ answerKeyDateFormat() }}</span>
+                </div>
+            </div> 
+            </div>
+            <!-- Grid -->
+            <div class="grid pb-2" :class="`grid-cols-${state.columns}`" :style="{ gridTemplateColumns: `repeat(${state.columns}, minmax(0, 1fr))` }">
+            <div v-for="(chunk, colIndex) in state.chunksToShow" :key="colIndex" class="col-span-1 flex flex-col justify-center">
+                <div v-for="(ans, index) in chunk" :key="index">
+                    <span>{{ index + 1 + colIndex * maxChunkSize }}. {{ ans }}</span>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <!-- save answer keys to pdf-->
     </DashboardLayout>
 </template>
 
@@ -391,13 +427,18 @@
 import DashboardLayout from '../DashboardLayout.vue';
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import ModalHeader from '../Components/ModalHeader.vue'
-import {ref,onMounted, computed,watch} from 'vue'
+import {ref,onMounted, computed,watch,reactive} from 'vue'
 import { useForm } from '@inertiajs/vue3';
 import jsPDF from 'jspdf';
 import html2pdf from 'html2pdf.js'; // Ensure the correct import path
 
+
 const customModalOpen = ref(true)
 const logoUrl = ref('/storage/Images/ncstLogo.png');
+
+const questionSetPdf = ref([])
+const answerKeySet = ref([])
+
 const closeModal = () => {
    customModalOpen.value = false;
 };
@@ -869,7 +910,7 @@ function testRandom(num)
 
 
 
-// saving logic
+// saving logic ********************************
 
 const saveExam = () => {
     if(!selectedDepartment.value)
@@ -966,7 +1007,7 @@ const saveExam = () => {
     {
         setC.value = randomizeQuestionSet(setB.value)
     }
-   
+    
     setAKeyToCorrection.value = getCorrectAnswer(setA.value)
     setBKeyToCorrection.value = getCorrectAnswer(setB.value)
     setCKeyToCorrection.value = getCorrectAnswer(setB.value)
@@ -979,6 +1020,18 @@ const saveExam = () => {
 
     if(selectedSet.value === 'A' || selectedSet.value === 'B' || selectedSet.value === 'C')
     {
+        switch(selectedSet.value)
+        {
+            case 'A':
+                questionSetPdf.value = setA.value
+                break
+            case 'B':
+                questionSetPdf.value = setB.value
+                break;
+            case 'C':
+                questionSetPdf.value = setC.value
+        }
+        
         const element = document.getElementById('pdf-convert'); // Replace 'pdf-content' with the ID of the content you want to convert to PDF
         const opt = {
             margin: [0.4,0.4, 0.4, 0.4], // [top, left, bottom, right].
@@ -1044,7 +1097,7 @@ const saveExam = () => {
     
 }
 
-
+// saving logic ********************************
 function convertTerm(term)
 {
     let converted = ''
@@ -1253,12 +1306,13 @@ const testQuestion = [
 ]
 
 const testAnswers = [
-    'a',
-    'b',
-    'a',
-    'd',
-    'e',
-    'b'
+    'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b',
+    'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b',
+    'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b',
+    'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b',
+    'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b',
+    'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b', 'a', 'b', 'c', 'd', 'd', 'b', 'c', 'd', 'a', 'a', 'b', 'b',
+
 ]
 function getCorrectAnswer(questions){
     let answers = []
@@ -1277,7 +1331,7 @@ function getCorrectAnswer(questions){
     return answers
 }
 
-function saveAnswerKeyCsV(answers)
+function saveAnswerKeyToCsV(answers)
 {
     let tempData = ['*','*','*','*','*',...answers]
 
@@ -1297,14 +1351,102 @@ function saveAnswerKeyCsV(answers)
     document.body.removeChild(link);
 }
 
-function saveAnswerKeyPdf()
-{
-    
-}
+
 function saveExamToPdf(questionSet)
 {
 
 }
+
+// saveAnswerKeysToPDF logic *******************************************************
+// Define the maximum number of elements to display per column
+const maxChunkSize = 30;
+const maxElementsPerColumn = 30 * 7; // 33 elements per column * 7 columns
+
+// Reactive state to store the columns and chunks to show
+const state = reactive({
+  columns: 1,
+  chunksToShow: [],
+  downloadStatus: '',
+  downloadMessage: ''
+});
+
+
+// Options for PDF generation
+var opt = {
+  margin:       [0.1,0.4,0.2,0.4],
+  filename:     'myfile.pdf',
+  image:        { type: 'jpeg', quality: 0.98 },
+  html2canvas:  { scale: 2 },
+  jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+};
+
+// Function to process answers and update the reactive state
+function processAnswers(answers) 
+{
+  // Helper function to chunk array
+  function chunkArray(arr, size) {
+    const chunks = [];
+    for (let i = 0; i < arr.length; i += size) {
+      chunks.push(arr.slice(i, i + size));
+    }
+    return chunks;
+  }
+
+  // Split answers into chunks of maxChunkSize elements
+  const chunks = chunkArray(answers, maxChunkSize);
+
+  // Calculate the number of columns based on the number of chunks
+  state.columns = Math.min(7, chunks.length);
+
+  // Determine how many chunks to display
+  state.chunksToShow = chunks.slice(0, Math.ceil(maxElementsPerColumn / maxChunkSize));
+}
+
+// Method to download PDF
+const saveAnswerKeysToPDF = (keyToCorrection) => {
+  
+  try {
+    // Process the answers to update the state
+    processAnswers(keyToCorrection);
+
+    const element = document.getElementById('answers-pdf');
+    html2pdf().set(opt).from(element).save()
+      .then(() => {
+        state.downloadStatus = 'success';
+        state.downloadMessage = 'PDF downloaded successfully!';
+      })
+      .catch((error) => {
+        state.downloadStatus = 'error';
+        state.downloadMessage = `Error downloading PDF: ${error.message}`;
+      });
+  } catch (error) {
+    state.downloadStatus = 'error';
+    state.downloadMessage = `Error processing answers: ${error.message}`;
+  }
+};
+
+function answerKeyDateFormat() {
+    const date = new Date();
+    
+    // Extract components
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    
+    // Construct the formatted date string
+    const formattedDate = `${day}/${month}/${year} ${hours}.${minutes}.${seconds}`;
+    
+    return formattedDate;
+}
+
+// Initialize the state with the default answers
+processAnswers(answerKeySet.value);
+
+
+// saveAnswerKeysToPDF logic *******************************************************
 </script>
 
 
