@@ -300,49 +300,13 @@
                 </form>
                 <!-- test answers:{{ testAnswer }} -->
             </ModalHeader>
-           <!-- <span class="text-red-500"> {{ department }}</span> -->
-            <!--TEST QUESTION-->
-           <!-- <div class="border border-black rounded-md p-2">           
-            <table class="w-full ">
-                <thead class="bg-green-100">
-                    <tr>
-                        <td>
-                            Question
-                        </td>
-                        
-                        <td>option a</td>
-                        <td>option b</td>
-                        <td>option c</td>
-                        <td>option c</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="question in testQuestion" :key="question.id">
-                        <td>
-                            {{ question.question }}
-                        </td>
-                        
-                        <td>
-                            {{ question.options[0].isCorrect }}
-                        </td>
-                        <td>
-                            {{ question.options[1].isCorrect }}
-                        </td>
-                        <td>
-                            {{ question.options[2].isCorrect }}
-                        </td>
-                        <td>
-                            {{ question.options[3].isCorrect }}
-                        </td>
-                    </tr>
-                </tbody>
-                </table>
-            </div> -->
-            <!--TEST QUESTION-->
         </Dialog>
-
+        <div>
+            <hr class="border border-2 border-black w-full max-w-[8.5in] max-h-[llin] mb-8 mt-2" />
+        </div>
+        
         <!--save question set--> <!-- andito ako 1-->
-        <div id="pdf-convert" class="w-full max-w-[8.5in] max-h-[llin]">
+        <div  id="pdf-convert" class="w-full max-w-[8.5in] max-h-[llin]">
             <!--heading-->
             <div class="flex justify-center gap-2 w-full ">
                 <div class="flex justify-between gap-4 ">
@@ -361,7 +325,7 @@
                         <span v-else class="text-[16px] font-bold mt-2"  >{{ selectedDepartment.name }} Department</span>
                         <span class="text-[16px] font-bold">{{ convertTerm(selectedTerm) }} Exam in {{ selectedSubjectCode.name }} {{ selectedSubjectCode.description }} </span>
                         <span class="text-[16px] font-bold" >{{ selectedSemester }} Semester SY: {{ selectedSchoolYear }} </span>
-                        <span class="text-[16px] font-bold" >Set {{ selectedSet }}</span>
+                        <span class="text-[16px] font-bold" >Set {{ displaySetQuestion }}</span>
                         
                     </div>
                 </div> 
@@ -394,9 +358,11 @@
             </div>
             <!--questions-->
         </div>
-
+        <div>
+            <hr class="border border-2 border-black w-full max-w-[8.5in] max-h-[llin] my-8" />
+        </div>
         <!--save answer keys to pdf-->
-        <div id="answers-pdf">
+        <div  id="answers-pdf" class="w-full max-w-[8.5in] max-h-[llin]">
             <!-- Heading -->
             <div class="flex justify-center gap-2 w-full pb-2">
             <div class="flex justify-between gap-4">
@@ -414,7 +380,7 @@
                 <span v-else class="text-[14px] font-bold mt-2"  >{{ selectedDepartment.name }} Department</span>
                 <span class="text-[14px] font-bold">{{ convertTerm(selectedTerm) }} Exam in {{ selectedSubjectCode.name }} {{ selectedSubjectCode.description }} </span>
                 <span class="text-[14px] font-bold">{{ selectedSemester }} Semester SY: {{ selectedSchoolYear }}</span>
-                <span class="text-[14px] font-bold mt-2">Set {{ selectedSet }}</span>
+                <span class="text-[14px] font-bold mt-2">Set {{ displaySetAnswer }}</span>
                 <span class="text-[14px] font-bold">Answer Key</span>
                 <span class="text-[12px] ">{{ answerKeyDateFormat() }}</span>
                 </div>
@@ -866,20 +832,7 @@ const handleResetButtonClicked = ()=>{
 
 
 
-//sweet alerts
-function errorMessage(message) {
-        customModalOpen.value = false
-        Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: message + '!',
-            allowOutsideClick:false,
-        }).then((result) => {
-            if (result.isConfirmed) {
-                customModalOpen.value = true
-            }
-        })
-    }
+
 
 
 // question generation logic
@@ -1040,16 +993,12 @@ const saveExam = () => {
     //return // andito ako debug
     // console.log('selected set: ')
     // console.log(selectedSet.value)
-
-  
     
-    if(selectedSet.value)
-    {
-        downloadQuestionairePDF(selectedSet.value)
-        downloadAnswerKeysPDF(selectedSet.value)
-        downloadAnswerKeysCSV(selectedSet.value)
-        
-    }
+    
+    confirmation("Please check if everything is set correctly before proceeding. This will download multiple files. Please allow multiple file download on your browser.")
+    
+    
+  
 
 }
 
@@ -1320,12 +1269,15 @@ async function downloadAnswerKeysCSV(set)
     for (const set of selectedSet) {
         switch (set) {
         case 'A':
+            
             saveAnswerKeyToCsV(setAKeyToCorrection.value, name+'-ANSWER-A-'+dateFormat+'.csv');
             break;
         case 'B':
+            
             saveAnswerKeyToCsV(setBKeyToCorrection.value, name+'-ANSWER-B-'+dateFormat+'.csv');
             break;
         case 'C':
+            
             saveAnswerKeyToCsV(setCKeyToCorrection.value, name+'-ANSWER-C-'+dateFormat+'.csv');
             break;
         }
@@ -1377,7 +1329,7 @@ const saveAnswerKeysToPDF = (keyToCorrection,filename) => {
   
   try {
     // Process the answers to update the state
-    
+   
     state.chunksToShow = []
     processAnswers(keyToCorrection);
 
@@ -1390,14 +1342,17 @@ const saveAnswerKeysToPDF = (keyToCorrection,filename) => {
             jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
         }).from(element).save()
       .then(() => {
+        
         state.downloadStatus = 'success';
         state.downloadMessage = 'PDF downloaded successfully!';
       })
       .catch((error) => {
+        
         state.downloadStatus = 'error';
         state.downloadMessage = `Error downloading PDF: ${error.message}`;
       });
   } catch (error) {
+    
     state.downloadStatus = 'error';
     state.downloadMessage = `Error processing answers: ${error.message}`;
   }
@@ -1452,13 +1407,16 @@ async function downloadAnswerKeysPDF(set)
     for (const set of selectedSet) {
         switch (set) {
         case 'A':
-            await saveAnswerKeysToPDF(setAKeyToCorrection.value, name+'-ANSWER-A-'+dateFormat+'.pdf');
+            displaySetAnswer.value = set
+            await saveAnswerKeysToPDF(setAKeyToCorrection.value, name+'-ANSWER-'+set+'-'+dateFormat+'.pdf');
             break;
         case 'B':
-            await saveAnswerKeysToPDF(setBKeyToCorrection.value, name+'-ANSWER-B-'+dateFormat+'.pdf');
+            displaySetAnswer.value = set
+            await saveAnswerKeysToPDF(setBKeyToCorrection.value, name+'-ANSWER-'+set+'-'+dateFormat+'.pdf');
             break;
         case 'C':
-            await saveAnswerKeysToPDF(setCKeyToCorrection.value, name+'-ANSWER-C-'+dateFormat+'.pdf');
+            displaySetAnswer.value = set
+            await saveAnswerKeysToPDF(setCKeyToCorrection.value, name+'-ANSWER-'+set+'-'+dateFormat+'.pdf');
             break;
         }
     } 
@@ -1466,6 +1424,7 @@ async function downloadAnswerKeysPDF(set)
 
 async function downloadQuestionairePDF(set)
 {
+    
     let selectedSet = set.split('')
     let dateFormat = questionSetDateFormat()
     let term    = convertTerm(selectedTerm.value).toString()
@@ -1476,13 +1435,16 @@ async function downloadQuestionairePDF(set)
     for (const set of selectedSet) {
         switch (set) {
         case 'A':
-            await saveQuestionareToPDF(setA.value, name+'-A-'+dateFormat);
+            displaySetQuestion.value = set
+            await saveQuestionareToPDF(setA.value, name+'-'+set+'-'+dateFormat);
             break;
         case 'B':
-            await saveQuestionareToPDF(setB.value, name+'-B-'+dateFormat);
+            displaySetQuestion.value = set
+            await saveQuestionareToPDF(setB.value, name+'-'+set+'-'+dateFormat);
             break;
         case 'C':
-            await saveQuestionareToPDF(setC.value, name+'-C-'+dateFormat);
+            displaySetQuestion.value = set
+            await saveQuestionareToPDF(setC.value, name+'-'+set+'-'+dateFormat);
             break;
         }
     } 
@@ -1490,6 +1452,7 @@ async function downloadQuestionairePDF(set)
 
 function saveQuestionareToPDF(questions,filename)
 {
+    
     questionSetPdf.value = questions
     const element = document.getElementById('pdf-convert'); // Replace 'pdf-content' with the ID of the content you want to convert to PDF
     const opt = {
@@ -1533,12 +1496,89 @@ function saveQuestionareToPDF(questions,filename)
     html2pdf().from(document.getElementById('pdf-convert')).set(opt).toPdf().get('pdf').then((pdf) => {
         addFooters(pdf);
     }).save().then(() => {
+        
         console.log('PDF saved successfully.');
     }).catch((error) => {
+        
         console.error('Error generating PDF:', error);
     });
 }
 // saveAnswerKeysToPDF logic *******************************************************
+
+// sweet alert
+const generateConfirmedQuestions = ref(false);
+const generateConfirmedAnswers = ref(false)
+const displaySetQuestion = ref('')
+const displaySetAnswer = ref('')
+const confirmation = (message)=> 
+{ 
+    
+    customModalOpen.value = false
+    Swal.fire({
+        title: "Are you sure?",
+        text:  message,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, proceed!",
+        allowOutsideClick:false,
+        allowEscapeKey:false,
+        customClass: {
+            popup: 'swal-popup-custom' // Adding a custom class
+        }
+        }).then((result) => {
+            if(result.isConfirmed)
+            {
+                
+                customModalOpen.value = true;
+                if(selectedSet.value)
+                { 
+                    try
+                    {
+                        downloadQuestionairePDF(selectedSet.value)
+                        downloadAnswerKeysPDF(selectedSet.value)
+                        downloadAnswerKeysCSV(selectedSet.value)
+                        
+                    }
+                    catch(err)
+                    {
+                        errorMessage(err)
+                    }
+                    
+                }
+                
+                
+            }   
+
+            if(result.isDismissed)
+            {
+                Swal.fire({
+                    title:'Canceled',
+                    text:'Your action was canceled!',
+                    icon:'error',
+                    confirmButtonColor: '#3085d6',
+                })   
+
+                
+            }
+    });
+}  
+
+
+function errorMessage(message) {
+        customModalOpen.value = false
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: message + '!',
+            allowOutsideClick:false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                customModalOpen.value = true
+            }
+        })
+    }
 </script>
 
 
