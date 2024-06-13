@@ -179,7 +179,7 @@
                         <hr>
                     </div>
                     <div class="my-2">
-                        <span class="text-black font-semibold">Select Term: </span>
+                        <span class="text-black font-semibold">Select Term: set A: {{ setA }} </span>
                     </div>
                     <div class="w-full m-auto border px-4 bg-blue-100 rounded-md shadow-inner ">
                         <div class="w-full grid grid-cols-5 gap-2 my-2">
@@ -341,8 +341,8 @@
             <!--TEST QUESTION-->
         </Dialog>
 
-        <!--save question set-->
-        <div id="pdf-convert" class="w-full">
+        <!--save question set--> <!-- andito ako 1-->
+        <div id="pdf-convert" class="w-full max-w-[8.5in] max-h-[llin]">
             <!--heading-->
             <div class="flex justify-center gap-2 w-full ">
                 <div class="flex justify-between gap-4 ">
@@ -372,11 +372,22 @@
             </div>
             <!--questions-->
             <div class="w-full flex flex-wrap whitespace-nowrap flex-col py-2  " v-for="(question,index) in questionSetPdf" :key="question.id">
-                <span>{{index+1}}. {{ question.question }}</span>
+                <span class="text-[12px]">{{index+1}}. {{ question.question }}</span>
                 <!--options-->
-                <div class="flex flex-row flex-wrap gap-3 w-full pl-4 ">
+                <div v-if="question.type === 'text'" class="flex flex-row whitespace-nowrap gap-3 w-full pl-4 mt-2 " :class="{'flex-col':question.options.some(option => option.option.length > 30)}">
+                    
                     <template v-for="(option,index) in question.options">
+                        
                         <span class="flex   w-full text-[12px]">{{ optionLetters[index] }}. {{ option.option }}</span>
+                    </template>
+                </div>
+                <!--andito ako 3-->
+                <div v-if="question.type === 'image'" class="flex flex-row w-full bg-gren-300 ml-4 mt-6 mb-4 p-2">
+                    <template v-for="(option,index) in question.options" class="w-full flex flex-row bg-green-300  " >  
+                        <div class="w-full flex  gap-2 ">
+                            <span class="text-[12]">{{ optionLetters[index] }}. </span>                
+                            <img :src="imageUrl+option.option" alt="image option" class="max-w-[1.5in] max-h-[1.5in] rounded-md border border-black"/>   
+                        </div>                    
                     </template>
                 </div>
                  <!--options-->   
@@ -435,7 +446,7 @@ import html2pdf from 'html2pdf.js'; // Ensure the correct import path
 
 const customModalOpen = ref(true)
 const logoUrl = ref('/storage/Images/ncstLogo.png');
-
+const imageUrl = ref('/storage/Images/')
 const questionSetPdf = ref([])
 const answerKeySet = ref([])
 
@@ -549,11 +560,11 @@ watch(isFinal,(val)=>{
 })
 
 
-const prelimItems   = ref([]);
-const midTermItems  = ref([]);
-const preFinalItems = ref([]);
-const finalItems    = ref([]);
-const totalItems    = computed(()=>{
+    const prelimItems   = ref([]);
+    const midTermItems  = ref([]);
+    const preFinalItems = ref([]);
+    const finalItems    = ref([]);
+    const totalItems    = computed(()=>{
     let count = 0
     count = prelimItems.value.length+midTermItems.value.length+preFinalItems.value.length+finalItems.value.length
 
@@ -1026,166 +1037,20 @@ const saveExam = () => {
     console.log('set C key to correction')
     console.log(setCKeyToCorrection.value)
 
+    //return // andito ako debug
     // console.log('selected set: ')
     // console.log(selectedSet.value)
 
-    // if(selectedSet.value === 'A' || selectedSet.value === 'B' || selectedSet.value === 'C')
-    // {
-    //     let filename = ''
-    //     let dateFormat = questionSetDateFormat()
-    //     let term    = convertTerm(selectedTerm.value).toString()
-    //     let code    = selectedSubjectCode.value.name.toString()
-    //     let set     = selectedSet.value.toString()
-    //     let keyToCorrection = ref([])
-    //     // set the questionnaire data
-    //     switch(selectedSet.value)
-    //     {
-    //         case 'A':
-    //             questionSetPdf.value = setA.value
-    //             filename = term+'-'+code+'-'+set+'-'+dateFormat
-    //             keyToCorrection.value = setAKeyToCorrection.value 
-    //             break
-    //         case 'B':
-    //             questionSetPdf.value = setB.value
-    //             filename = term+'-'+code+'-'+set+'-'+dateFormat
-    //             keyToCorrection.value = setBKeyToCorrection.value 
-    //             break;
-    //         case 'C':
-    //             questionSetPdf.value = setC.value
-    //             filename = term+'-'+code+'-'+set+'-'+dateFormat
-    //             keyToCorrection.value = setCKeyToCorrection.value 
-    //             break
-    //     }
-
-    //     const element = document.getElementById('pdf-convert'); // Replace 'pdf-content' with the ID of the content you want to convert to PDF
-    //     const opt = {
-    //         margin: [0.4,0.4, 0.4, 0.4], // [top, left, bottom, right].
-    //         filename:     filename+'.pdf',
-    //         image:        { type: 'jpeg', quality: 0.98 },
-    //         html2canvas:  { scale: 2 },
-    //         jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
-    //         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-    //     };
-
-    //      // Function to add footers to each page
-    //      function addFooters(pdf) {
-    //         const pageCount = pdf.internal.getNumberOfPages();
-    //         const currentDate = new Date().toLocaleDateString();
-    //         pdf.setFontSize(8); // Set font size to 10px
-
-    //         for (let i = 1; i <= pageCount; i++) {
-    //             pdf.setPage(i);
-    //             const pageWidth = pdf.internal.pageSize.getWidth();
-    //             const pageHeight = pdf.internal.pageSize.getHeight();
-
-    //             // Draw a line at the bottom of the page
-    //             // Draw a thinner line at the bottom of the page
-    //             pdf.setLineWidth(0.01); // Set line width to the smallest visible value
-    //             pdf.line(0.5, pageHeight - 0.6, pageWidth - 0.5, pageHeight - 0.6);
-
-    //             // Adding current date on the left
-    //             pdf.text(currentDate, 0.5, pageHeight - 0.4);
-
-    //             // Calculate the width of the text
-    //             const pageText = `Page ${i} of ${pageCount}`;
-    //             const textWidth = pdf.getTextDimensions(pageText).w;
-
-    //             // Adding page number on the right
-    //             pdf.text(pageText, pageWidth - textWidth - 0.5, pageHeight - 0.4);
-    //         }
-    //     }
-
-    //     // Generate the PDF
-    //     html2pdf().from(document.getElementById('pdf-convert')).set(opt).toPdf().get('pdf').then((pdf) => {
-    //         addFooters(pdf);
-    //     }).save().then(() => {
-    //         console.log('PDF saved successfully.');
-    //     }).catch((error) => {
-    //         console.error('Error generating PDF:', error);
-    //     });
-
-        
-    //     // generate key to correction in pdf and in csv as well
-    //     // console.log('questions')
-    //     // console.log(questionSetPdf.value)
-    //     // console.log('answer Key:')
-    //     // console.log(keyToCorrection.value)
-
-    //     let keyToCorrectionFileName = term+'-'+code+'-ANSWER-'+set+'-'+dateFormat
-        
-    //     saveAnswerKeysToPDF(keyToCorrection.value, keyToCorrectionFileName);
-    //     saveAnswerKeyToCsV(keyToCorrection.value,keyToCorrectionFileName);
-
-        
-    // }
-
-    // 'A B',
-    // 'A C',
-    // 'A B C',
-    //andito ako 1
+  
+    
     if(selectedSet.value)
     {
         downloadQuestionairePDF(selectedSet.value)
         downloadAnswerKeysPDF(selectedSet.value)
         downloadAnswerKeysCSV(selectedSet.value)
-        // for(let i=0;i<setArray.length;i++)
-        // {
-            
-        //     let filename = ''
-        //     let dateFormat = questionSetDateFormat()
-        //     let term    = convertTerm(selectedTerm.value).toString()
-        //     let code    = selectedSubjectCode.value.name.toString()
-        //     let set     = setArray[i]
-        //     let keyToCorrectionFileName = ''
-        //     // set the questionnaire data
-        //     switch(setArray[i])
-        //     {
-                
-        //         case 'A':
-        //             questionSetPdf.value = setA.value
-        //             filename = term+'-'+code+'-'+set+'-'+dateFormat
-        //             keyToCorrectionFileName = term+'-'+code+'-ANSWER-'+set+'-'+dateFormat
-        //             saveAnswerKeyToCsV(setAKeyToCorrection.value,keyToCorrectionFileName);
-        //             break
-        //         case 'B':
-        //             questionSetPdf.value = setB.value
-        //             filename = term+'-'+code+'-'+set+'-'+dateFormat
-        //             keyToCorrectionFileName = term+'-'+code+'-ANSWER-'+set+'-'+dateFormat
-        //             saveAnswerKeyToCsV(setBKeyToCorrection.value,keyToCorrectionFileName);
-        //             break;
-        //         case 'C':
-        //             questionSetPdf.value = setC.value
-        //             filename = term+'-'+code+'-'+set+'-'+dateFormat
-        //             keyToCorrectionFileName = term+'-'+code+'-ANSWER-'+set+'-'+dateFormat
-        //             saveAnswerKeyToCsV(setCKeyToCorrection.value, keyToCorrectionFileName);
-        //             break
-        //     }
-
-            
-
-            
-        //     // generate key to correction in pdf and in csv as well
-        //     // console.log('questions')
-        //     // console.log(questionSetPdf.value)
-        //     // console.log('answer Key:')
-        //     // console.log(keyToCorrection.value)
-            
-            
-            
-            
-            
-        // }
+        
     }
 
-
-
-
-    
-    
-    
-    
-    
-    
 }
 
 // saving logic ********************************
@@ -1442,7 +1307,7 @@ function saveAnswerKeyToCsV(answers,filename)
     document.body.removeChild(link);
 }
 
-//andito ako 3
+
 async function downloadAnswerKeysCSV(set)
 {
     let selectedSet = set.split(' ')
@@ -1574,7 +1439,7 @@ function questionSetDateFormat() {
 
 // Initialize the state with the default answers
 // processAnswers(answerKeySet.value);
-//andito ako 2
+
 async function downloadAnswerKeysPDF(set)
 {
     let selectedSet = set.split(' ')
