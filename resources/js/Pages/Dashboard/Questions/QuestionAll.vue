@@ -11,7 +11,7 @@
         </div>
         
         <!-- <div v-if="$page.props.flash.error" > {{ $page.props.flash.error }}</div> -->
-            <span class="text-red-500 text-[30px]">bug: check box filter</span>
+            
             <div class="flex  flex-col ">
                 <div class="grid grid-cols-10 items-center my-2 ">
                     <div class="col-span-1">
@@ -446,7 +446,42 @@ onMounted(()=>{
 
     selectedSubjectCode.value = data.subjectCodes[0]
     filteredQuestionByCode.value = selectedSubjectCode.value.questions
-    successAlertCounter.value = 0
+    successAlertCounter.value = 0 // andito ako 1
+    selectedTerm.value = []
+    if(localStorage.getItem('selectedTerm'))
+    {
+        selectedTerm.value = JSON.parse(localStorage.getItem('selectedTerm'));
+
+        selectedTerm.value.forEach((term)=>{
+            switch(term)
+            {
+                case 'prelim':
+                    prelim.value = true
+                    updateFilteredArray()
+                    break
+                case 'mid-term':
+                    midTerm.value = true
+                    updateFilteredArray()
+                    break
+                case 'pre-final':
+                    prefinal.value = true
+                    updateFilteredArray()
+                    break
+                case 'final':
+                    final.value = true
+                    updateFilteredArray()
+            }
+        })
+    }   
+   
+
+    console.log('selectedTerm')
+    console.log(selectedTerm.value)
+
+    console.log('localStorage')
+    console.log(localStorage.getItem('selectedTerm'));
+
+    //console.log(prelim.value)
 })
 
 
@@ -534,26 +569,40 @@ const selectedTermValidator = ref('');
 watch(prelim, (val)=>{
     if(val)
     {
-        selectedTerm.value.push('prelim')
+        if(!selectedTerm.value.includes('prelim'))
+        {
+            selectedTerm.value.push('prelim') //andito ako 2
+            localStorage.setItem('selectedTerm',JSON.stringify(selectedTerm.value))
+        }
+        
+        
     }
+
     if(!val)
     {
         
        selectedTerm.value =  selectedTerm.value.filter(val => val !== 'prelim');
+       localStorage.setItem('selectedTerm',JSON.stringify(selectedTerm.value))
     }
-
-    updateFilteredArray
+    
+    updateFilteredArray()
 });
 watch(midTerm, (val)=>{
 
     if(val)
     {
-        selectedTerm.value.push('mid-term')
+        if(!selectedTerm.value.includes('mid-term'))
+        {
+            selectedTerm.value.push('mid-term')
+            localStorage.setItem('selectedTerm',JSON.stringify(selectedTerm.value))
+        }
     }
     if(!val)
     {
         
        selectedTerm.value =  selectedTerm.value.filter(val => val !== 'mid-term');
+       localStorage.setItem('selectedTerm',JSON.stringify(selectedTerm.value))
+       
     }
 
     updateFilteredArray()
@@ -561,25 +610,39 @@ watch(midTerm, (val)=>{
 watch(prefinal, (val)=>{
     if(val)
     {
-        selectedTerm.value.push('pre-final')
+        if(!selectedTerm.value.includes('pre-final'))
+        {
+            selectedTerm.value.push('pre-final')
+            localStorage.setItem('selectedTerm',JSON.stringify(selectedTerm.value))
+        }
+        
     }
     if(!val)
     {
        selectedTerm.value =  selectedTerm.value.filter(val => val !== 'pre-final');
+       localStorage.setItem('selectedTerm',JSON.stringify(selectedTerm.value))
+       
     }
-    updateFilteredArray
+    updateFilteredArray()
 } );
 watch(final, (val)=>{
     if(val)
     {
-        selectedTerm.value.push('final')
+        if(!selectedTerm.value.includes('final'))
+        {
+            selectedTerm.value.push('final')
+            localStorage.setItem('selectedTerm',JSON.stringify(selectedTerm.value))
+        }
+        
     }
     if(!val)
     {
        selectedTerm.value =  selectedTerm.value.filter(val => val !== 'final');
+       localStorage.setItem('selectedTerm',JSON.stringify(selectedTerm.value))
+       
     }
 
-    updateFilteredArray
+    updateFilteredArray()
 });
 
 
@@ -788,6 +851,7 @@ const deleteConfirmation = (questionId)=>
     //watchers
     watch(selectedSubjectCode,(code)=>{
         form.subject_code_id = code.id
+        updateFilteredArray()
     })
 
  

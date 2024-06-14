@@ -279,16 +279,14 @@
                 <!--question bank-->
 
                 <!-- test gen-->
+                
                 <div>
                     <div class="flex items-center py-3 pl-3 space-x-2 hover:bg-blue-900" >
-                        <svg class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                            <path fill-rule="evenodd" d="M5 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11.5c.07 0 .14-.007.207-.021.095.014.193.021.293.021h2a2 2 0 0 0 2-2V7a1 1 0 0 0-1-1h-1a1 1 0 1 0 0 2v11h-2V5a2 2 0 0 0-2-2H5Zm7 4a1 1 0 0 1 1-1h.5a1 1 0 1 1 0 2H13a1 1 0 0 1-1-1Zm0 3a1 1 0 0 1 1-1h.5a1 1 0 1 1 0 2H13a1 1 0 0 1-1-1Zm-6 4a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H7a1 1 0 0 1-1-1Zm0 3a1 1 0 0 1 1-1h6a1 1 0 1 1 0 2H7a1 1 0 0 1-1-1ZM7 6a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H7Zm1 3V8h1v1H8Z" clip-rule="evenodd"/>
-                        </svg>
-
+                        <i class="pi pi-book"></i>
 
 
                         <div class="w-full">
-                            <Link  :href="route('testGen.show')"  class="flex w-full items-center justify-between pr-8 ">
+                            <button  @click="toggleTestGeneratorMenu" class="flex w-full items-center justify-between pr-8 ">
                                 Test Generator
                                 <svg v-if="showUserManagementMenu" class="w-6 h-6  text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
@@ -296,9 +294,29 @@
                                 <svg v-else class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
                                 </svg>
-                            </Link>
+                            </button>
                         </div>
-                    </div>
+                       
+                    </div><!--andito ako-->
+                    <ul 
+                        v-if="showTestGeneratorMenu"       
+                        >
+                            <Link :href="route('testGen.show')">
+                                <li @click="toggleBackground('testGenerator1')" :class="{'bg-blue-900':clickedItem === 'testGenerator1'}" class="flex pl-10  items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
+                                    <i class="pi pi-cog"></i>
+                                    <span>Generate</span>
+                                </li>
+                            </Link>
+                            <!-- <Link  :href="route('question.add')">
+                                <li @click="toggleBackground('questionBank2')" :class="{'bg-blue-900':clickedItem === 'questionBank2'}" class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
+                                    <svg class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                        <path fill-rule="evenodd" d="M9 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4H7Zm8-1a1 1 0 0 1 1-1h1v-1a1 1 0 1 1 2 0v1h1a1 1 0 1 1 0 2h-1v1a1 1 0 1 1-2 0v-1h-1a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Add
+                                </li>
+                            </Link> -->
+                            
+                        </ul>
                 </div>
                 <!-- test gen-->
                 <div v-if="user.role==='admin' || user.role==='co-admin'">
@@ -443,4 +461,11 @@ const testGenModalOpen = ref(true);
 const closeModal = () => {
     customModalOpen.value = false;
 };
+
+const showTestGeneratorMenu = ref(false)
+
+const toggleTestGeneratorMenu = ()=>
+{
+    showTestGeneratorMenu.value = !showTestGeneratorMenu.value
+}
 </script>
