@@ -112,7 +112,7 @@
                             <tr v-for="(question ,index ) in getDisplayedQuestions() " :key="index" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                                 {{ getQuestionTotalCount(filteredQuestionByCode.length) }} 
                                 <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    {{ index+1 }}
+                                    {{ index + 1 + (currentPage - 1) * itemsPerPage }}
                                 </th>
                                 <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                 {{ question.id }}
@@ -147,6 +147,15 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="flex justify-center mt-4 items-center gap-4">
+                    <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1" class="flex items-center gap-1 btn-primary p-2 ">
+                        <i class="pi pi-angle-double-left"></i> Prev
+                    </button>
+                    <div>Page {{ currentPage }} of {{ totalPages }}</div>
+                    <button @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages" class=" flex items-center gap-1 btn-primary p-2">
+                        Next <i class="pi pi-angle-double-right"></i> 
+                    </button>
+                </div>
             </div>
 
             <div v-else>
@@ -173,7 +182,7 @@
                             <tr v-for="(question ,index ) in searchFieldData " :key="index" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                                 {{ getQuestionTotalCount(filteredQuestionByCode.length) }} 
                                 <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                    {{ index+1 }}
+                                    {{ index + 1 + (currentPageSearch - 1) * itemsPerPageSearch }}
                                 </th>
                                 <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                 {{ question.id }}
@@ -207,6 +216,15 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+                <div class="flex justify-center gap-4 mt-4 items-center">
+                    <button @click="goToPageSearch(currentPageSearch - 1)" :disabled="currentPageSearch === 1" class="flex items-center gap-1 btn-primary p-2 ">
+                        <i class="pi pi-angle-double-left"></i> Prev 
+                    </button>
+                    <div>Page {{ currentPageSearch }} of {{ totalPagesSearch }}</div>
+                    <button @click="goToPageSearch(currentPageSearch + 1)" :disabled="currentPageSearch === totalPagesSearch" class="flex items-center gap-1 btn-primary p-2">
+                        Next <i class="pi pi-angle-double-right"></i>
+                    </button>
                 </div>
             </div>
         
@@ -489,27 +507,54 @@ const logoUrl = ref('/storage/Images/ncstLogo.png');
 const optionUrl = ref('/storage/Images/');
 const searchField = ref('')
 
+const currentPageSearch     = ref(1)
+const itemsPerPageSearch    = ref(2)
+const filteredSearchData = ref([])
 const searchFieldData = computed(() => { // andito ako 2
     
-   
     let searchTerm = searchField.value.toLowerCase().trim()
-    console.log(hasFilteredTerm.value)
+    
+    let startSearch = (currentPageSearch.value-1) * itemsPerPageSearch.value
+    let endSearch   = startSearch + itemsPerPageSearch.value
+
     if(hasFilteredTerm.value)
     {
-        console.log('has filtered Term')
-        return filteredQuestionByTerm.value.filter(question =>{
+        
+        filteredSearchData.value = filteredQuestionByTerm.value.filter(question =>{
             return question.term.toLowerCase().includes(searchTerm) || question.type.toLowerCase().includes(searchTerm) || question.author.name.toLowerCase().includes(searchTerm) || question.question.toLowerCase().includes(searchTerm)
         })
+        console.log('filtered search data length: ')
+        console.log(filteredSearchData.value.length)
+        return filteredSearchData.value.slice(startSearch,endSearch)
+        
     }
     else
     {
-        console.log('by code')
-        return filteredQuestionByCode.value.filter(question =>{
+        filteredSearchData.value = filteredQuestionByCode.value.filter(question =>{
             return question.term.toLowerCase().includes(searchTerm) || question.type.toLowerCase().includes(searchTerm) || question.author.name.toLowerCase().includes(searchTerm) || question.question.toLowerCase().includes(searchTerm)
         })
+        console.log('filtered search data length: ')
+        console.log(filteredSearchData.value.length)
+        return filteredSearchData.value.slice(startSearch,endSearch)
+        
     }
      
+    
 })
+
+const totalPagesSearch = computed(() => {
+  
+  const questionsToPaginate = filteredSearchData.value
+  console.log( 'total pages : '+ Math.ceil(questionsToPaginate.length / itemsPerPageSearch.value))
+  return Math.ceil(questionsToPaginate.length / itemsPerPageSearch.value);
+});
+const goToPageSearch = (page) => {
+  if (page >= 1 && page <= totalPagesSearch.value) {
+    currentPageSearch.value = page;
+  }
+};
+
+
 
 const data = defineProps({
     subjectCodes:Array,
@@ -773,11 +818,27 @@ function getQuestionTotalCount(count){
 }
 
 
-
+const currentPage = ref(1);
+const itemsPerPage = ref(5);
 function getDisplayedQuestions(){ // andito ako 1
-    return hasFilteredTerm.value ? filteredQuestionByTerm.value :  filteredQuestionByCode.value 
+
+    const start = (currentPage.value - 1) * itemsPerPage.value;
+    const end = start + itemsPerPage.value;
+
+    const questionsToPaginate = hasFilteredTerm.value ? filteredQuestionByTerm.value : filteredQuestionByCode.value;
+
+    return questionsToPaginate.slice(start, end);
 }
 
+const totalPages = computed(() => {
+  const questionsToPaginate = hasFilteredTerm.value ? filteredQuestionByTerm.value : filteredQuestionByCode.value;
+  return Math.ceil(questionsToPaginate.length / itemsPerPage.value);
+});
+const goToPage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+};
 
 const textTab = ref(true)
 const imageTab = ref(false)
