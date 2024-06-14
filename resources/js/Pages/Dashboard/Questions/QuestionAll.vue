@@ -9,7 +9,7 @@
                 </svg>
             </div> 
         </div>
-        To do:  <span class="text-red-500">after isconfirmed swal reload</span>
+       
         <!-- <div v-if="$page.props.flash.error" > {{ $page.props.flash.error }}</div> -->
             
             <div class="flex  flex-col ">
@@ -922,10 +922,11 @@ const deleteConfirmation = (questionId)=>
             if(result.isConfirmed)
             {
               
-               if(page.props.flash.action)
-               {
-                    location.reload();
-               }
+                location.reload()
+            //    if(page.props.flash.action)
+            //    {
+            //         location.reload();
+            //    }
                 
             }
         })
