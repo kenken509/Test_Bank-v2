@@ -2,14 +2,14 @@
     <DashboardLayout>
         <div class="flex items-center justify-between border-bot-only py-2 mb-4">
             <span class="text-[20px] font-bold text-gray-500">Questions Page </span> 
-            <!-- <div class="relative">
-                <input v-model="searchField" type="text" placeholder="search" class="rounded-md">
+            <div class="relative">
+                <input  v-model="searchField" type="text" placeholder="search" class="rounded-md">
                 <svg class="absolute top-3 right-2 w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
                 </svg>
-            </div>  -->
+            </div> 
         </div>
-        
+        To do:  <span class="text-red-500">after isconfirmed swal reload</span>
         <!-- <div v-if="$page.props.flash.error" > {{ $page.props.flash.error }}</div> -->
             
             <div class="flex  flex-col ">
@@ -88,7 +88,7 @@
             </div>
         
             <!--TABLE--> 
-            <div>
+            <div v-if="!searchField">
                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-200 uppercase bg-blue-900 dark:bg-gray-700 dark:text-gray-400">
@@ -149,6 +149,66 @@
                 </div>
             </div>
 
+            <div v-else>
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-200 uppercase bg-blue-900 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">No.</th>
+                                <th scope="col" class="px-6 py-3">ID</th>
+                                <th scope="col" class="px-6 py-3">Question</th>
+                                <th scope="col" class="px-6 py-3">Term</th>
+                                <th scope="col" class="px-6 py-3">Type</th>
+                                <th scope="col" class="px-6 py-3">Author</th>
+                                <th scope="col" class="px-6 py-3">Date</th>
+                                
+                            
+
+                                
+                                <th  v-if="isAdmin" scope="col" class="flex justify-center px-6 py-3">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <tr v-for="(question ,index ) in searchFieldData " :key="index" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                                {{ getQuestionTotalCount(filteredQuestionByCode.length) }} 
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    {{ index+1 }}
+                                </th>
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {{ question.id }}
+                                </th>
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {{ question.question }}
+                                </th>
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {{ question.term }}
+                                </th>
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    {{ question.type }}
+                                </th>
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    {{ question.author.name }}
+                                </th>
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    {{ formatDate(question.created_at) }}
+                                </th>
+                            
+                            
+                                <td  v-if="$page.props.user.role === 'admin'" class="px-6 py-4 text-center ">
+                                    <div  class="flex flex-col   lg:flex-row lg:justify-center  lg:space-x-4">
+                                        <button @click="showQuestionInfoModal(question)" class="btn-primary p-2">Info</button>
+                                        <button  @click="deleteConfirmation(question.id)" class=" btn-warning my-2">Delete </button>
+                                        <Link :href="route('question.update.show',{id:question.id})" type="button" class="btn-success my-2">
+                                            Update
+                                        </Link>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         
             <!--TABLE-->
          
@@ -429,7 +489,27 @@ const logoUrl = ref('/storage/Images/ncstLogo.png');
 const optionUrl = ref('/storage/Images/');
 const searchField = ref('')
 
-
+const searchFieldData = computed(() => { // andito ako 2
+    
+   
+    let searchTerm = searchField.value.toLowerCase().trim()
+    console.log(hasFilteredTerm.value)
+    if(hasFilteredTerm.value)
+    {
+        console.log('has filtered Term')
+        return filteredQuestionByTerm.value.filter(question =>{
+            return question.term.toLowerCase().includes(searchTerm) || question.type.toLowerCase().includes(searchTerm) || question.author.name.toLowerCase().includes(searchTerm) || question.question.toLowerCase().includes(searchTerm)
+        })
+    }
+    else
+    {
+        console.log('by code')
+        return filteredQuestionByCode.value.filter(question =>{
+            return question.term.toLowerCase().includes(searchTerm) || question.type.toLowerCase().includes(searchTerm) || question.author.name.toLowerCase().includes(searchTerm) || question.question.toLowerCase().includes(searchTerm)
+        })
+    }
+     
+})
 
 const data = defineProps({
     subjectCodes:Array,
@@ -446,7 +526,7 @@ onMounted(()=>{
 
     selectedSubjectCode.value = data.subjectCodes[0]
     filteredQuestionByCode.value = selectedSubjectCode.value.questions
-    successAlertCounter.value = 0 // andito ako 1
+    successAlertCounter.value = 0 
     selectedTerm.value = []
     if(localStorage.getItem('selectedTerm'))
     {
@@ -475,11 +555,11 @@ onMounted(()=>{
     }   
    
 
-    console.log('selectedTerm')
-    console.log(selectedTerm.value)
+    // console.log('selectedTerm')
+    // console.log(selectedTerm.value)
 
-    console.log('localStorage')
-    console.log(localStorage.getItem('selectedTerm'));
+    // console.log('localStorage')
+    // console.log(localStorage.getItem('selectedTerm'));
 
     //console.log(prelim.value)
 })
@@ -571,7 +651,7 @@ watch(prelim, (val)=>{
     {
         if(!selectedTerm.value.includes('prelim'))
         {
-            selectedTerm.value.push('prelim') //andito ako 2
+            selectedTerm.value.push('prelim') 
             localStorage.setItem('selectedTerm',JSON.stringify(selectedTerm.value))
         }
         
@@ -647,7 +727,6 @@ watch(final, (val)=>{
 
 
 // Function to filter myArray based on checkbox values
-
 function updateFilteredArray() {
         
         if(prelim.value || midTerm.value || prefinal.value || final.value)
@@ -693,9 +772,12 @@ function getQuestionTotalCount(count){
     questionTotalCoumt.value = count
 }
 
-function getDisplayedQuestions(){
-    return hasFilteredTerm.value ? filteredQuestionByTerm.value : filteredQuestionByCode.value
+
+
+function getDisplayedQuestions(){ // andito ako 1
+    return hasFilteredTerm.value ? filteredQuestionByTerm.value :  filteredQuestionByCode.value 
 }
+
 
 const textTab = ref(true)
 const imageTab = ref(false)
