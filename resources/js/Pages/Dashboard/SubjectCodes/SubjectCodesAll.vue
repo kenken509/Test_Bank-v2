@@ -61,7 +61,15 @@
             </div>
         </div>
         <!--TABLE-->
-        
+        <div class="flex justify-center items-center gap-4">
+            <button @click="prevPage" class="flex items-center gap-1 btn-primary p-2">
+                <i class="pi pi-angle-double-left"></i>    Prev
+            </button>
+            <span>{{ currentPage }} of {{ totalPages }}</span>
+            <button @click="nextPage" class=" flex items-center gap-1 btn-primary p-2 ">
+                  Next <i class="pi pi-angle-double-right"></i>
+            </button>
+        </div>
     </DashboardLayout>
 
 </template>
@@ -78,24 +86,50 @@ const data = defineProps({
 })
 
 const searchField = ref('')
-const itemsPerPage = 10 // Number of items to display per page
+const itemsPerPage = ref(5) // Number of items to display per page
 const currentPage = ref(1)
 
 const filteredData = computed(() => {
-    const searchTerm = searchField.value.toLowerCase().trim()
+    let searchTerm = searchField.value.toLowerCase().trim()
     if (!searchTerm) {
         return data.codes
     }
-    return data.codes.filter(code => code.name.toLowerCase().includes(searchTerm))
+
+    return data.codes.filter(code => { 
+        console.log(code)
+      return   code.name.toLowerCase().includes(searchTerm) || code.description.toLowerCase().includes(searchTerm) ||
+               code.department.name.toLowerCase().includes(searchTerm) || (code.division ? code.division.name.toLowerCase().includes(searchTerm):null)
+                
+    })
 })
 
-const totalPages = computed(() => Math.ceil(filteredData.value.length / itemsPerPage))
+const totalPages = computed(() => Math.ceil(filteredData.value.length / itemsPerPage.value))
 
 const paginatedData = computed(() => {
-    const startIndex = (currentPage.value - 1) * itemsPerPage
-    const endIndex = startIndex + itemsPerPage
+    if(searchField.value)
+    {
+        currentPage.value = 1
+    }
+    const startIndex = (currentPage.value - 1) * itemsPerPage.value
+    const endIndex = startIndex + itemsPerPage.value
     return filteredData.value.slice(startIndex, endIndex)
 })
+
+
+function nextPage(){
+    if(currentPage.value < totalPages.value)
+    {
+        currentPage.value++
+    }
+}
+
+function prevPage()
+{
+    if(currentPage.value > 1)
+    {
+        currentPage.value--
+    }
+}
 
 const deleteConfirmation = (codeId)=> 
     { 

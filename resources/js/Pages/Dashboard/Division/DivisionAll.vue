@@ -43,11 +43,11 @@
             </table>
         </div>
         <div class="flex justify-center gap-4">
-            <button class="btn-primary p-2" @click="prevPage">
+            <button class="btn-primary p-2" @click="prevPage" :disabled="currentPage === 1">
                 prev
             </button>
             <span class="flex items-center">{{ currentPage }} of {{ itemsPerPage }}</span>
-            <button class="btn-primary p-2" @click="nextPage">
+            <button class="btn-primary p-2" @click="nextPage" :disabled="totalPages === currentPage">
                 next
             </button>
         </div>
