@@ -9,7 +9,7 @@
                 </svg>
             </div> 
         </div>
-
+       
         <div v-if="$page.props.flash.success" >{{ successMessage($page.props.flash.success) }} </div>
         <div v-if="$page.props.flash.error" >{{ errorMessage($page.props.flash.error) }} </div>
 
@@ -23,7 +23,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="div in data.division" :key="div.id" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                    <tr v-for="div in paginatedData" :key="div.id" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                         <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                             {{ div.name }}
                         </th>
@@ -42,14 +42,22 @@
                 </tbody>
             </table>
         </div>
-        
+        <div class="flex justify-center gap-4">
+            <button class="btn-primary p-2" @click="prevPage">
+                prev
+            </button>
+            <span class="flex items-center">{{ currentPage }} of {{ itemsPerPage }}</span>
+            <button class="btn-primary p-2" @click="nextPage">
+                next
+            </button>
+        </div>
     </DashboardLayout>
 
 </template>
 
 <script setup>
 import DashboardLayout from '../DashboardLayout.vue';
-import {ref} from 'vue'
+import {ref, computed} from 'vue'
 import { Link, router } from '@inertiajs/vue3';
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 
@@ -59,8 +67,58 @@ const data = defineProps({
 })
 
 const searchField = ref('')
+const currentPage = ref(1)
+const itemsPerPage = ref(2)
+
+const filteredData = computed(()=>{
+    let searchTerm = searchField.value.toLowerCase().trim()
+    
+    //currentPage.value = 1
+    if(!searchTerm)
+    {
+        return data.division
+    }
+
+    return data.division.filter((div)=>{
+        console.log(div)
+        return div.name.toLowerCase().includes(searchTerm) || div.department.name.toLowerCase().includes(searchTerm)
+    })
+})
 
 
+const totalPages = computed(()=>{
+    return Math.ceil(filteredData.value.length / itemsPerPage.value)
+})
+
+const paginatedData = computed(()=>{
+    
+    if(searchField.value)
+    {
+        currentPage.value = 1
+    }
+
+    let startIndex  = (currentPage.value - 1) * itemsPerPage.value
+    let endIndex    = startIndex + itemsPerPage.value
+
+    return filteredData.value.slice(startIndex,endIndex)
+})
+
+function nextPage()
+{
+    
+    if(currentPage.value < totalPages.value)
+    {
+        currentPage.value++
+    }
+}
+
+function prevPage()
+{
+    if(currentPage.value > 1)
+    {
+        currentPage.value--
+    }
+}
 const deleteConfirmation = (divId)=> 
     { 
         Swal.fire({

@@ -148,7 +148,7 @@ const data = defineProps({
 
 const visible = ref(false);
 const searchField = ref('')
-const itemsPerPage = 10 // Number of items to display per page
+const itemsPerPage = 5 // Number of items to display per page
 const currentPage = ref(1)
 
 const filteredData = computed(() => {
@@ -162,6 +162,10 @@ const filteredData = computed(() => {
 const totalPages = computed(() => Math.ceil(filteredData.value.length / itemsPerPage))
 
 const paginatedData = computed(() => {
+    if(searchField.value)
+    {
+        currentPage.value = 1
+    }
     const startIndex = (currentPage.value - 1) * itemsPerPage
     const endIndex = startIndex + itemsPerPage
     return filteredData.value.slice(startIndex, endIndex)
