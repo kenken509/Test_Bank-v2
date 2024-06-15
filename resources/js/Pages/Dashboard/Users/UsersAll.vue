@@ -42,7 +42,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="user in filteredData" :key="user.id" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                        <tr v-for="user in paginatedData" :key="user.id" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                 {{ user.email }}
                             </th>
@@ -79,7 +79,15 @@
             </div>
         </div>
         <!--TABLE-->
-
+        <div class="flex items-center justify-center gap-4 mt-2">
+            <button @click="prevPage" :disabled="currentPage === 1" class="btn-pagination flex items-center gap-1">
+                <i class="pi pi-angle-double-left"></i> Prev
+            </button>
+            <span>{{ currentPage }} of {{ totalPages }}</span>
+            <button @click="nextPage" :disabled="currentPage === totalPages" class="btn-pagination flex items-center gap-1">
+                 Next <i class="pi pi-angle-double-right"></i>
+            </button>
+        </div>
 
         
 
@@ -178,9 +186,39 @@ const filteredData = computed(()=>{// andito ako 1
             
 
 })
-//$table->enum('role', ['admin','co-admin','department head','faculty'])->nullable();
 
+const currentPage = ref(1)
+const itemsPerPage = ref(5)
 
+const paginatedData = computed(()=>{
+    if(searchField.value)
+    {
+        currentPage.value = 1
+    }
+
+    let startIndex = (currentPage.value -1) * itemsPerPage.value
+    let endIndex = startIndex + itemsPerPage.value
+
+    return filteredData.value.slice(startIndex,endIndex)
+})
+
+const totalPages = computed(()=> Math.ceil(filteredData.value.length/itemsPerPage.value))
+
+function nextPage()
+{
+    if(currentPage.value < totalPages.value)
+    {
+        currentPage.value++
+    }
+}
+
+function prevPage()
+{
+    if(currentPage.value > 1)
+    {
+        currentPage.value--
+    }
+}
 const roles = ref([
     'admin',
     'co-admin',

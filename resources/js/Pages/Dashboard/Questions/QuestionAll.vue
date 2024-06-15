@@ -148,11 +148,11 @@
                     </table>
                 </div>
                 <div class="flex justify-center mt-4 items-center gap-4">
-                    <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1" class="flex items-center gap-1 btn-primary p-2 ">
+                    <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"class="btn-pagination flex items-center gap-1">
                         <i class="pi pi-angle-double-left"></i> Prev
                     </button>
                     <div>Page {{ currentPage }} of {{ totalPages }}</div>
-                    <button @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages" class=" flex items-center gap-1 btn-primary p-2">
+                    <button @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages" class="btn-pagination flex items-center gap-1">
                         Next <i class="pi pi-angle-double-right"></i> 
                     </button>
                 </div>
@@ -218,11 +218,11 @@
                     </table>
                 </div>
                 <div class="flex justify-center gap-4 mt-4 items-center">
-                    <button @click="goToPageSearch(currentPageSearch - 1)" :disabled="currentPageSearch === 1" class="flex items-center gap-1 btn-primary p-2 ">
+                    <button @click="goToPageSearch(currentPageSearch - 1)" :disabled="currentPageSearch === 1" class="btn-pagination flex items-center gap-1">
                         <i class="pi pi-angle-double-left"></i> Prev 
                     </button>
                     <div>Page {{ currentPageSearch }} of {{ totalPagesSearch }}</div>
-                    <button @click="goToPageSearch(currentPageSearch + 1)" :disabled="currentPageSearch === totalPagesSearch" class="flex items-center gap-1 btn-primary p-2">
+                    <button @click="goToPageSearch(currentPageSearch + 1)" :disabled="currentPageSearch === totalPagesSearch" class="btn-pagination flex items-center gap-1">
                         Next <i class="pi pi-angle-double-right"></i>
                     </button>
                 </div>

@@ -95,9 +95,13 @@
 
         <!--PAGINATION CONTROLS-->
         <div class="flex  justify-center items-center mt-4">
-            <button @click="prevPage" :disabled="currentPage === 1" class="px-4 py-2 mx-1 bg-blue-800 text-white rounded-md disabled:opacity-50">Previous</button>
+            <button @click="prevPage" :disabled="currentPage === 1" class="btn-pagination flex items-center gap-1">
+                <i class="pi pi-angle-double-left"></i>  Prev
+            </button>
             <span class="px-4 py-2">{{ currentPage }} / {{ totalPages }}</span>
-            <button @click="nextPage" :disabled="currentPage === totalPages" class="px-4 py-2 mx-1 bg-blue-800 text-white rounded-md disabled:opacity-50">Next</button>
+            <button @click="nextPage" :disabled="currentPage === totalPages" class="btn-pagination flex items-center gap-1">
+                Next <i class="pi pi-angle-double-right"></i>
+            </button>
         </div>
         <!--PAGINATION CONTROLS-->
         

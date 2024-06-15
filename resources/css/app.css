@@ -20,6 +20,11 @@
       .btn-primary{
         @apply bg-blue-700 hover:bg-blue-600 hover:text-white my-2 py-2 rounded text-gray-100 rounded-lg
       }
+
+      .btn-pagination
+      {
+         @apply px-4 py-2 mx-1 bg-blue-800 text-white rounded-md disabled:opacity-50
+      }
   }
 
   /* Order */

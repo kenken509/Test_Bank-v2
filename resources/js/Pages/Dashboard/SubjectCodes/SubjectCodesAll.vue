@@ -61,12 +61,12 @@
             </div>
         </div>
         <!--TABLE-->
-        <div class="flex justify-center items-center gap-4">
-            <button @click="prevPage" class="flex items-center gap-1 btn-primary p-2">
+        <div class="flex justify-center items-center gap-4 mt-2">
+            <button @click="prevPage" type="button" :disabled="currentPage === 1" class="btn-pagination flex items-center gap-1" >
                 <i class="pi pi-angle-double-left"></i>    Prev
             </button>
             <span>{{ currentPage }} of {{ totalPages }}</span>
-            <button @click="nextPage" class=" flex items-center gap-1 btn-primary p-2 ">
+            <button @click="nextPage" type="button" :disabled="currentPage === totalPages" class="btn-pagination flex items-center gap-1">
                   Next <i class="pi pi-angle-double-right"></i>
             </button>
         </div>
@@ -193,3 +193,4 @@ const deleteConfirmation = (codeId)=>
         })
     }
 </script>
+

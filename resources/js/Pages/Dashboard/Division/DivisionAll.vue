@@ -42,13 +42,13 @@
                 </tbody>
             </table>
         </div>
-        <div class="flex justify-center gap-4">
-            <button class="btn-primary p-2" @click="prevPage" :disabled="currentPage === 1">
-                prev
+        <div class="flex justify-center gap-4 mt-2">
+            <button class="btn-pagination flex items-center gap-1" @click="prevPage" :disabled="currentPage === 1">
+                <i class="pi pi-angle-double-left"></i>  Prev
             </button>
             <span class="flex items-center">{{ currentPage }} of {{ itemsPerPage }}</span>
-            <button class="btn-primary p-2" @click="nextPage" :disabled="totalPages === currentPage">
-                next
+            <button class="btn-pagination flex items-center gap-1" @click="nextPage" :disabled="totalPages === currentPage">
+                Next <i class="pi pi-angle-double-right"></i>
             </button>
         </div>
     </DashboardLayout>
