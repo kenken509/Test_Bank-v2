@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BackUpController;
 use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\TestPageController;
@@ -82,4 +83,9 @@ Route::controller(TestGeneratorController::class)->group(function(){
 
 Route::controller(TestPageController::class)->group(function(){
     Route::get('/test', 'showTestPage')->name('testPage');
+});
+
+Route::controller(BackUpController::class)->group(function(){
+    Route::get('/download-database-backup', 'download')->name('backup.download');
+    Route::get('/test_con', 'testDatabaseConnection')->name('test.con');
 });

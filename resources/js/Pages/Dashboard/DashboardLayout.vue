@@ -299,26 +299,19 @@
                        
                     </div><!--andito ako-->
                     <ul 
-                        v-if="showTestGeneratorMenu"       
-                        >
-                            <Link :href="route('testGen.show')">
-                                <li @click="toggleBackground('testGenerator1')" :class="{'bg-blue-900':clickedItem === 'testGenerator1'}" class="flex pl-10  items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
-                                    <i class="pi pi-cog"></i>
-                                    <span>Generate</span>
-                                </li>
-                            </Link>
-                            <!-- <Link  :href="route('question.add')">
-                                <li @click="toggleBackground('questionBank2')" :class="{'bg-blue-900':clickedItem === 'questionBank2'}" class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
-                                    <svg class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                        <path fill-rule="evenodd" d="M9 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4H7Zm8-1a1 1 0 0 1 1-1h1v-1a1 1 0 1 1 2 0v1h1a1 1 0 1 1 0 2h-1v1a1 1 0 1 1-2 0v-1h-1a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
-                                    </svg>
-                                    Add
-                                </li>
-                            </Link> -->
-                            
-                        </ul>
+                    v-if="showTestGeneratorMenu"       
+                    >
+                        <Link :href="route('testGen.show')">
+                            <li @click="toggleBackground('testGenerator1')" :class="{'bg-blue-900':clickedItem === 'testGenerator1'}" class="flex pl-10  items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
+                                <i class="pi pi-cog"></i>
+                                <span>Generate</span>
+                            </li>
+                        </Link>
+                    </ul>
                 </div>
                 <!-- test gen-->
+
+                <!--back up-->
                 <div v-if="user.role==='admin' || user.role==='co-admin'">
                     <div class="flex items-center py-3 pl-3 space-x-2 hover:bg-blue-900" >
                         <svg class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
@@ -326,9 +319,9 @@
                         </svg>
 
                         <div class="w-full">
-                            <button  class="flex w-full items-center justify-between pr-8 ">
+                            <button  @click="toggleBackUpMenu" class="flex w-full items-center justify-between pr-8 ">
                                 Back Up
-                                <svg v-if="showUserManagementMenu" class="w-6 h-6  text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <svg v-if="showBackUpMenu" class="w-6 h-6  text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
                                 </svg>
                                 <svg v-else class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -337,8 +330,25 @@
                             </button>
                         </div>
                     </div>
+                    <ul 
+                    v-if="showBackUpMenu"       
+                    >
+                        <Link href="">
+                            <li @click="toggleBackground('backup1')" :class="{'bg-blue-900':clickedItem === 'backup1'}" class="flex pl-10  items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
+                                <i class="pi pi-download"></i>
+                                <span @click="downloadBackup">Download</span>
+                            </li>
+                        </Link>
+                        <Link href="">
+                            <li @click="toggleBackground('backup2')" :class="{'bg-blue-900':clickedItem === 'backup2'}" class="flex pl-10  items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
+                                <i class="pi pi-upload"></i>
+                                <input type="file" ref="fileInput" @change="handleFileUpload"  class="hidden">
+                                <button type="button" @click="triggerFileUpload"  >Upload</button> <!--andito ako 3-->
+                            </li>
+                        </Link>
+                    </ul>
                 </div>
-                
+                <!--back up-->
 
                 <div class="border-b-2 border-gray-700 my-2">
                 
@@ -388,6 +398,7 @@
 import { computed, ref } from 'vue';
 import { usePage, Link, router } from '@inertiajs/vue3';
 import CustomModal from '../Global Component/CustomModal.vue';
+import axios from 'axios';
 
 
 const customModalOpen = ref(true)
@@ -468,4 +479,70 @@ const toggleTestGeneratorMenu = ()=>
 {
     showTestGeneratorMenu.value = !showTestGeneratorMenu.value
 }
+
+const showBackUpMenu = ref(false)
+const toggleBackUpMenu = ()=>
+{
+    showBackUpMenu.value = !showBackUpMenu.value
+}
+
+// back up logic
+const downloadBackup = async () => { 
+  try {
+    const response = await axios({
+      url: '/download-database-backup',
+      method: 'GET',
+      responseType: 'blob', // Important for file download
+    });
+        let date = dateFormat()
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'NCST_TEST_BANK_DB_BACKUP_'+date+'.sql'); // Adjust filename if necessary
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+  } catch (error) {
+    console.error('Error downloading the backup file:', error);
+    // Handle error appropriately in your frontend
+  }
+};
+
+function dateFormat() {
+    const date = new Date();
+    
+    // Extract components
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    
+    // Construct the formatted date string
+    const formattedDate = `${day}-${month}-${year}-${hours}-${minutes}-${seconds}`;
+    
+    return formattedDate;
+}
+
+
+
+// Define reactive state
+const selectedFile = ref(null);
+const fileInput = ref(null);
+// Function to trigger file input click
+const triggerFileUpload = () => { // andito ako 4
+    let input = fileInput.value
+    if (input) {
+        input.dispatchEvent(new MouseEvent('click')); // Dispatch a click event
+    }
+};
+
+// Handle file upload when file is selected
+const handleFileUpload = (event) => {
+    console.log('im here')
+  const file = event.target.files[0];
+  console.log(file);
+  // Handle file upload logic here
+};
 </script>
