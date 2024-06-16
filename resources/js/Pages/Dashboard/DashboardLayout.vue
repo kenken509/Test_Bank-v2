@@ -336,7 +336,7 @@
                         <Link href="">
                             <li @click="toggleBackground('backup1')" :class="{'bg-blue-900':clickedItem === 'backup1'}" class="flex pl-10  items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
                                 <i class="pi pi-download"></i>
-                                <span @click="downloadBackup">Download</span>
+                                <Link :href="route('backup.show')">Download</Link>
                             </li>
                         </Link>
                         <Link href="">
@@ -486,47 +486,11 @@ const toggleBackUpMenu = ()=>
     showBackUpMenu.value = !showBackUpMenu.value
 }
 
-// back up logic
-const downloadBackup = async () => { 
-  try {
-    const response = await axios({
-      url: '/download-database-backup',
-      method: 'GET',
-      responseType: 'blob', // Important for file download
-    });
-        let date = dateFormat()
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'NCST_TEST_BANK_DB_BACKUP_'+date+'.sql'); // Adjust filename if necessary
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-  } catch (error) {
-    console.error('Error downloading the backup file:', error);
-    // Handle error appropriately in your frontend
-  }
-};
-
-function dateFormat() {
-    const date = new Date();
-    
-    // Extract components
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-    
-    // Construct the formatted date string
-    const formattedDate = `${day}-${month}-${year}-${hours}-${minutes}-${seconds}`;
-    
-    return formattedDate;
-}
 
 
 
+
+// upload logic********************************************8
 // Define reactive state
 const selectedFile = ref(null);
 const fileInput = ref(null);

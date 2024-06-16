@@ -13,6 +13,10 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class BackUpController extends Controller
 {
+    public function show()
+    {
+        return inertia('Dashboard/Backup/Download');
+    }
     public function download()
     {
         $mysqldumpPath = 'C:/xampp/mysql/bin/mysqldump';
