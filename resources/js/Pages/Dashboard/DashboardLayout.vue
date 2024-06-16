@@ -343,7 +343,7 @@
                             <li @click="toggleBackground('backup2')" :class="{'bg-blue-900':clickedItem === 'backup2'}" class="flex pl-10  items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
                                 <i class="pi pi-upload"></i>
                                 <input type="file" ref="fileInput" @change="handleFileUpload"  class="hidden">
-                                <button type="button" @click="triggerFileUpload"  >Upload</button> <!--andito ako 3-->
+                                <Link  :href="route('backup.restore.show')" >Upload</Link> <!--andito ako 3-->
                             </li>
                         </Link>
                     </ul>
@@ -380,8 +380,6 @@
                
             </div>
             <div class="p-8  ">
-                
-                
                 
 
                 <slot></slot>

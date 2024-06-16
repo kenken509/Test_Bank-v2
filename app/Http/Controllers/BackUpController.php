@@ -7,8 +7,9 @@ use PDOException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Process\Process;
-use PHPUnit\TextUI\Configuration\Exception;
+use Exception;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+
 
 
 class BackUpController extends Controller
@@ -17,6 +18,7 @@ class BackUpController extends Controller
     {
         return inertia('Dashboard/Backup/Download');
     }
+
     public function download()
     {
         $mysqldumpPath = 'C:/xampp/mysql/bin/mysqldump';
@@ -54,7 +56,59 @@ class BackUpController extends Controller
         }
     }
     
+    public function showRestore()
+    {
+        return inertia('Dashboard/Backup/Restore');
+    }
 
+    public function restoreDatabase(Request $request)
+    {
+        $request->validate([
+            'database' => 'required|file'
+        ]);
+
+        $databaseFile = $request->file('database');
+
+        try 
+        {
+            // Process the database restoration
+            $backupPath = storage_path('app/backup'); // Adjust the path as necessary
+            $fileName = $databaseFile->getClientOriginalName();
+            $filePath = $databaseFile->storeAs('backup', $fileName);
+
+            
+            $mysqldumpPath = 'C:/xampp/mysql/bin/mysql'; // Adjust the path to your MySQL client
+            $database = env('DB_DATABASE');
+            $username = env('DB_USERNAME');
+            $password = env('DB_PASSWORD');
+            $host = env('DB_HOST');
+
+           
+            // Construct the command to restore the database
+            $command = "\"$mysqldumpPath\" --user=$username --password=$password --host=$host $database < \"$backupPath/$fileName\"";
+            
+            exec($command, $output, $returnVar);
+
+            
+            if ($returnVar !== 0) {
+                throw new Exception("Database restoration failed with return code $returnVar");
+            }
+
+            
+            // Clean up the uploaded backup file
+            unlink(storage_path("app/$filePath"));
+
+            return redirect()->back()->with('success','Database successfully restored!');
+        } catch (Exception $e) {
+            Log::error('Error restoring database: ' . $e->getMessage());
+
+            // If an error occurs, delete the uploaded backup file if it exists
+            if (isset($filePath) && file_exists(storage_path("app/$filePath"))) {
+                unlink(storage_path("app/$filePath"));
+            }
+            return redirect()->back()->with('error','Failed to restore database!');
+        }
+    }
 
      public function testDatabaseConnection()
     {

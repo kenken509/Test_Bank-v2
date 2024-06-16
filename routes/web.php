@@ -88,5 +88,7 @@ Route::controller(TestPageController::class)->group(function(){
 Route::controller(BackUpController::class)->group(function(){
     Route::get('/backup-download-db', 'show')->name('backup.show');
     Route::get('/download-database-backup', 'download')->name('backup.download');
+    Route::get('/backup-restore', 'showRestore')->name('backup.restore.show');
+    Route::post('/backup-restore-db', 'restoreDatabase')->name('backup.restore.restore');
     Route::get('/test_con', 'testDatabaseConnection')->name('test.con');
 });

@@ -261,7 +261,7 @@ const handleAttachedImageChange = (event) => {
 const attachedImageValidator = ref('');
 const textOptionsValidator = ref('');
 const imageOptionValidator = ref('');
-const noError = ref(false);
+const hasError = ref(false);
 
 function imageFileValidator(file,index){
     
@@ -477,26 +477,26 @@ const submit = ()=>{
         {
             
             imageOptionValidator.value = 'Fill out all image options.'
-            noError.value = false
+            hasError.value = false
         }
         else
         {
             if(selectedOption.value === null || selectedOption.value === '')
             {
                 imageOptionValidator.value = "Please select correct answer."
-                noError.value = false
+                hasError.value = false
             }
             else
             {
                 
                 imageOptionValidator.value = ''
-                noError.value = true
+                hasError.value = true
             }
         }
         
         
 
-        if(noError.value)
+        if(hasError.value)
         {
             form.options = options
             submitConfirmation();

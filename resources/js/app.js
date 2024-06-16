@@ -17,6 +17,8 @@ import Button from "primevue/button"
 import InputText from 'primevue/inputtext';
 import InputMask from 'primevue/inputmask';
 import Image from 'primevue/image';
+import FileUpload from 'primevue/fileupload';
+
 
 
 createInertiaApp({
@@ -35,6 +37,7 @@ createInertiaApp({
       .component('InputText',InputText)
       .component('InputMask',InputMask)
       .component('Image', Image)
+      .component('FileUpload',FileUpload)
       .mount(el)
   },
 })
