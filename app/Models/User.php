@@ -57,4 +57,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Division::class);
     }   
+
+    public function questions()
+    {
+        return $this->hasMany(Question::class,'author_id','id');
+    }
 }
