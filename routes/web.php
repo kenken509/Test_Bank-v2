@@ -9,6 +9,7 @@ use App\Http\Controllers\TestPageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\SubjectCodeController;
+use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\TestGeneratorController;
 use App\Http\Controllers\UserManagementController;
 
@@ -91,4 +92,9 @@ Route::controller(BackUpController::class)->group(function(){
     Route::get('/backup-restore', 'showRestore')->name('backup.restore.show');
     Route::post('/backup-restore-db', 'restoreDatabase')->name('backup.restore.restore');
     Route::get('/test_con', 'testDatabaseConnection')->name('test.con');
+});
+
+Route::controller(AnnouncementController::class)->group(function(){
+    Route::get('text_bank/announcement', 'showAnnouncement')->name('announcement.show');
+    Route::get('text_bank/announcement/new', 'createAnnouncement')->name('announcement.create');;
 });

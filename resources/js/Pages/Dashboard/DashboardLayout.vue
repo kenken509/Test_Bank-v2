@@ -28,6 +28,69 @@
                     </svg>
                     <span>Dashboard</span>
                 </Link>
+                <div v-if="user.role==='admin' || user.role==='co-admin'">
+                    <div class="flex items-center py-3 pl-3 space-x-2 hover:bg-blue-900" >
+                        <svg class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                            <path fill-rule="evenodd" d="M18.458 3.11A1 1 0 0 1 19 4v16a1 1 0 0 1-1.581.814L12 16.944V7.056l5.419-3.87a1 1 0 0 1 1.039-.076ZM22 12c0 1.48-.804 2.773-2 3.465v-6.93c1.196.692 2 1.984 2 3.465ZM10 8H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6V8Zm0 9H5v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3Z" clip-rule="evenodd"/>
+                        </svg>
+
+                        
+                        <div class="w-full">
+                            <button @click="announcmentToggleMenu" class="flex w-full items-center justify-between pr-8 ">
+                            Announcement
+                                <svg v-if="showDepMgmtMenu" class="w-6 h-6  text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+                                </svg>
+                                <svg v-else class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
+                                </svg>
+                                
+                            </button>
+                            
+                        </div>
+                    </div>
+                    <ul 
+                        v-if="showAnnouncmentMenu"
+                        
+                    >
+                        
+                        <Link v-if="user.role === 'admin'" :href="route('announcement.show')">
+                            <li @click="toggleBackground('ann1')" :class="{'bg-blue-900':clickedItem == 'ann1'}" class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
+                                <svg class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                    <path fill-rule="evenodd" d="M18.458 3.11A1 1 0 0 1 19 4v16a1 1 0 0 1-1.581.814L12 16.944V7.056l5.419-3.87a1 1 0 0 1 1.039-.076ZM22 12c0 1.48-.804 2.773-2 3.465v-6.93c1.196.692 2 1.984 2 3.465ZM10 8H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6V8Zm0 9H5v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3Z" clip-rule="evenodd"/>
+                                </svg>
+
+
+                                Announcement
+                            </li>
+                        </Link>
+                        <Link v-if="user.role === 'admin'" :href="route('announcement.create')">
+                            <li @click="toggleBackground('ann2')" :class="{'bg-blue-900':clickedItem == 'ann2'}" class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
+                                <svg class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                    <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4.243a1 1 0 1 0-2 0V11H7.757a1 1 0 1 0 0 2H11v3.243a1 1 0 1 0 2 0V13h3.243a1 1 0 1 0 0-2H13V7.757Z" clip-rule="evenodd"/>
+                                </svg>
+                                Create
+                            </li>
+                        </Link>
+                       
+                        
+
+
+                        <!-- <li @click="toggleBackground('dep3')" :class="{'bg-blue-900':clickedItem == 'dep3'}" class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
+                            <svg class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" d="M5 8a4 4 0 1 1 8 0 4 4 0 0 1-8 0Zm-2 9a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1Zm13-6a1 1 0 1 0 0 2h4a1 1 0 1 0 0-2h-4Z" clip-rule="evenodd"/>
+                            </svg>
+                            Delete
+                        </li>
+                        <li @click="toggleBackground('dep4')" :class="{'bg-blue-900':clickedItem == 'dep4'}" class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
+                            <svg class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" d="M5 8a4 4 0 1 1 7.796 1.263l-2.533 2.534A4 4 0 0 1 5 8Zm4.06 5H7a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h2.172a2.999 2.999 0 0 1-.114-1.588l.674-3.372a3 3 0 0 1 .82-1.533L9.06 13Zm9.032-5a2.907 2.907 0 0 0-2.056.852L9.967 14.92a1 1 0 0 0-.273.51l-.675 3.373a1 1 0 0 0 1.177 1.177l3.372-.675a1 1 0 0 0 .511-.273l6.07-6.07a2.91 2.91 0 0 0-.944-4.742A2.907 2.907 0 0 0 18.092 8Z" clip-rule="evenodd"/>
+                            </svg>
+
+                            Update
+                        </li> -->
+                    </ul>
+                </div>
                 <!-- DEPARTMENT MANAGEMENT -->
                 <div v-if="user.role==='admin' || user.role==='co-admin'">
                     <div class="flex items-center py-3 pl-3 space-x-2 hover:bg-blue-900" >
@@ -416,6 +479,14 @@ const logoUrl = ref('/storage/Images/ncstLogo.png');
 const menuBtnClick = () => {
     showSideBar.value = !showSideBar.value;
 };
+
+// Announcement Management
+const showAnnouncmentMenu = ref(false)
+
+const announcmentToggleMenu = ()=>{
+    showAnnouncmentMenu.value = !showAnnouncmentMenu.value
+    clickedItem.value = 0
+}
 
 // DEPARTMENT MANAGEMENT LOGIC
 const showDepMgmtMenu = ref(false)
