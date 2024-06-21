@@ -9,9 +9,9 @@
                 </svg>
             </div> 
         </div>
-       
-        <!-- <div v-if="$page.props.flash.error" > {{ $page.props.flash.error }}</div> -->
-            
+       <!-- {{ problemSetFormattedData(problemSets[0].content) }}  -->
+        <div v-if="$page.props.flash.error" > {{ errorMessage($page.props.flash.error) }}</div>
+        <div v-if="problemSetForm.errors.content" > {{ errorMessage(problemSetForm.errors.content) }}</div>
             <div class="flex  flex-col ">
                 <div class="grid grid-cols-10 items-center my-2 ">
                     <div class="col-span-1">
@@ -73,13 +73,13 @@
                         </span>
                     </div>
                     
-                    <div class="col-span-8 w-full">
+                    <div class="col-span-6 w-full" :class="{'col-span-8':!isAdminOrCoAdmin}" >
                         <input type="text" :value="selectedSubjectCode.description" class="w-full bg-gray-100 rounded-md" disabled />
                         <span class="col-span-1">
-                            
                         </span>
                     </div>
-                    <div class="col-span-1 ">
+                    <div class="col-span-3 flex w-full gap-2 " :class="{'col-span-1':!isAdminOrCoAdmin}"><!--andito ako 1-->
+                        <button @click="handleProblemSetButtonClicked" v-if="user.role === 'admin'" type="button" class="text-center btn-primary p-2 w-full hover:cursor-pointer">+ Problem Set</button>
                         <button @click="handleAddQuestionModal" type="button" class="btn-primary p-2 w-full">+ New</button>
                     </div>
                 </div>
@@ -468,11 +468,59 @@
             </ModalHeader>
             
         </Dialog>
-
         <!-- ADD QUESTION MODAL-->
-        <div>
-           
-        </div>
+
+
+        <!--problem set modal-->
+        <Dialog v-model:visible="addProblemSetModal" modal :style="{ width: '60rem'}">
+            <!--header-->
+            <div class="border  flex justify-between items-center bg-blue-900 p-4 pl-2 pr-4 rounded-tl-md rounded-tr-md">
+                <div class="flex items-center gap-2">
+                    <img :src="logoUrl" alt="error" class="w-20 h-20">
+                    <span class="text-gray-100 text-xl">Problem Set</span><!--andito ako 2-->
+                </div>
+                <div class="flex  flex-col  ">
+                    <div class="flex justify-end text-[30px] text-gray-100">
+                        {{ user.name }}
+                    </div>
+                    <div class="flex justify-end text-gray-100">
+                        {{ user.role }} 
+                    </div>
+                </div>
+                
+            </div>
+            <div class="w-full pt-6">
+                <div class=" border-gray-400 relative">
+                    <form @submit.prevent="submitProbSet">
+                        <div class="mb-2 w-full ">
+                            <div class="flex flex-col md:flex-row justify-between ">
+                                <div class="flex gap-4 items-center justify-between ">
+                                    <span class="text-[18px] font-semibold ">Subject Code: </span>
+                                    <input type="text" :placeholder="selectedSubjectCode.name" disabled class="rounded-md bg-gray-200"/>
+                                </div>
+                                <div class="flex gap-4 items-center justify-between" >
+                                    <span class="text-[18px] font-semibold ">Term: </span>
+                                    <input type="text" :placeholder="selectedTerm[0]" disabled class="rounded-md bg-gray-200"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="my-2">
+                            <hr/>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label for="content" class="font-semibold text-[18px]">Content:</label>    
+                            <textarea  v-model="problemSetForm.content" id="content" class="rounded-md w-full" rows="8" cols="50" placeholder="Enter text here" required></textarea>
+                        </div>
+
+                        <button @click="handleResetButton" type="button" class="btn-primary p-2 w-full">Reset</button>
+                        <button type="submit" class="btn-primary p-2 w-full" :disabled="form.processing">Submit</button>
+                    </form>
+                </div>
+            </div>
+            <!--header-->
+        </Dialog>
+         <!--problem set modal-->
     </DashboardLayout>
 </template>
 
@@ -499,7 +547,16 @@ function getCorrectAnswer(options)
     //     }
     // })
 }
-
+const isAdminOrCoAdmin = computed(()=>{
+    if(user.role === 'admin' || user.role === 'co-admin')
+    {
+        return true
+    }
+    else
+    {
+        return false
+    }
+})
 const { convertedText, convertText } = useConvertText();
 
 const correctAnswer= ref('')
@@ -510,7 +567,7 @@ const searchField = ref('')
 const currentPageSearch     = ref(1)
 const itemsPerPageSearch    = ref(2)
 const filteredSearchData = ref([])
-const searchFieldData = computed(() => { // andito ako 2
+const searchFieldData = computed(() => { 
     
     let searchTerm = searchField.value.toLowerCase().trim()
     
@@ -558,6 +615,7 @@ const goToPageSearch = (page) => {
 
 const data = defineProps({
     subjectCodes:Array,
+    problemSets:Array,
     
 })
 
@@ -699,8 +757,6 @@ watch(prelim, (val)=>{
             selectedTerm.value.push('prelim') 
             localStorage.setItem('selectedTerm',JSON.stringify(selectedTerm.value))
         }
-        
-        
     }
 
     if(!val)
@@ -820,7 +876,7 @@ function getQuestionTotalCount(count){
 
 const currentPage = ref(1);
 const itemsPerPage = ref(5);
-function getDisplayedQuestions(){ // andito ako 1
+function getDisplayedQuestions(){ 
 
     const start = (currentPage.value - 1) * itemsPerPage.value;
     const end = start + itemsPerPage.value;
@@ -980,7 +1036,53 @@ const deleteConfirmation = (questionId)=>
         }
     }
 
+    // add problem set logic ***************************** start
+    const addProblemSetModal = ref(false)
+    const problemSetForm = useForm({
+        content:'',
+        subject_code_id:'',
+        term:'',
+    })
+    const handleProblemSetButtonClicked = ()=>{ // andito ako 3
+        
+        if(selectedTerm.value.length < 1)
+        {
+            selectedTermValidator.value = 'Term is required.'
+            errorMessage2(selectedTermValidator.value)
+            return
+        }
 
+        if(selectedTerm.value.length === 1)
+        {
+            selectedTermValidator.value = ''
+            addProblemSetModal.value = true
+        }
+        else
+        {
+            selectedTermValidator.value = 'Multiple terms are not allowed.'
+            errorMessage2(selectedTermValidator.value)
+        }
+        
+    }
+
+    const handleResetButton = ()=>{
+        problemSetForm.content = ''
+        
+    }
+
+    const submitProbSet = ()=>{
+        problemSetForm.term = selectedTerm.value[0]
+        problemSetForm.subject_code_id = selectedSubjectCode.value.id
+        
+        problemSetForm.post(route('problem.set.store'),{
+            preserveScroll:true,
+            preserveState:true,
+            onSuccess: ()=> addProblemSetModal.value = false,
+            onError: ()=> addProblemSetModal.value = false,
+        })
+    }
+
+     // add problem set logic ***************************** end
     const form = useForm({
         question:'',
         type:'text',
@@ -1363,7 +1465,10 @@ const submitConfirmation = ()=>
     
     
     
-
+function problemSetFormattedData(data)
+{
+    return  data.replace(/\r\n/, '<br>').replace(/\n/, '<br>');
+}
 </script>
 
 

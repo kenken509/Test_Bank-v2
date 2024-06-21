@@ -8,6 +8,7 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\TestPageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\ProblemSetController;
 use App\Http\Controllers\SubjectCodeController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\TestGeneratorController;
@@ -97,4 +98,8 @@ Route::controller(BackUpController::class)->group(function(){
 Route::controller(AnnouncementController::class)->group(function(){
     Route::get('text_bank/announcement', 'showAnnouncement')->name('announcement.show');
     Route::get('text_bank/announcement/new', 'createAnnouncement')->name('announcement.create');;
+});
+
+Route::controller(ProblemSetController::class)->group(function(){
+    Route::post('test_bank/problem_set/store','store')->name('problem.set.store');
 });

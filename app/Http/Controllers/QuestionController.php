@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Option;
 use App\Models\Question;
+use App\Models\ProblemSet;
 use App\Models\SubjectCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +19,7 @@ class QuestionController extends Controller
     {
         // user rolse admin, co-admin, department head, faculty
         $loggedUser = Auth::user();
-        
+        $problemSet = [];
         $questions = Question::with(['options', 'author', 'subjectCode'])->latest()->get();
         
         if($loggedUser->role == 'admin' || $loggedUser->role == 'co-admin')
@@ -27,6 +28,7 @@ class QuestionController extends Controller
                 $query->with(['author','options']);
             }])->latest()->get();
             
+            $problemSet = ProblemSet::all();
         }
 
         if($loggedUser->role == 'department head')
@@ -61,7 +63,8 @@ class QuestionController extends Controller
         }
         
         return inertia('Dashboard/Questions/QuestionAll', [
-            'subjectCodes' => $subjectCodes,
+            'subjectCodes'  => $subjectCodes,
+            'problemSets'    => $problemSet,
         ]);
     }
 
@@ -290,7 +293,7 @@ class QuestionController extends Controller
             }
         }
     }
-
+    
     public function storeQuestionModal(Request $request)
     {
         dd('im here');
