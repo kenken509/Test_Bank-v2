@@ -491,8 +491,9 @@
             </div>
             <div class="w-full pt-6">
                 <div class=" border-gray-400 relative">
+                   
                     <form @submit.prevent="submitProbSet">
-                        <div class="mb-2 w-full ">
+                        <div class="mb-2 w-full "> 
                             <div class="flex flex-col md:flex-row justify-between ">
                                 <div class="flex gap-4 items-center justify-between ">
                                     <span class="text-[18px] font-semibold ">Subject Code: </span>
@@ -510,7 +511,7 @@
                         </div>
                         <div class="flex flex-col gap-2">
                             <label for="content" class="font-semibold text-[18px]">Content:</label>    
-                            <textarea  v-model="problemSetForm.content" id="content" class="rounded-md w-full" rows="8" cols="50" placeholder="Enter text here" required></textarea>
+                            <textarea  v-model="problemSetForm.content" id="content" class="rounded-md w-full" rows="8" cols="50" placeholder="Enter text here" required> </textarea>
                         </div>
 
                         <button @click="handleResetButton" type="button" class="btn-primary p-2 w-full">Reset</button>
@@ -656,8 +657,11 @@ onMounted(()=>{
             }
         })
     }   
-   
+    
+    
 
+    
+    
     // console.log('selectedTerm')
     // console.log(selectedTerm.value)
 
@@ -722,7 +726,6 @@ watch(selectedSubjectCode, (val)=>{
     filteredQuestionByCode.value = val.questions
     
     questionTotalCoumt.value = 0
-
 
 })
 
@@ -1038,11 +1041,13 @@ const deleteConfirmation = (questionId)=>
 
     // add problem set logic ***************************** start
     const addProblemSetModal = ref(false)
+    const problemSetContent = ref('')
     const problemSetForm = useForm({
         content:'',
         subject_code_id:'',
         term:'',
     })
+    
     const handleProblemSetButtonClicked = ()=>{ // andito ako 3
         
         if(selectedTerm.value.length < 1)
@@ -1054,6 +1059,7 @@ const deleteConfirmation = (questionId)=>
 
         if(selectedTerm.value.length === 1)
         {
+            findProblemSet(data.problemSets)
             selectedTermValidator.value = ''
             addProblemSetModal.value = true
         }
@@ -1064,7 +1070,7 @@ const deleteConfirmation = (questionId)=>
         }
         
     }
-
+    
     const handleResetButton = ()=>{
         problemSetForm.content = ''
         
@@ -1082,6 +1088,13 @@ const deleteConfirmation = (questionId)=>
         })
     }
 
+    function findProblemSet(data)
+    {
+        let tempData = data.filter((set)=> set.term.toString() === selectedTerm.value.toString() && set.subject_code_id === selectedSubjectCode.value.id)
+        //console.log(tempData.length)
+        problemSetForm.content = tempData.length ? tempData[0].content : ''
+        return 
+    }
      // add problem set logic ***************************** end
     const form = useForm({
         question:'',
