@@ -149,7 +149,7 @@
                  <!-- SET C-->
 
 
-                <form @submit.prevent="handlePreviewButtonClicked">   
+                <form @submit.prevent="handlePreviewButtonClicked"> 
                     <div class="w-full">
                         <div class="flex w-full pr-4 gap-2 flex-col  md:items-center md:flex-row py-2 ">
                             <label for="department" class="text-black font-semibold w-full max-w-[150px]">Department: </label>
@@ -306,7 +306,7 @@
         </div>
         
         <!--save question set--> <!-- andito ako 1-->
-        <div  id="pdf-convert" class="w-full max-w-[8.5in] max-h-[llin]">
+        <div  id="pdf-convert" class="w-full max-w-[8.5in] max-h-[l0.5in]">
             <!--heading-->
             <div class="flex justify-center gap-2 w-full ">
                 <div class="flex justify-between gap-4 ">
@@ -336,31 +336,36 @@
             </div>
             <!--questions-->
             <div class="w-full flex flex-wrap whitespace-nowrap flex-col py-2  " v-for="(question,index) in questionSetPdf" :key="question.id">
-                <span class="text-[12px]">{{index+1}}. {{ question.question }}</span>
+                <span class="text-[12px] py-2">{{index+1}}. {{ question.question }}</span>
                 <!--options-->
                 <div v-if="question.type === 'text'" class="flex flex-row whitespace-nowrap gap-3 w-full pl-4 mt-2 " :class="{'flex-col':question.options.some(option => option.option.length > 30)}">
                     
                     <template v-for="(option,index) in question.options">
                         
-                        <span class="flex   w-full text-[12px]">{{ optionLetters[index] }}. {{ option.option }}</span>
+                        <span class="flex w-full text-[12px] pb-2">{{ optionLetters[index] }}. {{ option.option }}</span>
                     </template>
                 </div>
-                <!--andito ako 3-->
-                <div v-if="question.type === 'image'" class="flex flex-row w-full bg-gren-300 ml-4 mt-6 mb-4 p-2">
+                
+                <div v-if="question.type === 'image'" class="flex flex-row w-full bg-gren-300 ml-2 mt-6 mb-4 p-2">
                     <template v-for="(option,index) in question.options" class="w-full flex flex-row bg-green-300  " >  
-                        <div class="w-full flex  gap-2 ">
-                            <span class="text-[12]">{{ optionLetters[index] }}. </span>                
-                            <img :src="imageUrl+option.option" alt="image option" class="max-w-[1.5in] max-h-[1.5in] rounded-md border border-black"/>   
+                        <div class="w-full flex  gap-2 pb-2 ">
+                            <span class="text-[12px]">{{ optionLetters[index] }}. </span>                
+                            <img :src="imageUrl+option.option" alt="image option" class="max-w-[1.5in] max-h-[1.5in] rounded-md border border-black "/>   
                         </div>                    
                     </template>
                 </div>
                  <!--options-->   
             </div>
             <!--questions-->
+            <div v-if="problemSet.length" class="mt-4 py-4">
+                <span v-html="formatText(problemSet[0].content)" class="font-bold text-[12px]"></span>
+                 <!--andito ako 3-->
+            </div>
         </div>
         <div>
             <hr class="border border-2 border-black w-full max-w-[8.5in] max-h-[llin] my-8" />
         </div>
+
         <!--save answer keys to pdf-->
         <div  id="answers-pdf" class="w-full max-w-[8.5in] max-h-[llin]">
             <!-- Heading -->
@@ -388,11 +393,11 @@
             </div>
             <!-- Grid -->
             <div class="grid pb-2" :class="`grid-cols-${state.columns}`" :style="{ gridTemplateColumns: `repeat(${state.columns}, minmax(0, 1fr))` }">
-            <div v-for="(chunk, colIndex) in state.chunksToShow" :key="colIndex" class="col-span-1 flex flex-col justify-center">
-                <div v-for="(ans, index) in chunk" :key="index">
-                    <span>{{ index + 1 + colIndex * maxChunkSize }}. {{ ans }}</span>
+                <div v-for="(chunk, colIndex) in state.chunksToShow" :key="colIndex" class="col-span-1 flex flex-col justify-center">
+                    <div v-for="(ans, index) in chunk" :key="index">
+                        <span>{{ index + 1 + colIndex * maxChunkSize }}. {{ ans }}</span>
+                    </div>
                 </div>
-            </div>
             </div>
         </div>
 
@@ -802,6 +807,7 @@ const terms = ref([
     'final',
 ])
 
+
 const selectedSemester = ref('');
 const semesters = ref([
     '1st',
@@ -875,7 +881,7 @@ function testRandom(num)
 
 
 // saving logic ********************************
-
+const problemSet = ref('')
 const saveExam = () => {
     if(!selectedDepartment.value)
     {
@@ -975,7 +981,7 @@ const saveExam = () => {
     setAKeyToCorrection.value = getCorrectAnswer(setA.value)
     setBKeyToCorrection.value = getCorrectAnswer(setB.value)
     setCKeyToCorrection.value = getCorrectAnswer(setC.value)
-
+    problemSet.value = selectedSubjectCode.value.problem_sets.filter((problemSet)=> problemSet.term === selectedTerm.value); // andito ako 4
 
     console.log('set a')
     console.log(setA.value)
@@ -990,9 +996,10 @@ const saveExam = () => {
     console.log('set C key to correction')
     console.log(setCKeyToCorrection.value)
 
-    //return // andito ako debug
+    //return 
     // console.log('selected set: ')
     // console.log(selectedSet.value)
+    
     
     
     confirmation("Please check if everything is set correctly before proceeding. This will download multiple files. Please allow multiple file download on your browser.")
@@ -1456,9 +1463,9 @@ function saveQuestionareToPDF(questions,filename)
     questionSetPdf.value = questions
     const element = document.getElementById('pdf-convert'); // Replace 'pdf-content' with the ID of the content you want to convert to PDF
     const opt = {
-        margin: [0.4,0.4, 0.4, 0.4], // [top, left, bottom, right].
+        margin: [0.4,0.4, 0.5, 0.4], // [top, left, bottom, right].
         filename:     filename+'.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
+        image:        { type: 'jpeg', quality: 0.98 }, //andito ako 33
         html2canvas:  { scale: 2 },
         jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
@@ -1579,6 +1586,11 @@ function errorMessage(message) {
             }
         })
     }
+
+
+    const formatText = (text) => {
+        return text.replace(/\n/g, '<br>');
+    };
 </script>
 
 

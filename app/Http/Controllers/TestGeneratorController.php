@@ -17,7 +17,7 @@ class TestGeneratorController extends Controller
         $departments = Department::with(['subjectCodes' => function($query){
             $query->with(['questions' => function ($query){
                 $query->with(['author','options']);
-            }]);
+            },'problemSets']);
         },'divisions'])->get();
 
         // $departments = Department::with(['subjectCodes' => function($query){

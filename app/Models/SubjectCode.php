@@ -23,4 +23,9 @@ class SubjectCode extends Model
     {
         return $this->hasMany(Question::class);
     }
+
+    public function problemSets()
+    {
+        return $this->hasMany(ProblemSet::class);
+    }
 }
