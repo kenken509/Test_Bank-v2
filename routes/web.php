@@ -96,8 +96,10 @@ Route::controller(BackUpController::class)->group(function(){
 });
 
 Route::controller(AnnouncementController::class)->group(function(){
-    Route::get('text_bank/announcement', 'showAnnouncement')->name('announcement.show');
-    Route::get('text_bank/announcement/new', 'createAnnouncement')->name('announcement.create');;
+    Route::get('test_bank/announcement', 'showAnnouncement')->name('announcement.show');
+    Route::get('test_bank/announcement/new', 'showAddAnnouncement')->name('announcement.add');
+    Route::post('test_bank/announcement/store', 'storeAnnouncement')->name('announcement.store');
+    Route::delete('test_bank/announcement/delete/{marking}','delete')->name('announcement.delete');
 });
 
 Route::controller(ProblemSetController::class)->group(function(){

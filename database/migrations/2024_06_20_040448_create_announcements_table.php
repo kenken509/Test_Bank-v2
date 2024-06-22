@@ -13,15 +13,19 @@ return new class extends Migration
     {
         Schema::create('announcements', function (Blueprint $table) {
             $table->id();
-            $table->text('announcement');
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->unsignedBigInteger('author');
+            $table->text('content');
+            $table->string('start_date');
+            $table->string('end_date');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('author_id');
+            $table->string('marking');
+            $table->date('read_at')->nullable();
             $table->unsignedBigInteger('editor')->nullable();
             $table->timestamps();
 
 
-            $table->foreign('author')->references('id')->on('users')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('author_id')->references('id')->on('users')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict')->onUpdate('restrict');
             
         });
     }
