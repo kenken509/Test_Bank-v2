@@ -127,7 +127,7 @@
                                 Departments
                             </li>
                         </Link>
-                        <Link v-if="user.role === 'admin'" :href="route('department.add')">
+                        <!-- <Link v-if="user.role === 'admin'" :href="route('department.add')">
                             <li @click="toggleBackground('dep2')" :class="{'bg-blue-900':clickedItem == 'dep2'}" class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
                                 <svg class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                                     <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4.243a1 1 0 1 0-2 0V11H7.757a1 1 0 1 0 0 2H11v3.243a1 1 0 1 0 2 0V13h3.243a1 1 0 1 0 0-2H13V7.757Z" clip-rule="evenodd"/>
@@ -135,7 +135,7 @@
 
                                 Add
                             </li>
-                        </Link>
+                        </Link> -->
                        
                         
 

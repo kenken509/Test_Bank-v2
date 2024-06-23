@@ -188,7 +188,7 @@ const filteredData = computed(()=>{// andito ako 1
 })
 
 const currentPage = ref(1)
-const itemsPerPage = ref(1)
+const itemsPerPage = ref(5)
 
 const paginatedData = computed(()=>{
     if(searchField.value)
