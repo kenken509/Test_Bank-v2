@@ -32,7 +32,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(announcement,index) in data.announcements" :key="index" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-100 hover:cursor-pointer">
+                    <tr v-for="(announcement,index) in paginatedData" :key="index" class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-100 hover:cursor-pointer">
                         <td class=" align-middle px-6 py-3 text-black  ">
                             {{ index+1 }}
                         </td>
@@ -56,11 +56,21 @@
                                         Update
                                     </button>
                                 </div>
-                            </td>
+                        </td>
                     </tr>
                 </tbody>
                 
             </table>
+        </div>
+
+        <div class="flex items-center justify-center gap-4 mt-2">
+            <button @click="prevPage" :disabled="currentPage === 1" class="btn-pagination flex items-center gap-1">
+                <i class="pi pi-angle-double-left"></i> Prev
+            </button>
+            <span>{{ currentPage }} of {{ totalPages }}</span>
+            <button @click="nextPage" :disabled="currentPage === totalPages" class="btn-pagination flex items-center gap-1">
+                 Next <i class="pi pi-angle-double-right"></i>
+            </button>
         </div>
 
         <!--add announcement modal-->
@@ -143,7 +153,7 @@
     
 </template>
 <script setup>
-import {ref, onMounted, watch} from 'vue'
+import {ref, onMounted, watch, computed} from 'vue'
 import DashboardLayout from '../DashboardLayout.vue';
 import { useForm, usePage,Link, router } from '@inertiajs/vue3';
 import Swal from 'sweetalert2/dist/sweetalert2.js'
@@ -155,8 +165,6 @@ const data = defineProps({
     announcements:Array,
 })
 
-
-
 const user = usePage().props.user
 const form = useForm({
     startDate:'',
@@ -165,11 +173,54 @@ const form = useForm({
     author:user.id,
 })
 
+const filteredData = computed(()=>{// andito ako 1
+    let searchTerm = searchField.value.toLowerCase().trim()
+    // name email role  if has division division.name if has department department.name 
+    if(!searchTerm)
+    {
+        return data.announcements
+    }
+    
+    return data.announcements.filter((announcement)=>{
+       return announcement.content.toLowerCase().includes(searchTerm) || announcement.start_date.toLowerCase().includes(searchTerm) ||
+        announcement.end_date.toLowerCase().includes(searchTerm)
+    })
+})
 
+const currentPage = ref(1)
+const itemsPerPage = ref(1)
 
+const paginatedData = computed(()=>{
+    if(searchField.value)
+    {
+        currentPage.value = 1
+    }
 
+    let startIndex = (currentPage.value -1) * itemsPerPage.value
+    let endIndex = startIndex + itemsPerPage.value
 
-// new announcement logic
+    return filteredData.value.slice(startIndex,endIndex)
+})
+
+function nextPage()
+{
+    if(currentPage.value < totalPages.value)
+    {
+        currentPage.value++
+    }
+}
+
+function prevPage()
+{
+    if(currentPage.value > 1)
+    {
+        currentPage.value--
+    }
+}
+
+const totalPages = computed(()=> Math.ceil(filteredData.value.length/itemsPerPage.value))
+
+// new announcement logic **************************************************88
 const announcementModalOpen = ref(false)
 const handleNewButtonClicked = ()=>{
     announcementModalOpen.value = true
