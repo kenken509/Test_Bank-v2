@@ -25,8 +25,10 @@ class QuestionController extends Controller
         $questions = Question::with(['options', 'author', 'subjectCode'])->latest()->get();
 
         $currentDate = Carbon::today()->toDateString();
+        
         $announcements = DB::table('announcements')
                     ->whereRaw('STR_TO_DATE(start_date, "%Y-%m-%d") >= ?', [$currentDate])
+                    ->whereRaw('STR_TO_DATE(end_date, "%Y-%m-%d") >= ?', [$currentDate])
                     ->get();
 
         if($loggedUser->role == 'admin' || $loggedUser->role == 'co-admin')
@@ -36,6 +38,8 @@ class QuestionController extends Controller
             }])->latest()->get();
             
             $problemSet = ProblemSet::all();
+
+            $announcements = Announcements::orderBy('marking','desc')->get();
         }
 
         if($loggedUser->role == 'department head')
@@ -812,4 +816,6 @@ class QuestionController extends Controller
             
         }
     }
+
+    
 }

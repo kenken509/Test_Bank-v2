@@ -1522,16 +1522,18 @@ const announcementMessage = async (announcements) => {
             allowOutsideClick: false,
             allowEscapeKey: false,
             showConfirmButton:false,
+            didOpen: () => {
+            // This function runs when the modal opens
+                const closeButton = Swal.getCloseButton();
+                if (closeButton) {
+                    closeButton.blur(); // Remove focus from close button
+                }
+            }
         });
   }
   
 };
 </script>
 
-<style scoped>
-    .no-border {
-        border: 0;
-    }
 
-</style>
 

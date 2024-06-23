@@ -27,6 +27,7 @@
                         <th scope="col" class="px-6 py-3">Content</th>
                         <th scope="col" class="px-6 py-3">Start Date</th>
                         <th scope="col" class="px-6 py-3">End DAte</th>
+                        <th scope="col" class="px-6 py-3">Status</th>
                         <th  v-if="$page.props.user.role === 'admin'" scope="col" class="flex justify-center px-6 py-3">Action</th>
                     </tr>
                 </thead>
@@ -38,11 +39,15 @@
                         <td class=" align-middle px-6 py-3 text-black ">
                            <span>{{ announcement.content }}</span> 
                         </td>
-                        <td class=" align-middle px-6 py-3 text-black ">
+                        <td class=" align-middle px-6 py-3 text-black">
                            <span>{{ announcement.start_date }}</span> 
                         </td>
                         <td class=" align-middle px-6 py-3 text-black ">
                            <span> {{ announcement.end_date }} </span>
+                        </td>
+                        <td class=" align-middle px-6 py-3 text-black ">
+                           <span v-if="isExpired(announcement.end_date)" class="text-red-500"> Expired </span>
+                           <span v-else class="text-green-700"> Active </span>
                         </td>
                         <td  v-if="$page.props.user.role === 'admin'" class="px-6 py-4 text-center ">
                                 <div  class="flex flex-col   lg:flex-row lg:justify-center  lg:space-x-4">
@@ -119,6 +124,7 @@
                         <div class="flex items-center gap-2 col-span-2 mt-4 md:col-span-1  md:flex md:justify-end">
                             <label for="endDate" class="font-semibold ">End Date: </label>
                         </div>
+            
                         <div class="col-span-6 mt-4 md:col-span-2 md:flex md:justify-end">
                             <input v-model="updateEndDate" id="endDate" type="date" class="rounded-md" required :disabled="!updateStartDate"/>
                         </div>
@@ -484,4 +490,11 @@ function errorMessageUpdate(message)
         }
     })
 }
+
+function isExpired(endDate) 
+{
+    const today = new Date();
+    const end = new Date(endDate);
+    return end < today;
+};
 </script>
