@@ -343,10 +343,9 @@
 
                 <!-- test gen-->
                 
-                <div>
+                <div v-if="user.role==='admin'">
                     <div class="flex items-center py-3 pl-3 space-x-2 hover:bg-blue-900" >
                         <i class="pi pi-book"></i>
-
 
                         <div class="w-full">
                             <button  @click="toggleTestGeneratorMenu" class="flex w-full items-center justify-between pr-8 ">
@@ -360,7 +359,7 @@
                             </button>
                         </div>
                        
-                    </div><!--andito ako-->
+                    </div>
                     <ul 
                     v-if="showTestGeneratorMenu"       
                     >
@@ -406,7 +405,7 @@
                             <li @click="toggleBackground('backup2')" :class="{'bg-blue-900':clickedItem === 'backup2'}" class="flex pl-10  items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
                                 <i class="pi pi-upload"></i>
                                 <input type="file" ref="fileInput" @change="handleFileUpload"  class="hidden">
-                                <Link  :href="route('backup.restore.show')" >Upload</Link> <!--andito ako 3-->
+                                <Link  :href="route('backup.restore.show')" >Upload</Link> 
                             </li>
                         </Link>
                     </ul>
@@ -416,14 +415,14 @@
                 <div class="border-b-2 border-gray-700 my-2">
                 
                 </div>   
-                <Link class="w-full" :href="route('logout')" as="button" method="delete">
+                <button @click="logout" class="w-full"  as="button" method="delete"><!--andito ako 11-->
                     <div class="flex items-center py-3 pl-3 space-x-2 hover:bg-blue-900">
                         <svg class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2"/>
                         </svg>
                         <span>Logout</span>
                     </div>
-                </Link>
+                </button>
             </nav>
         </div>
         
@@ -460,6 +459,7 @@ import { computed, ref } from 'vue';
 import { usePage, Link, router } from '@inertiajs/vue3';
 import CustomModal from '../Global Component/CustomModal.vue';
 import axios from 'axios';
+
 
 
 const customModalOpen = ref(true)
@@ -564,18 +564,41 @@ const toggleBackUpMenu = ()=>
 const selectedFile = ref(null);
 const fileInput = ref(null);
 // Function to trigger file input click
-const triggerFileUpload = () => { // andito ako 4
+const triggerFileUpload = () => { 
     let input = fileInput.value
     if (input) {
         input.dispatchEvent(new MouseEvent('click')); // Dispatch a click event
     }
 };
 
-// Handle file upload when file is selected
+// Handle file upload when file is selected 
 const handleFileUpload = (event) => {
     console.log('im here')
   const file = event.target.files[0];
   console.log(file);
   // Handle file upload logic here
+};
+
+// log out logic ************************************
+
+
+const logout = async () => {
+    try {
+    // Make a POST request to your Laravel backend logout endpoint
+    await router.post(route('logout'), {}, {
+      onFinish: () => {
+        // Clear localStorage after logout is completed
+        clearLocalStorageOnLogout(); // Call the function to clear localStorage
+      }
+    });
+  } catch (error) {
+    console.error('Error during logout:', error);
+    // Handle network or other errors
+  }
+};
+
+// Function to clear localStorage item on logout
+const clearLocalStorageOnLogout = () => {
+  localStorage.removeItem('dataDisplayedOnce'); // Remove the item from localStorage
 };
 </script>

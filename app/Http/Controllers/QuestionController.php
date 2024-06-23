@@ -6,12 +6,14 @@ use App\Models\Option;
 use App\Models\Question;
 use App\Models\ProblemSet;
 use App\Models\SubjectCode;
+use App\Models\Announcement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class QuestionController extends Controller
 {
@@ -21,7 +23,12 @@ class QuestionController extends Controller
         $loggedUser = Auth::user();
         $problemSet = [];
         $questions = Question::with(['options', 'author', 'subjectCode'])->latest()->get();
-        
+
+        $currentDate = Carbon::today()->toDateString();
+        $announcements = DB::table('announcements')
+                    ->whereRaw('STR_TO_DATE(start_date, "%Y-%m-%d") >= ?', [$currentDate])
+                    ->get();
+
         if($loggedUser->role == 'admin' || $loggedUser->role == 'co-admin')
         {
             $subjectCodes = SubjectCode::with(['questions' => function ($query){
@@ -37,7 +44,8 @@ class QuestionController extends Controller
             $subjectCodes = SubjectCode::with(['questions' => function ($query){
                 $query->with(['author','options']);
             }])->where('department_id', $loggedUser->department_id)->latest()->get();
-                
+            
+            
         }
 
         if($loggedUser->role == 'faculty')
@@ -63,8 +71,9 @@ class QuestionController extends Controller
         }
         
         return inertia('Dashboard/Questions/QuestionAll', [
-            'subjectCodes'  => $subjectCodes,
-            'problemSets'    => $problemSet,
+            'subjectCodes'      => $subjectCodes,
+            'problemSets'       => $problemSet,
+            'announcements'     => $announcements,
         ]);
     }
 

@@ -73,15 +73,16 @@
                         </span>
                     </div>
                     
-                    <div class="col-span-6 w-full" :class="{'col-span-8':!isAdminOrCoAdmin}" >
+                    <div class="col-span-6 w-full" :class="{'col-span-8':!isAdminOrCoAdmin, 'col-span-6':isAdminOrCoAdmin}" >
                         <input type="text" :value="selectedSubjectCode.description" class="w-full bg-gray-100 rounded-md" disabled />
                         <span class="col-span-1">
                         </span>
                     </div>
-                    <div class="col-span-3 flex w-full gap-2 " :class="{'col-span-1':!isAdminOrCoAdmin}"><!--andito ako 1-->
+                    <div class=" flex w-full gap-2 " :class="{'col-span-1':!isAdminOrCoAdmin, 'col-span-3':isAdminOrCoAdmin }"><!--andito ako 1-->
                         <button @click="handleProblemSetButtonClicked" v-if="user.role === 'admin'" type="button" class="text-center btn-primary p-2 w-full hover:cursor-pointer">+ Problem Set</button>
                         <button @click="handleAddQuestionModal" type="button" class="btn-primary p-2 w-full">+ New</button>
                     </div>
+                    
                 </div>
                 
                 
@@ -522,6 +523,13 @@
             <!--header-->
         </Dialog>
          <!--problem set modal-->
+         <!-- andito ako 44-->
+         <div v-if="showData" class="hidden">
+                {{ announcementMessage()}}
+         </div>
+         
+       
+         
     </DashboardLayout>
 </template>
 
@@ -617,17 +625,17 @@ const goToPageSearch = (page) => {
 const data = defineProps({
     subjectCodes:Array,
     problemSets:Array,
-    
+    announcements:Array,
 })
 
 const user = usePage().props.user
 const isAdmin = ref(false);
-onMounted(()=>{
+onMounted(()=>{ // andito ako mounted
     if(user.role === 'admin')
     {
         isAdmin.value = true;
     }
-
+    
     selectedSubjectCode.value = data.subjectCodes[0]
     filteredQuestionByCode.value = selectedSubjectCode.value.questions
     successAlertCounter.value = 0 
@@ -658,7 +666,7 @@ onMounted(()=>{
         })
     }   
     
-    
+    checkDataDisplay();
 
     
     
@@ -1482,6 +1490,48 @@ function problemSetFormattedData(data)
 {
     return  data.replace(/\r\n/, '<br>').replace(/\n/, '<br>');
 }
+
+// announcements logic **********************************8
+const userAnnouncement = ref(data.announcements.filter((announcement)=>announcement.user_id === user.id))
+
+// A flag to determine whether to show the data
+const showData = ref(false);
+
+// The key used in localStorage to track if the data has been displayed
+const displayDataKey = 'dataDisplayedOnce';
+
+const checkDataDisplay = () => {
+  if (!localStorage.getItem(displayDataKey)) { 
+        // Data has not been displayed, set flag to true
+        showData.value = true;
+        // Set the flag in localStorage
+        localStorage.setItem(displayDataKey, 'true');
+  } else {
+    // Data has already been displayed, set flag to false
+    showData.value = false;
+  }
+};
+
+const announcementMessage = async (announcements) => {
+  for (const announcement of userAnnouncement.value) {
+        await Swal.fire({
+            title: 'Announcement',
+            text: announcement.content,
+            icon: 'info',
+            showCloseButton: true,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton:false,
+        });
+  }
+  
+};
 </script>
 
+<style scoped>
+    .no-border {
+        border: 0;
+    }
+
+</style>
 

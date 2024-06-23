@@ -21,7 +21,7 @@ Route::get('/', function () {
 Route::controller(AuthController::class)->group(function(){
     Route::get('/login', 'create')->name('login.show');
     Route::post('/login', 'store')->name('login.store');
-    Route::delete('/logout', 'destroy')->name('logout');
+    Route::post('/logout', 'destroy')->name('logout');
 });
 
 Route::controller(UserManagementController::class)->group(function(){
@@ -100,6 +100,7 @@ Route::controller(AnnouncementController::class)->group(function(){
     Route::get('test_bank/announcement/new', 'showAddAnnouncement')->name('announcement.add');
     Route::post('test_bank/announcement/store', 'storeAnnouncement')->name('announcement.store');
     Route::delete('test_bank/announcement/delete/{marking}','delete')->name('announcement.delete');
+    Route::put('test_bank/announcement/delete', 'updateAnnouncement')->name('announcement.update');
 });
 
 Route::controller(ProblemSetController::class)->group(function(){

@@ -20,12 +20,13 @@ return new class extends Migration
             $table->unsignedBigInteger('author_id');
             $table->string('marking');
             $table->date('read_at')->nullable();
-            $table->unsignedBigInteger('editor')->nullable();
+            $table->unsignedBigInteger('editor_id')->nullable();
             $table->timestamps();
 
 
             $table->foreign('author_id')->references('id')->on('users')->onDelete('restrict')->onUpdate('restrict');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict')->onUpdate('restrict');
+            $table->foreign('editor_id')->references('id')->on('users')->onDelete('restrict')->onUpdate('restrict');
             
         });
     }

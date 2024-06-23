@@ -47,9 +47,9 @@
                         <td  v-if="$page.props.user.role === 'admin'" class="px-6 py-4 text-center ">
                                 <div  class="flex flex-col   lg:flex-row lg:justify-center  lg:space-x-4">
                                     <button @click="handleDeleteButtonClicked(announcement.marking)"  class=" btn-warning my-2">Delete </button>
-                                    <Link href="/" type="button" class="btn-success my-2">
+                                    <button  @click="handleUpdateButtonClicked(announcement.marking)" type="button" class="btn-success my-2">
                                         Update
-                                    </Link>
+                                    </button>
                                 </div>
                             </td>
                     </tr>
@@ -58,7 +58,7 @@
             </table>
         </div>
 
-        <!--announcement modal-->
+        <!--add announcement modal-->
         <Dialog v-model:visible="announcementModalOpen" modal  :style="{ width: '50rem' }">
             <div class=" w-full">
                 <h2 class="text-xl font-bold mb-2">New Announcement</h2>
@@ -94,6 +94,45 @@
                 </form>
             </div>
         </Dialog>
+        <!--add announcement modal-->
+
+        <!--update announcement modal-->
+        <Dialog v-model:visible="updateAnnouncementModalOpen" modal  :style="{ width: '50rem' }">
+            <div class=" w-full">
+                <h2 class="text-xl font-bold mb-2">Update Announcement</h2>
+                <div class="w-full border-b border-gray-500 "></div>
+            </div> 
+            <div class="w-full mt-6 ">
+                <form @submit.prevent="update">
+                    <div class="mt-6">
+                        <label for="announcement" class="font-semibold ">Content: </label>
+                        <textarea v-model="updateContent" id="announcement" class="w-full mt-2 rounded-md" rows="4" cols="50" required></textarea> 
+                    </div>
+                    <div class="grid grid-cols-8 mt-4 w-full ">
+                        <div class="flex items-center gap-4 col-span-2 mt-4 md:col-span-1">
+                            <label for="startDate" class="font-semibold ">Start Date: </label>
+                        </div>
+                        <div class="col-span-6 md:col-span-4">
+                            <input v-model="updateStartDate" id="startDate" type="date" class="rounded-md mt-4" required/>
+                        </div>
+                        
+                        <div class="flex items-center gap-2 col-span-2 mt-4 md:col-span-1  md:flex md:justify-end">
+                            <label for="endDate" class="font-semibold ">End Date: </label>
+                        </div>
+                        <div class="col-span-6 mt-4 md:col-span-2 md:flex md:justify-end">
+                            <input v-model="updateEndDate" id="endDate" type="date" class="rounded-md" required :disabled="!updateStartDate"/>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 border-t-2 border-gray-300 pt-2">
+                        <button @click="resetUpdate" type="button" class="btn-primary w-full ">Reset</button>
+                        <button type='submit'class="btn-primary w-full" :disabled="form.processing">Update</button>
+                    </div>
+                    
+                </form>
+            </div>
+        </Dialog>
+        <!--update announcement modal-->
     </DashboardLayout>
     
 </template>
@@ -182,6 +221,7 @@ const submit = ()=>{
         submitConfirmation()
     }
     
+
 }
 
 function submitConfirmation(marking)
@@ -317,4 +357,131 @@ function successMessage(message)
             }
         })
     }
+
+//update announcment logic
+const updateContent = ref('')
+const updateStartDate = ref('')
+const updateEndDate = ref('');
+
+const updateAnnouncementModalOpen = ref(false)
+const updateData = ref([])
+
+function handleUpdateButtonClicked(marking)
+{
+    updateData.value = data.announcements.filter((ann)=> ann.marking === marking);
+    updateContent.value = updateData.value[0].content
+    updateStartDate.value = updateData.value[0].start_date
+    updateEndDate.value = updateData.value[0].end_date
+
+    updateAnnouncementModalOpen.value = true
+}
+
+const formUpdate = useForm({
+    startDate:'',
+    endDate:'',
+    content:'',
+    marking:'',
+    editor:user.id,
+})
+
+const update = ()=>{ // andito ako 2
+    if(updateStartDate.value)
+    {
+        let selectedDate = new Date(updateStartDate.value)
+        selectedDate.setHours(0, 0, 0, 0);
+        currentDate.value.setHours(0, 0, 0, 0);
+
+        if(selectedDate < currentDate.value)
+        {
+            errorMessageUpdate('"Start Date" cannot be less than today.')
+
+            noError.value = false
+            return
+        }
+        noError.value = true
+    }
+
+    if(updateEndDate.value)
+    {
+        let selectedEndDate = new Date(updateEndDate.value)
+        let selectedStartDate = new Date(updateStartDate.value);
+        
+        selectedStartDate.setHours(0, 0, 0, 0)
+        selectedEndDate.setHours(0, 0, 0, 0)
+
+        if(selectedEndDate < selectedStartDate)
+        {
+            errorMessageUpdate('"End date" cannot be less than start date');
+            noError.value = false
+            return
+        }
+
+        noError.value = true
+    }
+    
+    if(noError.value)
+    {
+        formUpdate.startDate = updateStartDate.value
+        formUpdate.endDate = updateEndDate.value
+        formUpdate.content = updateContent.value
+        formUpdate.marking = updateData.value[0].marking
+        submitConfirmationUpdate()
+    }
+}
+
+function resetUpdate()
+{
+    updateStartDate.value = null
+    updateEndDate.value = null
+    updateContent.value = ''
+}
+
+function submitConfirmationUpdate(marking)
+{
+    updateAnnouncementModalOpen.value = false
+    Swal.fire({
+        title: "Are you sure?",
+        text: "Are you sure you want to update this announcement?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, create it!",
+        allowOutsideClick:false,
+        allowEscapeKey:false,
+        }).then((result) => {
+            if(result.isConfirmed)
+            {
+                formUpdate.put(route('announcement.update',{ // andito ako 1
+                    preserveScroll:true,
+                    preserveState:true,
+                    onSuccess:()=>updateAnnouncementModalOpen.value = true
+                })); 
+            }
+
+            if(result.isDismissed)
+            {
+                Swal.fire({
+                    title:'Canceled',
+                    text:'Your action was canceled!',
+                    icon:'error',
+                    confirmButtonColor: '#3085d6',
+                })
+            }
+    });
+}
+function errorMessageUpdate(message) 
+{
+    updateAnnouncementModalOpen.value = false
+    Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: message + '!',
+        allowOutsideClick:false,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            updateAnnouncementModalOpen.value = true
+        }
+    })
+}
 </script>

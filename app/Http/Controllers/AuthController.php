@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
+
 
 class AuthController extends Controller
 {
@@ -16,21 +18,7 @@ class AuthController extends Controller
 
     public function store(Request $request)
     {
-        //dd($request->password);
-        // $request->validate([
-        //     'email' => 'required|email',
-        //     'password' => [
-        //         'required',
-        //         'string',
-        //         Password::min(8)
-        //             ->mixedCase()
-        //             ->numbers()
-        //             ->symbols(),
-        //     ],
-        // ], [
-        //     'password.required' => 'The password field is required.',
-        //     'password' => 'The password must be at least 8 characters long and contain both uppercase and lowercase letters, at least one number, and at least one special character.'
-        // ]);
+        
         
         if(!Auth::attempt($request->validate([
             'email' => 'required|string|email',
@@ -43,7 +31,15 @@ class AuthController extends Controller
         
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard.show')->with('success', 'Successfully registered! Please check your email for verification!');
+        if(Auth::user()->role == 'admin' || Auth::user()->role == 'co-admin')
+        {
+            return redirect()->route('dashboard.show')->with('success', 'Logged in successfully');
+        }
+        else
+        {
+            return redirect()->route('questions.show')->with('success', 'Logged in successfully');
+        };
+        
     }
 
     public function destroy(Request $request)
@@ -53,6 +49,9 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login.show')->with('success', 'Successfully Logged out.');
+        //return redirect()->route('login.show')->with('success', 'Successfully Logged out.');
+        
+        // Redirect to login page using Inertia
+        return inertia('Authentication/Login');
     }
 }

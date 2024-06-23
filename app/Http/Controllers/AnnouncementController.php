@@ -81,6 +81,36 @@ class AnnouncementController extends Controller
         
     }
 
+    public function updateAnnouncement(Request $request)
+    {
+        $announcementsToUpdate = Announcement::where('marking',$request->marking)->get();
+
+        $randomNumber = rand(1,999999);
+        
+        try
+        {
+            DB::beginTransaction();
+            foreach($announcementsToUpdate as $announcement)
+            {
+                $announcement->content      = $request->content;
+                $announcement->start_date   = $request->startDate;
+                $announcement->end_date     = $request->endDate;
+                $announcement->editor_id    = $request->editor;
+                $announcement->read_at      = null;
+                $announcement->save();
+            }
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Updated Successfully.'.$randomNumber);
+        }
+        catch(\Exception $e)
+        {
+            DB::rollback();
+            Log::error('Error updating announcement: '.$e->getMessage());
+
+            return redirect()->back()->with('error','Failed to update.'.$randomNumber);
+        }
+    }
     public function delete($marking)
     {
         $announcementsToDelete = Announcement::where('marking',$marking)->get();
@@ -92,7 +122,7 @@ class AnnouncementController extends Controller
             {
                 $announcement->delete();
             }
-            throw new \Exception('simulated error');
+            //throw new \Exception('simulated error');
             DB::commit();
             $randomNumber = rand(1,99999999);
             return redirect()->back()->with('success','Successfully deleted announcement.'.$randomNumber);
