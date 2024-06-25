@@ -39,7 +39,7 @@ class QuestionController extends Controller
             
             $problemSet = ProblemSet::all();
 
-            $announcements = Announcements::orderBy('marking','desc')->get();
+            $announcements = Announcement::orderBy('marking','desc')->get();
         }
 
         if($loggedUser->role == 'department head')

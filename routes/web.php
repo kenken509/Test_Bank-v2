@@ -11,6 +11,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ProblemSetController;
 use App\Http\Controllers\SubjectCodeController;
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\TestGeneratorController;
 use App\Http\Controllers\UserManagementController;
 
@@ -105,4 +106,10 @@ Route::controller(AnnouncementController::class)->group(function(){
 
 Route::controller(ProblemSetController::class)->group(function(){
     Route::post('test_bank/problem_set/store','store')->name('problem.set.store');
+});
+
+Route::controller(ResetPasswordController::class)->group(function(){
+    Route::post('/reset_password/send-email', 'sendPasswordReset')->name('reset.password.verify');
+    Route::get('/pasword-reset/verify/{token}','verifyResetEmail')->name('reset.password.verify.email');
+    Route::post('/password-reset/store', 'resetPassword')->name('reset.password.store');
 });

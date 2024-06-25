@@ -28,6 +28,10 @@
                         </div>
                     </div>
 
+                    <div class="mt-4 pl-2">
+                        <span class="text-gray-500">Forgot password? </span> <button type="button" @click="toggleShowForgotPWModal" class="text-blue-500">click here</button>
+                    </div>
+                    
                     <!-- submit button-->
                     <div class="mt-4">
                         <button 
@@ -38,26 +42,61 @@
                     </div>
                     <!-- submit button-->
                 </form>
+                
             </div>  
+            
         </div>
 
-        
+        <Dialog v-model:visible="showForgotPWModal" modal  :style="{ width: '35rem' }">
+            <div class="flex  flex-col w-full items-center justify-center bg-blue-900 text-gray-200  rounded-t-md pl-2 shadow-md">
+                <div class="flex justify-center items-center pt-4 ">
+                    <img :src="logoUrl" alt="error" class="w-[50px] h-[50px]"/>
+                </div>
+                <div class="  py-2 xs:text-sm md:text-xl ">
+                    Forgot Password
+                </div>
+            </div>
+            <div class="mt-4">
+                <form @submit.prevent="submitForgotEmail">
+                    <div class="flex flex-col ">
+                        <label for="forgotEmail " class="font-semibold">Email: </label>
+                        <input v-model="forgotEmailForm.email" id="forgotEmail" type="email" placeholder="Enter Email" class="rounded-md mt-2" required/>
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit" class="w-full btn-primary" :diabled="forgotEmailForm.processing" >Submit</button>
+                    </div>
+                </form>
+            </div>
+        </Dialog>
+        <div v-if="$page.props.flash.error">{{ errorMessage($page.props.flash.error) }}</div>
+        <div v-if="$page.props.flash.success" class="hidden">{{ tempSuccessMessage = $page.props.flash.success }}</div>
     </div>
     
 </template>
 
 <script setup>
-import {ref} from 'vue'
-import { useForm } from '@inertiajs/vue3';
+import {ref,watch} from 'vue'
+import { useForm, Link } from '@inertiajs/vue3';
 import InputError from '../Global Component/InputError.vue';
+import Swal from 'sweetalert2/dist/sweetalert2.js'
 
 
 
 const logoUrl = ref('/storage/Images/ncstLogo.png')
+const showForgotPWModal =ref(false)
+
+function toggleShowForgotPWModal()
+{
+    showForgotPWModal.value = !showForgotPWModal.value
+}
 
 const form = useForm({
     email:null,
     password:null,
+})
+
+const forgotEmailForm = useForm({
+    email:'',
 })
 
 
@@ -70,4 +109,60 @@ const counter = ref(0);
 setInterval(() => {
     counter.value++
 }, 1000);
+
+const submitForgotEmail = ()=>{
+    forgotEmailForm.post(route('reset.password.verify'),{
+        preserveState:true,
+        preserveScroll:true,
+        onFinish:()=>{ 
+            showForgotPWModal.value = false 
+            forgotEmailForm.email = ''
+        }
+    })
+}
+
+
+function errorMessage(message) {
+        showForgotPWModal.value = !showForgotPWModal
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: message + '!',
+            allowOutsideClick:false,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                location.reload();
+            }
+        })
+    }
+
+const tempSuccessMessage = ref('')
+watch(tempSuccessMessage,(message)=>{
+    let mess = message.split('.')
+
+    successMessage(mess[0])
+})
+function successMessage(message)
+{
+    
+    Swal.fire({
+        title:'Success',
+        text:message,
+        icon:'success',
+        allowOutsideClick:false,
+        allowEscapeKey:false,
+    }).then((result)=>{
+        if(result.isConfirmed)
+        {
+        
+            // location.reload()
+        //    if(page.props.flash.action)
+        //    {
+        //         location.reload();
+        //    }
+            
+        }
+    })
+    
+}
 </script>

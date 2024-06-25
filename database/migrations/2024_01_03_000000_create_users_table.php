@@ -20,6 +20,8 @@ return new class extends Migration
             $table->enum('role', ['admin','co-admin','department head','faculty'])->nullable();
             $table->unsignedBigInteger('department_id')->nullable();
             $table->unsignedBigInteger('division_id')->nullable();
+            $table->string('reset_password_token')->nullable();
+            $table->timestamp('reset_expires_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
 
