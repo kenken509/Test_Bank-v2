@@ -41,14 +41,16 @@
         <!--users count-->
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-10">
             <div class="w-full flex justify-center border rounded-t-md bg-blue-900 border-gray-500 text-gray-800">
-                <span class="text-[20px] font-semibold text-white p-1">Top Contributors</span>
+                <span class="text-[20px] font-semibold text-white p-1">LOWEST CONTRIBUTIONS</span>
             </div>
             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-200 uppercase bg-blue-900 dark:bg-gray-700 dark:text-gray-400">
                     <tr scope="row">
                         <th scope="col" class="px-6 py-3">No.</th>
                         <th scope="col" class="px-6 py-3">User</th>
-                        <th scope="col" class="px-6 py-3">Questions</th>
+                        <th scope="col" class="px-6 py-3">Email</th>
+                        <th scope="col" class="px-6 py-3">Role</th>
+                        <th scope="col" class="px-6 py-3">No.Questions</th>
                     </tr>
                 </thead>
                 <tbody v-for="(user,index) in userQuestionCount" :key="index">
@@ -57,7 +59,13 @@
                             {{ index+1 }}
                         </td>
                         <td scope="col" class="px-6 py-3 text-gray-800">
-                            {{ user.name }} -- {{ user.email }}
+                            {{ user.name }} 
+                        </td>
+                        <td scope="col" class="px-6 py-3 text-gray-800">
+                           {{ user.email }}
+                        </td>
+                        <td scope="col" class="px-6 py-3 text-gray-800">
+                           {{ user.role }}
                         </td>
                         <td scope="col" class="px-6 py-3 text-gray-800">
                             {{ user.questions_count }}

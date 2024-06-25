@@ -16,8 +16,8 @@ class DashboardController extends Controller
         $questionsCount = Question::all()->count();
         
         $userQuestionCount = User::withCount('questions')
-                                ->orderBy('questions_count','desc')
-                                ->take(10)
+                                ->orderBy('questions_count','asc')
+                                ->take(5)
                                 ->get();
         
         return inertia('Dashboard/Dashboard/Dashboard',[
