@@ -46,16 +46,22 @@
   const date = new Date()
   const currentYear = date.getFullYear();
   
-  onMounted(() => {
-    const interval = setInterval(() => {
-      if (currentCharIndex.value < welcomeText.length) {
-        currentCharIndex.value++;
-      } else {
-        clearInterval(interval);
+  // Calculate halfway point of welcomeText
+const halfwayIndex = Math.ceil(welcomeText.length / 2);
+
+onMounted(() => {
+  const interval = setInterval(() => {
+    if (currentCharIndex.value < welcomeText.length) {
+      currentCharIndex.value++;
+      // Check if we've reached halfway through welcomeText
+      if (currentCharIndex.value === halfwayIndex) {
         showLoginText.value = true;
       }
-    }, 100); // Adjust the speed here for smoother animation
-  });
+    } else {
+      clearInterval(interval);
+    }
+  }, 200); // Adjust the speed here for smoother animation
+});
   </script>
   
   <style scoped>
@@ -92,7 +98,7 @@
   }
   
   .char-animation {
-    animation: fadeIn 0.5s ease-in-out forwards;
+    animation: fadeIn 1s ease-in-out forwards;
     margin-right: 2px; /* Add spacing between characters */
   }
   
