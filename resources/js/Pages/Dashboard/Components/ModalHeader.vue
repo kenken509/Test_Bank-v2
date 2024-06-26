@@ -4,12 +4,12 @@
             <img :src="logoUrl" alt="error" class=" w-16 h-16">
             <span class="text-gray-100 text-xl">{{ title }}</span>
         </div>
-        <div class="flex  flex-col  ">
+        <div class="flex  flex-col hidden md:block ">
             <div class="flex justify-end text-[30px] text-gray-100">
-                {{ user.name }}
+                {{ capitalizeFirstLetter(user.name) }}
             </div>
             <div class="flex justify-end text-gray-100">
-                {{ user.role }}
+                {{ capitalizeFirstLetter(user.role) }}
             </div>
             
         </div>
@@ -23,6 +23,7 @@
 <script setup>
 import { usePage } from '@inertiajs/vue3'
 import {ref} from 'vue'
+import { capitalizeFirstLetter } from '../Composables/capitalizeFirstLetter';
 
 const user = usePage().props.user
 const logoUrl = ref('/storage/Images/ncstLogo.png');

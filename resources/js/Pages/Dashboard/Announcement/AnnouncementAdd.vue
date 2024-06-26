@@ -8,7 +8,7 @@
         <Dialog v-model:visible="announcementModalOpen" modal  :style="{ width: '50rem' }">
             <div class=" w-full">
                 <h2 class="text-xl font-bold mb-2">New Announcement</h2>
-                <div class="w-full border-b border-gray-500 w-full"></div>
+                <div class="w-full border-b border-gray-500 "></div>
             </div> 
             <div class="w-full mt-6 ">
                 <form @submit.prevent="submit">

@@ -18,9 +18,9 @@
                         <label>Subject Code: </label>
                     </div>
                     
-                    <div class="flex  col-span-10 lg:col-span-8 gap-8 ">
+                    <div class="flex  col-span-8  gap-8 ">
                         
-                        <select  v-model="selectedSubjectCode" class="border-blue-500 rounded-md ">
+                        <select  v-model="selectedSubjectCode" class=" border-blue-500 rounded-md ">
                             <option value="" selected hidden>
                                 Subject Code
                             </option>
@@ -28,7 +28,7 @@
                                 {{ code.name }}
                             </option>
                         </select>
-                        <div class="flex flex-col lg:flex-row  gap-3" > 
+                        <div class="flex flex-row  gap-3" > 
                             <span class="flex items-center"> Term: </span>   
                             <div class="flex items-center gap-4 hover:cursor-pointer  " :class="{'pointer-events-none ': allTermsSelected}">
                                 <input v-model="prelim" type="checkbox" id="prelim" class="hover:cursor-pointer "  />
@@ -48,10 +48,10 @@
                             </div>
                             
                             
-                            <div class="flex items-center gap-4 hover:cursor-pointer">
+                            <!-- <div class="flex items-center gap-4 hover:cursor-pointer">
                                 <input v-model="allTerm" type="checkbox" id="all" class="hover:cursor-pointer" />
                                 <label for="all" class="hover:cursor-pointer">All</label>
-                            </div> 
+                            </div>  -->
                         </div>
                     </div>
                     
@@ -68,8 +68,8 @@
                 
                 <div class=" grid grid-cols-10 items-center mb-2 gap-2">
                     <div class="col-span-1">
-                        <span class="">
-                            Description : 
+                        <span class="flex flex-nowrap">
+                            Description: 
                         </span>
                     </div>
                     
@@ -364,7 +364,7 @@
                                 <input v-model="form.term" class="rounded-md border-gray-400 bg-gray-200 shadow-md hover:cursor-pointer p-2"  :placeholder="selectedTerm" disabled/>
                             </div>
                         </div>
-                        
+            
                     </div>   
                     
                     <div class=" flex w-full mb-4 flex-col lg:flex-row ">
@@ -480,12 +480,12 @@
                     <img :src="logoUrl" alt="error" class="w-20 h-20">
                     <span class="text-gray-100 text-xl">Problem Set</span><!--andito ako 2-->
                 </div>
-                <div class="flex  flex-col  ">
+                <div class="flex  flex-col hidden md:block  ">
                     <div class="flex justify-end text-[30px] text-gray-100">
-                        {{ user.name }}
+                        {{ capitalizeFirstLetter(user.name) }}
                     </div>
                     <div class="flex justify-end text-gray-100">
-                        {{ user.role }} 
+                        {{ capitalizeFirstLetter(user.role) }} 
                     </div>
                 </div>
                 
@@ -540,6 +540,7 @@ import { Link,usePage,router,useForm } from '@inertiajs/vue3';
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import ModalHeader from '../Components/ModalHeader.vue';
 import { useConvertText } from '../Composables/useConvertText';
+import { capitalizeFirstLetter } from '../Composables/capitalizeFirstLetter';
 
 
 function getCorrectAnswer(options)
@@ -1502,8 +1503,10 @@ const showData = ref(false);
 const displayDataKey = 'dataDisplayedOnce';
 
 const checkDataDisplay = () => {
+    
   if (!localStorage.getItem(displayDataKey)) { 
         // Data has not been displayed, set flag to true
+
         showData.value = true;
         // Set the flag in localStorage
         localStorage.setItem(displayDataKey, 'true');
@@ -1511,6 +1514,7 @@ const checkDataDisplay = () => {
     // Data has already been displayed, set flag to false
     showData.value = false;
   }
+  
 };
 
 const announcementMessage = async (announcements) => {
@@ -1532,7 +1536,7 @@ const announcementMessage = async (announcements) => {
             }
         });
   }
-  
+   showData.value = false
 };
 </script>
 

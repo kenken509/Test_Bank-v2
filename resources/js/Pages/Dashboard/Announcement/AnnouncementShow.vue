@@ -75,13 +75,23 @@
 
         <!--add announcement modal-->
         <Dialog v-model:visible="announcementModalOpen" modal  :style="{ width: '50rem' }">
-            <div class=" w-full">
-                <h2 class="text-xl font-bold mb-2">New Announcement</h2>
-                <div class="w-full border-b border-gray-500 "></div>
-            </div> 
-            <div class="w-full mt-6 ">
+            <div class="header w-full w-[91%] md:w-[94%]  fixed top-14 left-0 right-0 border flex justify-between items-center ml-6 mr-10 bg-blue-900 p-4 pl-2 pr-4 rounded-tl-md rounded-tr-md">
+                <div class="flex items-center gap-2">
+                    <img :src="logoUrl" alt="error" class=" w-16 h-16">
+                    <span class="text-gray-100 text-xl">New Announcement</span>
+                </div>
+                <div class="flex  flex-col hidden md:block ">
+                    <div class="flex justify-end text-[30px] text-gray-100">
+                        {{ capitalizeFirstLetter(user.name) }}
+                    </div>
+                    <div class="flex justify-end text-gray-100">
+                        {{ capitalizeFirstLetter(user.role) }}
+                    </div>
+                </div>
+            </div>
+            <div class="w-full mt-24">
                 <form @submit.prevent="submit">
-                    <div class="mt-6">
+                    <div class="mt-6 ">
                         <label for="announcement" class="font-semibold ">Content: </label>
                         <textarea v-model="content" id="announcement" class="w-full mt-2 rounded-md" rows="4" cols="50" required></textarea> 
                     </div>
@@ -113,11 +123,21 @@
 
         <!--update announcement modal-->
         <Dialog v-model:visible="updateAnnouncementModalOpen" modal  :style="{ width: '50rem' }">
-            <div class=" w-full">
-                <h2 class="text-xl font-bold mb-2">Update Announcement</h2>
-                <div class="w-full border-b border-gray-500 "></div>
-            </div> 
-            <div class="w-full mt-6 ">
+            <div class="header w-full w-[91%] md:w-[94%]  fixed top-14 left-0 right-0 border flex justify-between items-center ml-6 mr-10 bg-blue-900 p-4 pl-2 pr-4 rounded-tl-md rounded-tr-md">
+                <div class="flex items-center gap-2">
+                    <img :src="logoUrl" alt="error" class=" w-16 h-16">
+                    <span class="text-gray-100 text-xl">Update Announcement</span>
+                </div>
+                <div class="flex  flex-col hidden md:block ">
+                    <div class="flex justify-end text-[30px] text-gray-100">
+                        {{ capitalizeFirstLetter(user.name) }}
+                    </div>
+                    <div class="flex justify-end text-gray-100">
+                        {{ capitalizeFirstLetter(user.role) }}
+                    </div>
+                </div>
+            </div>
+            <div class="w-full mt-24 ">
                 <form @submit.prevent="update">
                     <div class="mt-6">
                         <label for="announcement" class="font-semibold ">Content: </label>
@@ -157,7 +177,10 @@ import {ref, onMounted, watch, computed} from 'vue'
 import DashboardLayout from '../DashboardLayout.vue';
 import { useForm, usePage,Link, router } from '@inertiajs/vue3';
 import Swal from 'sweetalert2/dist/sweetalert2.js'
+import { capitalizeFirstLetter } from '../Composables/capitalizeFirstLetter';
 
+
+const logoUrl = ref('/storage/Images/ncstLogo.png');
 const searchField = ref('');
 
 
@@ -442,6 +465,7 @@ const formUpdate = useForm({
 })
 
 const update = ()=>{ // andito ako 2
+
     if(updateStartDate.value)
     {
         let selectedDate = new Date(updateStartDate.value)
@@ -548,4 +572,6 @@ function isExpired(endDate)
     const end = new Date(endDate);
     return end < today;
 };
+
+
 </script>

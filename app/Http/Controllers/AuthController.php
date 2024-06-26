@@ -23,7 +23,7 @@ class AuthController extends Controller
         if(!Auth::attempt($request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string'
-        ]), true)){ // remember me = true
+        ]), /**true */)){ // remember me = true
             throw ValidationException::withMessages([
                 'email' => 'Authentication Failed.'
             ]);
@@ -49,9 +49,9 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        //return redirect()->route('login.show')->with('success', 'Successfully Logged out.');
+        return redirect()->route('login.show')->with('success', 'Successfully Logged out.');
         
-        // Redirect to login page using Inertia
-        return inertia('Authentication/Login');
+        // // Redirect to login page using Inertia
+        // return inertia('Authentication/Login');
     }
 }

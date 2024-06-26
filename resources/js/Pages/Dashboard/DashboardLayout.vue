@@ -37,8 +37,8 @@
                         
                         <div class="w-full">
                             <button @click="announcmentToggleMenu" class="flex w-full items-center justify-between pr-8 ">
-                            Announcement
-                                <svg v-if="showDepMgmtMenu" class="w-6 h-6  text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                Announcement 
+                                <svg v-if="showAnnouncmentMenu" class="w-6 h-6  text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
                                 </svg>
                                 <svg v-else class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -127,15 +127,15 @@
                                 Departments
                             </li>
                         </Link>
-                        <!-- <Link v-if="user.role === 'admin'" :href="route('department.add')">
+                        <Link v-if="user.role === 'admin'" :href="route('department.add')">
                             <li @click="toggleBackground('dep2')" :class="{'bg-blue-900':clickedItem == 'dep2'}" class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
                                 <svg class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                                     <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4.243a1 1 0 1 0-2 0V11H7.757a1 1 0 1 0 0 2H11v3.243a1 1 0 1 0 2 0V13h3.243a1 1 0 1 0 0-2H13V7.757Z" clip-rule="evenodd"/>
                                 </svg>
-
+                                
                                 Add
                             </li>
-                        </Link> -->
+                        </Link>
                        
                         
 
@@ -328,14 +328,14 @@
                                     Questions
                                 </li>
                             </Link>
-                            <Link  :href="route('question.add')">
+                            <!-- <Link  :href="route('question.add')">
                                 <li @click="toggleBackground('questionBank2')" :class="{'bg-blue-900':clickedItem === 'questionBank2'}" class="flex pl-10 items-center gap-2 py-2 hover:bg-blue-900 hover:cursor-pointer">
                                     <svg class="w-6 h-6 text-gray-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                                         <path fill-rule="evenodd" d="M9 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4H7Zm8-1a1 1 0 0 1 1-1h1v-1a1 1 0 1 1 2 0v1h1a1 1 0 1 1 0 2h-1v1a1 1 0 1 1-2 0v-1h-1a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
                                     </svg>
                                     Add
                                 </li>
-                            </Link>
+                            </Link> -->
                             
                         </ul>
                 </div>
@@ -428,22 +428,17 @@
         
         <!-- header and content -->
         <div class="flex-1 transition-all duration-200 ease-in-out" :class="{'ml-0': !showSideBar, 'ml-64': showSideBar}">
-            <div class="flex items-center justify-between bg-white shadow px-2 py-4">
+            <div class="flex items-center justify-between bg-blue-950 shadow px-2 py-4">
                 <button @click="menuBtnClick">
-                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14"/>
                     </svg>
                 </button>
-                Welcome back, {{ user.role }} {{ user.name }}
-                
-                    
-             
-                
-               
+                <span class="text-gray-200 pr-2 mr-5">
+                    Welcome back, <span v-if="user.role==='admin'"> {{ capitalizeFirstLetter(user.role) }}</span> {{ capitalizeFirstLetter(user.name) }}
+                </span>
             </div>
             <div class="p-8  ">
-                
-
                 <slot></slot>
             </div>
         </div>
@@ -459,6 +454,7 @@ import { computed, ref } from 'vue';
 import { usePage, Link, router } from '@inertiajs/vue3';
 import CustomModal from '../Global Component/CustomModal.vue';
 import axios from 'axios';
+import { capitalizeFirstLetter } from './Composables/capitalizeFirstLetter';
 
 
 

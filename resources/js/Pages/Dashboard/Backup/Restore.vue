@@ -18,14 +18,14 @@
             />
             <button
               type="button"
-              class="bg-gray-800 text-white p-2 rounded-md my-2 w-full"
+              class="bg-blue-800 text-white p-2 rounded-md my-2 w-full"
               @click="reset"
             >
               Reset
             </button>
             <button
               type="submit"
-              class="bg-gray-800 text-white p-2 rounded-md my-2 w-full"
+              class="bg-blue-800 text-white p-2 rounded-md my-2 w-full"
               :disabled="form.processing"
             >
               Upload

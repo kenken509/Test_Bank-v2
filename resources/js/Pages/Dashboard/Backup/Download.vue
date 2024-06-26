@@ -1,6 +1,9 @@
 <template>
     <DashboardLayout>
-        download
+      <div class="flex items-center justify-between border-bot-only py-2 mb-4">
+            <span class="text-[20px] font-bold text-gray-500">Download Backup </span> 
+            
+        </div>
     </DashboardLayout>
 </template>
 <script setup>
