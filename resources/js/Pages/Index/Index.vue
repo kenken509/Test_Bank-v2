@@ -55,18 +55,6 @@ onMounted(() => {
   }, 150); // Adjust the speed here for smoother animation
 });
 
-function errorMessage(message) {
-        Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: message + '!',
-            allowOutsideClick:false,
-        }).then((result) => {
-            if (result.isConfirmed) {
-                location.reload();
-            }
-        })
-    }
 </script>
 
 <style scoped>

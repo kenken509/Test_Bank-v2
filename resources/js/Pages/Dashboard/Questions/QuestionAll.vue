@@ -1013,6 +1013,7 @@ const deleteConfirmation = (questionId)=>
             }
         })
     }
+    
     function errorMessage2(message) {
         Swal.fire({
             icon: "error",

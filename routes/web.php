@@ -17,7 +17,7 @@ use App\Http\Controllers\UserManagementController;
 
 Route::get('/', function () {
     return inertia('Index/Index');
-});
+})->name('index');
 
 Route::controller(AuthController::class)->group(function(){
     Route::get('/login', 'create')->name('login.show');
@@ -26,7 +26,7 @@ Route::controller(AuthController::class)->group(function(){
 });
 
 Route::controller(UserManagementController::class)->group(function(){
-    Route::get('/test_bank/users', 'showUsers')->name('users.show');
+    Route::get('/test_bank/users', 'showUsers')->name('users.show')->middleware('isCoAdmin');
     Route::get('/test_bank/user/add', 'showAddUser' )->name('user.add');
     Route::post('/test_bank/new-user/store', 'storeUser')->name('user.store');
     Route::delete('test_bank/user/delete/{id}', 'deleteUser')->name('user.delete');
@@ -35,53 +35,53 @@ Route::controller(UserManagementController::class)->group(function(){
 });
 
 Route::controller(DashboardController::class)->group(function(){
-    Route::get('/dashboard', 'showDashboard')->name('dashboard.show');
+    Route::get('/dashboard', 'showDashboard')->name('dashboard.show')->middleware('isCoAdmin');
 });
 
 
 
 Route::controller(DepartmentController::class)->group(function(){
-    Route::get('/departments', 'showDepartment')->name('departments.show');
-    Route::get('/department/add', 'addDepartment')->name('department.add');
-    Route::delete('/test_bank/departments/delete/{id}','destroy')->name('department.delete');
-    Route::post('/test_bank/departments/store', 'storeDepartment')->name('department.store');
-    Route::get('/test_bank/departments/update/{id}','updateDepartmentShow')->name('department.update.show');
-    Route::put('/test_bank/departments/update/store', 'updateDepartment')->name('department.update');
+    Route::get('/departments', 'showDepartment')->name('departments.show')->middleware('isCoAdmin');
+    Route::get('/department/add', 'addDepartment')->name('department.add')->middleware('isAdmin');
+    Route::delete('/test_bank/departments/delete/{id}','destroy')->name('department.delete')->middleware('isAdmin');
+    Route::post('/test_bank/departments/store', 'storeDepartment')->name('department.store')->middleware('isAdmin');
+    Route::get('/test_bank/departments/update/{id}','updateDepartmentShow')->name('department.update.show')->middleware('isAdmin');
+    Route::put('/test_bank/departments/update/store', 'updateDepartment')->name('department.update')->middleware('isAdmin');
 });
 
 Route::controller(DivisionController::class)->group(function(){
-    Route::get('/test_bank/divisions', 'showDivision')->name('division.show');
-    Route::delete('/test_bank/divisions/delete/{id}', 'destroy')->name('division.delete');
-    Route::get('/test_bank/divisions/add', 'addDivision')->name('division.add');
-    Route::post('/test_bank/divisions/store', 'storeDivision')->name('division.store');
-    Route::get('/test_bank/divisions/update/{id}', 'updateShow')->name('division.update.show');
-    Route::put('/test_bank/divisions/update/store', 'storeUpdate')->name('division.update.store');
+    Route::get('/test_bank/divisions', 'showDivision')->name('division.show')->middleware('isCoAdmin');
+    Route::delete('/test_bank/divisions/delete/{id}', 'destroy')->name('division.delete')->middleware('isAdmin');
+    Route::get('/test_bank/divisions/add', 'addDivision')->name('division.add')->middleware('isAdmin');
+    Route::post('/test_bank/divisions/store', 'storeDivision')->name('division.store')->middleware('isAdmin');
+    Route::get('/test_bank/divisions/update/{id}', 'updateShow')->name('division.update.show')->middleware('isAdmin');
+    Route::put('/test_bank/divisions/update/store', 'storeUpdate')->name('division.update.store')->middleware('isAdmin');
 });
 
 Route::controller(SubjectCodeController::class)->group(function(){
-    Route::get('/test_bank/subject_codes', 'showSubjectCodes')->name('subject.codes.show');
-    Route::delete('/test_bank/subject_code/delete/{id}', 'destroy')->name('subject.codes.delete');
-    Route::get('/test_bank/subject_codes/add', 'showAddSubjectCode')->name('subject.codes.add.show');
-    Route::post('/test_bank/subject_codes/store', 'store')->name('subject.codes.store');
-    Route::get('/test_bank/subject_codes/update/{id}', 'updateShow')->name('subject.codes.update.show');
-    Route::put('/test_bank/subject_codes/update/store', 'update')->name('subject.codes.update');
+    Route::get('/test_bank/subject_codes', 'showSubjectCodes')->name('subject.codes.show')->middleware('isCoAdmin');
+    Route::delete('/test_bank/subject_code/delete/{id}', 'destroy')->name('subject.codes.delete')->middleware('isAdmin');
+    Route::get('/test_bank/subject_codes/add', 'showAddSubjectCode')->name('subject.codes.add.show')->middleware('isAdmin');
+    Route::post('/test_bank/subject_codes/store', 'store')->name('subject.codes.store')->middleware('isAdmin');
+    Route::get('/test_bank/subject_codes/update/{id}', 'updateShow')->name('subject.codes.update.show')->middleware('isAdmin');
+    Route::put('/test_bank/subject_codes/update/store', 'update')->name('subject.codes.update')->middleware('isAdmin');
 });
 
 Route::controller(QuestionController::class)->group(function(){
-    Route::get('/test_bank/questions', 'showQuestions')->name('questions.show');
-    Route::delete('/test_bank/questions/delete/{id}', 'destroy')->name('questions.delete');
-    Route::get('/test_bank/questions/add', 'showAddQuestion')->name('question.add');
-    Route::post('/test_bank/question/store', 'storeQuestion')->name('question.store');
+    Route::get('/test_bank/questions', 'showQuestions')->name('questions.show')->middleware('isFaculty');
+    Route::delete('/test_bank/questions/delete/{id}', 'destroy')->name('questions.delete')->middleware('isAdmin');
+    Route::get('/test_bank/questions/add', 'showAddQuestion')->name('question.add')->middleware('isFaculty');
+    Route::post('/test_bank/question/store', 'storeQuestion')->name('question.store')->middleware('isFaculty');
     //Route::post('/test_bank/question/store', 'storeQuestion')->name('question.store.modal');
-    Route::get('/test_bank/question/update/{id}', 'showUpdate')->name('question.update.show');
-    Route::post('/test_bank/question/update', 'update')->name('question.update');
+    Route::get('/test_bank/question/update/{id}', 'showUpdate')->name('question.update.show')->middleware('isAdmin');
+    Route::post('/test_bank/question/update', 'update')->name('question.update')->middleware('isAdmin');
 
 });
 
 Route::controller(TestGeneratorController::class)->group(function(){
-    Route::get('/test_bank/test_generator', 'showTestGenerator')->name('testGen.show');
-    Route::match(['get', 'post'], '/test_bank/generated_test', 'showGeneratedExam')->name('testGen.generated');
-    Route::post('/test_bank/generated_test', 'showGeneratedExam')->name('testGen.test');
+    Route::get('/test_bank/test_generator', 'showTestGenerator')->name('testGen.show')->middleware('isAdmin');
+    Route::match(['get', 'post'], '/test_bank/generated_test', 'showGeneratedExam')->name('testGen.generated')->middleware('isAdmin');
+    Route::post('/test_bank/generated_test', 'showGeneratedExam')->name('testGen.test')->middleware('isAdmin');
 });
 
 Route::controller(TestPageController::class)->group(function(){
@@ -89,19 +89,19 @@ Route::controller(TestPageController::class)->group(function(){
 });
 
 Route::controller(BackUpController::class)->group(function(){
-    Route::get('/backup-download-db', 'show')->name('backup.show');
-    Route::get('/download-database-backup', 'download')->name('backup.download');
-    Route::get('/backup-restore', 'showRestore')->name('backup.restore.show');
-    Route::post('/backup-restore-db', 'restoreDatabase')->name('backup.restore.restore');
-    Route::get('/test_con', 'testDatabaseConnection')->name('test.con');
+    Route::get('/backup-download-db', 'show')->name('backup.show')->middleware('isAdmin');
+    Route::get('/download-database-backup', 'download')->name('backup.download')->middleware('isAdmin');
+    Route::get('/backup-restore', 'showRestore')->name('backup.restore.show')->middleware('isAdmin');
+    Route::post('/backup-restore-db', 'restoreDatabase')->name('backup.restore.restore')->middleware('isAdmin');
+    Route::get('/test_con', 'testDatabaseConnection')->name('test.con')->middleware('isAdmin');
 });
 
 Route::controller(AnnouncementController::class)->group(function(){
-    Route::get('test_bank/announcement', 'showAnnouncement')->name('announcement.show');
-    Route::get('test_bank/announcement/new', 'showAddAnnouncement')->name('announcement.add');
-    Route::post('test_bank/announcement/store', 'storeAnnouncement')->name('announcement.store');
-    Route::delete('test_bank/announcement/delete/{marking}','delete')->name('announcement.delete');
-    Route::put('test_bank/announcement/delete', 'updateAnnouncement')->name('announcement.update');
+    Route::get('test_bank/announcement', 'showAnnouncement')->name('announcement.show')->middleware('isCoAdmin');
+    Route::get('test_bank/announcement/new', 'showAddAnnouncement')->name('announcement.add')->middleware('isCoAdmin');
+    Route::post('test_bank/announcement/store', 'storeAnnouncement')->name('announcement.store')->middleware('isCoAdmin');
+    Route::delete('test_bank/announcement/delete/{marking}','delete')->name('announcement.delete')->middleware('isAdmin');
+    Route::put('test_bank/announcement/delete', 'updateAnnouncement')->name('announcement.update')->middleware('isAdmin');
 });
 
 Route::controller(ProblemSetController::class)->group(function(){
