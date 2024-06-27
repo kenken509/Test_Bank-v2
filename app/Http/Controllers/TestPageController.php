@@ -8,7 +8,7 @@ class TestPageController extends Controller
 {
     public function showTestPage()
     {
-        return inertia('TestPage/TestPage2');
+        return inertia('TestPage/TestPage3');
     }
     
 }

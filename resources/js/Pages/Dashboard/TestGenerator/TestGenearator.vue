@@ -305,12 +305,12 @@
             <hr class="border border-2 border-black w-full max-w-[8.5in] max-h-[llin] mb-8 mt-2" />
         </div>
         
-        <!--save question set--> <!-- andito ako 1-->
-        <div  id="pdf-convert" class="w-full max-w-[8.5in] max-h-[l0.5in]">
+        <!--save question set--> 
+        <div  id="pdf-convert" class="w-full py-2 ">
             <!--heading-->
-            <div class="flex justify-center gap-2 w-full ">
+            <div class="flex justify-center gap-2 w-full  relative ">
                 <div class="flex justify-between gap-4 ">
-                    <div class=" w-20 h-20 mt-[18px] ">
+                    <div class=" w-20 h-20 mt-[18px] absolute z-50 top-0 left-[30px]">
                         <img :src="logoUrl" alt="Ncst Logo"/>
                     </div>
                     <div class="flex flex-col justify-center items-center mb-2 mt-1 ">
@@ -335,22 +335,24 @@
                 <span class="font-bold text-[16px]">{{ direction }}</span>
             </div>
             <!--questions-->
-            <div class="w-full flex flex-wrap whitespace-nowrap flex-col py-2  " v-for="(question,index) in questionSetPdf" :key="question.id">
-                <span class="text-[12px] py-2">{{index+1}}. {{ question.question }}</span>
+            <div class="w-full flex flex-wrap whitespace-nowrap flex-col py-2    " v-for="(question,index) in questionSetPdf" :key="question.id"><!-- andito ako 1-->
+                <div class="txt-break">
+                    <span class="text-[12px] py-2 text-break ">{{index+1}}. {{ question.question }}</span>
+                </div>
+                
                 <!--options-->
-                <div v-if="question.type === 'text'" class="flex flex-row whitespace-nowrap gap-3 w-full pl-4 mt-2 " :class="{'flex-col':question.options.some(option => option.option.length > 30)}">
+                <div v-if="question.type === 'text'" class="flex flex-row whitespace-nowrap gap-3 w-full pl-4 mt-2  " :class="{'flex-col':question.options.some(option => option.option.length > 30)}">
                     
-                    <template v-for="(option,index) in question.options">
-                        
-                        <span class="flex w-full text-[12px] pb-2">{{ optionLetters[index] }}. {{ option.option }}</span>
+                    <template v-for="(option,index) in question.options" class="">
+                        <span class="flex w-full text-[12px] py-2 txt-break">{{ optionLetters[index] }}. {{ option.option }}</span>
                     </template>
                 </div>
                 
-                <div v-if="question.type === 'image'" class="flex flex-row w-full bg-gren-300 ml-2 mt-6 mb-4 p-2">
+                <div v-if="question.type === 'image'" class="flex flex-row w-full bg-gren-300 ml-2 mt-2  p-2  ">
                     <template v-for="(option,index) in question.options" class="w-full flex flex-row bg-green-300  " >  
-                        <div class="w-full flex  gap-2 pb-2 ">
+                        <div class="w-full flex  gap-2 pb-2 img-break  ">
                             <span class="text-[12px]">{{ optionLetters[index] }}. </span>                
-                            <img :src="imageUrl+option.option" alt="image option" class="max-w-[1.5in] max-h-[1.5in] rounded-md border border-black "/>   
+                            <img :src="imageUrl+option.option" alt="image option" class="max-w-[1.5in] max-h-[1.5in] rounded-md border border-black img-break"/>   
                         </div>                    
                     </template>
                 </div>
@@ -1393,7 +1395,7 @@ function questionSetDateFormat() {
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const seconds = String(date.getSeconds()).padStart(2, '0');
     
-    // Construct the formatted date string
+    // Construct the formatted date strin
     const formattedDate = `${day}-${month}-${year}-${hours}-${minutes}-${seconds}`;
     
     return formattedDate;
@@ -1463,12 +1465,12 @@ function saveQuestionareToPDF(questions,filename)
     questionSetPdf.value = questions
     const element = document.getElementById('pdf-convert'); // Replace 'pdf-content' with the ID of the content you want to convert to PDF
     const opt = {
-        margin: [0.4,0.4, 0.5, 0.4], // [top, left, bottom, right].
+        margin: [0.4, 0.5, 0.7, 0.4], // [top, left, bottom, right].
         filename:     filename+'.pdf',
         image:        { type: 'jpeg', quality: 0.98 }, //andito ako 33
         html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }, // 'letter', 'a4', 'legal' or [width, height] for custom size
+        pagebreak: { mode: ['avoid-all'] },
     };
 
     // Function to add footers to each page
@@ -1607,4 +1609,15 @@ function errorMessage(message) {
     input[type=number] {
         -moz-appearance: textfield;
     }
+
+    .img-break, .txt-break {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+    
+    /* Ensuring all parent elements are not breaking inside */
+     .pdf-convert div, .pdf-convert span, .pdf-convert img {
+        page-break-inside: avoid;
+        break-inside:avoid;
+    } 
 </style>
